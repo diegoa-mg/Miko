@@ -14,8 +14,8 @@ No necesitas instalar Python, Node ni PostgreSQL en tu máquina — todo corre d
 ### 1. Clona el proyecto
 
 ```bash
-git clone https://github.com/diegoa-mg/PI-3er-Semestre.git
-cd PI3erSemestre
+git clone https://github.com/diegoa-mg/Miko.git
+cd Miko
 ```
 
 ### 2. Crea tus archivos de variables de entorno
