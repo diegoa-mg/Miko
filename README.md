@@ -115,7 +115,7 @@ Miko/
 | Integrante | GitHub |
 |---|---|
 | Diego Morales | [@diegoa-mg](https://github.com/diegoa-mg) |
-| Nombre Apellido | [@luisfer-rv](https://github.com/luisfer-rv) |
-| Nombre Apellido | [@darimonc](https://github.com/darimonc) |
-| Nombre Apellido | [@fespitia01](https://github.com/fespitia01) |
-| Nombre Apellido | [@MigueSsj](https://github.com/MigueSsj) |
+| Luis Ramírez | [@luisfer-rv](https://github.com/luisfer-rv) |
+| Darinka Contreras | [@darimonc](https://github.com/darimonc) |
+| Francisco Espitia | [@fespitia01](https://github.com/fespitia01) |
+| Miguel Orozco | [@MigueSsj](https://github.com/MigueSsj) |
