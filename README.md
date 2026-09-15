@@ -165,7 +165,7 @@ Después de `pnpm add` o `pnpm remove`, el `pnpm-lock.yaml` en tu carpeta local 
 ## Estructura del proyecto
 
 ```
-PI3erSemestre/
+Miko/
 ├── docker-compose.yml
 ├── .env.example            # plantilla de variables de entorno (raíz)
 ├── .gitignore
