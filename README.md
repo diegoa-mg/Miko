@@ -21,9 +21,9 @@ Aplicación que permite a una empresa con varias sucursales administrar de forma
 
 ## 🚀 Funcionalidades implementadas
 
-✅ Entorno de desarrollo completo con Docker (backend, frontend y base de datos aislados y comunicados entre sí)
-✅ Frontend base con Vite + React, con cambio de idioma español/inglés funcional
-✅ Backend base con FastAPI respondiendo peticiones
+✅ Entorno de desarrollo completo con Docker (backend, frontend y base de datos aislados y comunicados entre sí)<br>
+✅ Frontend base con Vite + React, con cambio de idioma español/inglés funcional<br>
+✅ Backend base con FastAPI respondiendo peticiones<br>
 ✅ Diseño del modelo relacional completo (diagrama entidad-relación y diccionario de datos)
 
 🔜 Pendiente:
