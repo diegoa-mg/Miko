@@ -19,7 +19,7 @@ Aplicación que permite a una empresa con varias sucursales administrar de forma
 | Infraestructura | Docker + Docker Compose |
 | Gestor de paquetes (frontend) | pnpm |
 
-## Funcionalidades implementadas
+## 🚀 Funcionalidades implementadas
 
 ✅ Entorno de desarrollo completo con Docker (backend, frontend y base de datos aislados y comunicados entre sí)
 ✅ Frontend base con Vite + React, con cambio de idioma español/inglés funcional
@@ -32,12 +32,12 @@ Aplicación que permite a una empresa con varias sucursales administrar de forma
 - CRUD de sucursales, productos e inventario
 - Módulo de ventas (POS)
 
-## Capturas de la plataforma
+## 📸 Capturas de la plataforma
 
 <!-- 📸 Agregar aquí capturas conforme se implementen las pantallas -->
 _(Próximamente)_
 
-## Guía de instalación
+## 🛠️ Guía de instalación
 
 ### Requisitos previos
 
@@ -46,13 +46,22 @@ _(Próximamente)_
 
 No necesitas instalar Python, Node ni PostgreSQL en tu máquina — todo corre dentro de los contenedores.
 
-### Pasos
+### Paso 1: Clonar el repositorio y entrar a la carpeta
 
 ```bash
 git clone https://github.com/diegoa-mg/Miko.git
 cd Miko
+```
+
+### Paso 2: Crear archivos .env
+
+```
 cp .env.example .env
 cp frontend/.env.example frontend/.env
+```
+
+### Paso 3: Levantar el contenedor
+```
 docker compose up -d --build
 ```
 
@@ -64,11 +73,9 @@ Verifica que los 3 contenedores estén `Up` con `docker compose ps`, y abre:
 | Backend (API) | http://localhost:8000 |
 | Documentación de la API (Swagger) | http://localhost:8000/docs |
 
-**Notas técnicas:**
-- El frontend usa **pnpm**, no npm — instala paquetes con `docker compose exec frontend pnpm add <paquete>`, nunca desde tu máquina directamente.
-- Requiere **Node 22+** dentro del contenedor (ya configurado en `frontend/Dockerfile`) — es un requisito de la versión de pnpm usada, no lo cambies a una imagen de Node más vieja.
+**⚠️ No modifiques el `Dockerfile` del frontend** sin saber por qué está así — usa una versión específica de Node y pnpm a propósito; cambiarlo rompe el build para todo el equipo.
 
-## Estructura del proyecto
+## 📂 Estructura del proyecto
 
 ```
 Miko/
@@ -103,12 +110,12 @@ Miko/
             └── en/translation.json
 ```
 
-## Equipo de desarrollo
+## 👤 Equipo de desarrollo
 
 | Integrante | GitHub |
 |---|---|
 | Diego Morales | [@diegoa-mg](https://github.com/diegoa-mg) |
-| Nombre Apellido | [@usuario](https://github.com/usuario) |
-| Nombre Apellido | [@usuario](https://github.com/usuario) |
-| Nombre Apellido | [@usuario](https://github.com/usuario) |
-| Nombre Apellido | [@usuario](https://github.com/usuario) |
+| Nombre Apellido | [@luisfer-rv](https://github.com/luisfer-rv) |
+| Nombre Apellido | [@darimonc](https://github.com/darimonc) |
+| Nombre Apellido | [@fespitia01](https://github.com/fespitia01) |
+| Nombre Apellido | [@MigueSsj](https://github.com/MigueSsj) |
