@@ -1,13 +1,24 @@
+<div align="center">
+
+<!-- 🖼️ Logo pendiente: reemplaza este comentario cuando lo subas -->
+<!-- <img src="./ruta/al/logo.png" width="200" alt="Logo de Miko" /> -->
+
 # Miko
+### Control centralizado de sucursales, inventario y ventas
 
-<!-- 🖼️ Logo pendiente: cuando lo subas al repo, reemplaza esta línea por: -->
-<!-- ![Logo de Miko](./ruta/al/logo.png) -->
+![Estado](https://img.shields.io/badge/estado-en%20desarrollo-yellow)
+![FastAPI](https://img.shields.io/badge/FastAPI-009688?logo=fastapi&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?logo=postgresql&logoColor=white)
+![Alembic](https://img.shields.io/badge/Alembic-migrations-6BA539)
+![React](https://img.shields.io/badge/React-61DAFB?logo=react&logoColor=black)
+![Vite](https://img.shields.io/badge/Vite-646CFF?logo=vite&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/TailwindCSS-06B6D4?logo=tailwindcss&logoColor=white)
+![Docker](https://img.shields.io/badge/Docker-2496ED?logo=docker&logoColor=white)
+![pnpm](https://img.shields.io/badge/pnpm-F69220?logo=pnpm&logoColor=white)
 
-**Miko** — Sistema web de punto de venta e inventario multi-sede.
+</div>
 
-🚧 En desarrollo — Proyecto Integrador, 3er semestre, Ingeniería de Software.
-
-Aplicación que permite a una empresa con varias sucursales administrar de forma centralizada su inventario, usuarios y ventas. Un Administrador General gestiona sucursales y Gerentes; cada Gerente controla el inventario de su sede; los Cajeros registran las ventas desde un punto de venta (POS). Interfaz disponible en español e inglés.
+Aplicación web que permite a una empresa con varias sucursales administrar de forma centralizada su inventario, usuarios y ventas. Un Administrador General gestiona sucursales y Gerentes; cada Gerente controla el inventario de su sede; los Cajeros registran las ventas desde un punto de venta (POS). Interfaz disponible en español e inglés.
 
 **Stack tecnológico:**
 
