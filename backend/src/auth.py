@@ -1,20 +1,36 @@
-"""
-Placeholder temporal. Si algún compañero ya está implementando el login/JWT,
-reemplacen este archivo por el suyo — lo único que importa es que exponga
-una función get_current_user(...) usable como Depends() y que devuelva un
-objeto Usuario con su relación .rol ya disponible.
-"""
-
 from fastapi import Depends, HTTPException, status
+from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
+import jwt
 
 from src.database import get_db
 from src.models import Usuario
+from src.security import decodificar_access_token
+
+bearer_scheme = HTTPBearer(auto_error=False)
 
 
-def get_current_user(db: Session = Depends(get_db)) -> Usuario:
-    # TODO: reemplazar por la lógica real de decodificación de token (JWT).
-    raise HTTPException(
-        status_code=status.HTTP_501_NOT_IMPLEMENTED,
-        detail="get_current_user aún no está implementado (pendiente de login/JWT)",
+def get_current_user(
+    credenciales: HTTPAuthorizationCredentials = Depends(bearer_scheme),
+    db: Session = Depends(get_db),
+) -> Usuario:
+    credenciales_invalidas = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail="Credenciales inválidas o sesión expirada",
+        headers={"WWW-Authenticate": "Bearer"},
     )
+
+    if credenciales is None:
+        raise credenciales_invalidas
+
+    try:
+        payload = decodificar_access_token(credenciales.credentials)
+        usuario_id = int(payload["sub"])
+    except (jwt.PyJWTError, KeyError, ValueError):
+        raise credenciales_invalidas
+
+    usuario = db.get(Usuario, usuario_id)
+    if usuario is None:
+        raise credenciales_invalidas
+
+    return usuario

@@ -8,7 +8,7 @@ from sqlalchemy.orm import declarative_base, sessionmaker
 # directamente: export DATABASE_URL="postgresql+psycopg2://usuario:pass@localhost:5432/pos_db"
 DATABASE_URL = os.getenv(
     "DATABASE_URL",
-    "postgresql+psycopg2://postgres:postgres@localhost:5432/pos_db",
+    "postgresql+psycopg://postgres:postgres@localhost:5432/pos_db",
 )
 
 engine = create_engine(DATABASE_URL, pool_pre_ping=True)
