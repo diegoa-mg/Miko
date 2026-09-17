@@ -18,7 +18,7 @@ services:
       - db
     environment:
       DATABASE_URL: postgresql+psycopg://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
-      JWT_SECRET_KEY: ${JWT_SECRET}
+      JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       JWT_EXPIRE_MINUTES: ${JWT_EXPIRE_MINUTES}
       CORS_ORIGINS: ${CORS_ORIGINS}
     ports:

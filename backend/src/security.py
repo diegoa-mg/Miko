@@ -6,7 +6,7 @@ import jwt
 
 JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "cambiar-en-produccion-nunca-usar-este-valor")
 JWT_ALGORITHM = "HS256"
-JWT_EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES", "60")) # Falta modificar el tiempo de expiracion
+JWT_EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES", "60"))
 
 
 # Función para guardar la contraseña con hash

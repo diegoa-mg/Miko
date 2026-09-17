@@ -1,18 +1,13 @@
 import api from "./axios";
 
 export const login = async (email, password) => {
-    const response = await api.post("/login", {
-        email,
-        password,
-    });
+  const { data } = await api.post("/login", { email, password });
+  localStorage.setItem("token", data.token);
 
-    const token = response.data.token;
-
-    localStorage.setItem("token", token);
-
-    return response.data;
+  const { data: usuario } = await api.get("/me");
+  return usuario;
 };
 
 export const logout = () => {
-    localStorage.removeItem("token");
+  localStorage.removeItem("token");
 };

@@ -7,6 +7,10 @@ from src.models import Usuario
 from src.schemas import LoginRequest, TokenResponse, UsuarioOut
 from src.security import crear_access_token, verify_password
 
+"""
+APIRouter es un 
+"""
+
 router = APIRouter(tags=["auth"])
 
 
