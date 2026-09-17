@@ -1,6 +1,6 @@
 """
 Provisional, solo para probar login/JWT mientras no existe el endpoint
-de registro (HU-06). Ejecutar dentro del contenedor:
+de registro. Ejecutar dentro del contenedor:
 
     docker compose exec backend python scripts/crear_usuario_prueba.py
 """

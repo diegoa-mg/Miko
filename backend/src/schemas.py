@@ -5,7 +5,7 @@ class LoginRequest(BaseModel):
     email: str
     password: str
 
-# Es lo qe el servidor responde tras un login exitoso
+# Es lo que el servidor responde tras un login exitoso
 class TokenResponse(BaseModel):
     token: str # token
     token_type: str = "bearer" # tipo del token
