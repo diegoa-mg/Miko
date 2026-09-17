@@ -9,6 +9,7 @@ export function AuthProvider({ children }) {
 
   useEffect(() => {
     const token = localStorage.getItem("token");
+<<<<<<< HEAD
     if (!token) {
       setLoading(false);
       return;
@@ -22,6 +23,23 @@ export function AuthProvider({ children }) {
   }, []);
 
   const login = (usuario) => setUser(usuario);
+=======
+
+    if (token) {
+      setUser({ authenticated: true });
+    }
+
+    setLoading(false);
+  }, []);
+
+  const login = () => {
+    const token = localStorage.getItem("token");
+
+    if (token) {
+      setUser({ authenticated: true });
+    }
+  };
+>>>>>>> 94ac1812f9d6ba405ba93fe4684978617bd58be6
 
   const logout = () => {
     localStorage.removeItem("token");
