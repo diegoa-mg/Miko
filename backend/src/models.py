@@ -114,7 +114,7 @@ class MetodoPago(Base):
 
     id = Column(Integer, primary_key=True)
     nombre = Column(
-        Enum(NombreMetodoPago, name="enum_metodos_pago"),
+        Enum(NombreMetodoPago, name="enum_metodos_pago", values_callable=lambda x: [e.value for e in x]),
         nullable=False,
         unique=True,
     )

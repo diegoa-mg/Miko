@@ -1,10 +1,6 @@
 from fastapi import Depends, HTTPException, status
 
 from src.models import Usuario
-
-# Se asume que ya existe (o existirá) una dependencia get_current_user,
-# normalmente en app/auth.py, que decodifica el JWT/token de sesión y
-# devuelve el objeto Usuario autenticado, con su relación .rol cargada.
 from src.auth import get_current_user
 
 
