@@ -3,12 +3,12 @@ from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.orm import Session
 import jwt
 
+# Importaciones locales de tu proyecto
 from src.database import get_db
 from src.models import Usuario
 from src.security import decodificar_access_token
 
 bearer_scheme = HTTPBearer(auto_error=False)
-
 
 def get_current_user(
     credenciales: HTTPAuthorizationCredentials = Depends(bearer_scheme),
