@@ -4,6 +4,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from src.routers import auth as auth_router
+from src.routers import sucursales as sucursales_router
 
 app = FastAPI(title="POS Multi-sede API")
 
@@ -33,9 +34,9 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-# Activa las rutas que se construyen en routers/auth.py
-# En caso de crear otro archivo, ej: routers/productos.py, cada uno se tiene que conectar aquí con su propio línea include_router
+# Activa las rutas que se construyen en routers/auth.py y routers/sucursales.py
 app.include_router(auth_router.router)
+app.include_router(sucursales_router.router)
 
 
 # Health check básico
