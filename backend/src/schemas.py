@@ -1,4 +1,4 @@
-from pydantic import BaseModel
+from pydantic import BaseModel, ConfigDict
 
 # Es lo que el cliente manda para el login
 class LoginRequest(BaseModel):
@@ -17,3 +17,31 @@ class UsuarioOut(BaseModel):
     email: str
     rol: str
     sucursal_id: int | None = None # Puede venir vacio
+
+    model_config = ConfigDict(from_attributes=True)
+
+# Esquemas para Sucursales
+class SucursalBase(BaseModel):
+    nombre: str
+    direccion: str
+    telefono: str | None = None
+    estado: str = "activa"
+    gerente_id: int | None = None
+
+class SucursalCreate(BaseModel):
+    nombre: str
+    direccion: str
+    telefono: str | None = None
+    gerente_id: int | None = None
+
+class SucursalUpdate(BaseModel):
+    nombre: str | None = None
+    direccion: str | None = None
+    telefono: str | None = None
+    estado: str | None = None
+    gerente_id: int | None = None
+
+class SucursalOut(SucursalBase):
+    id: int
+
+    model_config = ConfigDict(from_attributes=True)
