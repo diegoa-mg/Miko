@@ -1,4 +1,4 @@
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { Routes, Route, useNavigate ,Navigate} from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { login as loginApi } from "./api/auth";
@@ -134,6 +134,7 @@ export default function App() {
     <AuthProvider>
       <div>
         <Routes>
+          <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
 
           <Route element={<ProtectedRoute />}>
