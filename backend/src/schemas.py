@@ -45,3 +45,9 @@ class SucursalOut(SucursalBase):
     id: int
 
     model_config = ConfigDict(from_attributes=True)
+
+# Esquemas de Gerentes
+class GerenteCreate(BaseModel):
+    nombr: str
+    email: str
+    password: str
