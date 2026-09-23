@@ -11,6 +11,7 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer" # tipo del token
 
 # Se declaran los unicos campos que se quieren exponer, evita poner la password_hash
+# Se usa tambien para gerente
 class UsuarioOut(BaseModel):
     id: int
     nombre: str
@@ -48,6 +49,6 @@ class SucursalOut(SucursalBase):
 
 # Esquemas de Gerentes
 class GerenteCreate(BaseModel):
-    nombr: str
+    nombre: str
     email: str
     password: str

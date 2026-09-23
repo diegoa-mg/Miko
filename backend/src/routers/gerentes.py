@@ -1,5 +1,46 @@
 from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
+from src.dependencies import requiere_rol
+from src.services import obtener_rol
 from src.database import get_db
-from src.models import Rol
+from src.security import hash_password
+from src.models import Rol, Usuario
+from src.schemas import GerenteCreate, UsuarioOut
+
+router = APIRouter(
+    prefix="/gerentes",
+    tags=["gerentes"],
+    dependencies=[Depends(requiere_rol("admin_general"))] # Solo accesible para administradores
+)
+
+@router.post("", response_model=UsuarioOut, status_code=status.HTTP_201_CREATED)
+def crear_gerente(gerente_in: GerenteCreate, db: Session = Depends(get_db),):
+
+    # Validar si ya existe un usuario con el mismo correo
+    existente = db.query(Usuario).filter(Usuario.email == gerente_in.email).first()
+    if existente:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Ya existe un usuario con el email '{gerente_in.email}'",
+        )
+
+    rol_gerente = obtener_rol(db, "gerente_sede")
+    
+    usuario = Usuario(
+        nombre=gerente_in.nombre,
+        email=gerente_in.email,
+        password_hash=hash_password(gerente_in.password),
+        rol=rol_gerente,
+    )
+    db.add(usuario)
+    db.commit()
+    db.refresh(usuario)
+
+    return UsuarioOut(
+        id=usuario.id,
+        nombre=usuario.nombre,
+        email=usuario.email,
+        rol=rol_gerente.nombre,
+        sucursal_id=usuario.sucursal_id,
+    )
