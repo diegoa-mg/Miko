@@ -6,6 +6,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import ProtectedRoute from "./routes/protectedRoute";
 import RoleRoute from "./routes/roleRoute";
 import logoMiko from "./assets/logo_claro.png";
+import Sucursales from "./pages/sucursales";
 
 function Login() {
   const { login } = useAuth();
@@ -140,6 +141,7 @@ export default function App() {
           <Route element={<ProtectedRoute />}>
             <Route element={<RoleRoute allowedRoles={["admin_general"]} />}>
               <Route path="/admin/*" element={<Dashboard />} />
+              <Route path="/admin/sucursales" element={<Sucursales />} />
             </Route>
 
             <Route element={<RoleRoute allowedRoles={["admin_general", "gerente_sede"]} />}>

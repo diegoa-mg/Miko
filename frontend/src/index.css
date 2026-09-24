@@ -26,3 +26,85 @@ html {
   animation: float-blob 14s ease-in-out infinite;
   pointer-events: none;
 }
+
+/* Animación botón eliminar de sucursales */
+.miko-delete-button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: rgb(20, 20, 20);
+  border: none;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.164);
+  cursor: pointer;
+  transition-duration: 0.3s;
+  overflow: hidden;
+  position: relative;
+  gap: 2px;
+}
+
+.miko-delete-icon {
+  width: 12px;
+  transition-duration: 0.3s;
+}
+
+.miko-delete-icon path {
+  fill: white;
+}
+
+.miko-delete-button:hover {
+  transition-duration: 0.3s;
+  background-color: rgb(255, 69, 69);
+  align-items: center;
+  gap: 0;
+}
+
+.miko-bin-top {
+  transform-origin: bottom right;
+}
+
+.miko-delete-button:hover .miko-bin-top {
+  transition-duration: 0.5s;
+  transform: rotate(160deg);
+}
+
+/* Botón editar de sucursales */
+.miko-edit-button {
+  width: 50px;
+  height: 50px;
+  border-radius: 50%;
+  background-color: rgb(20, 20, 20);
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 0px 20px rgba(0, 0, 0, 0.164);
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  overflow: hidden;
+  position: relative;
+  flex-shrink: 0;
+}
+
+.miko-edit-icon {
+  width: 20px;
+  height: 20px;
+  display: block;
+  transition: transform 0.4s ease;
+}
+
+.miko-edit-icon path {
+  fill: white;
+}
+
+.miko-edit-button:hover {
+  background-color: rgb(69, 171, 255);
+}
+
+.miko-edit-button:hover .miko-edit-icon {
+  transform: rotate(360deg);
+}
