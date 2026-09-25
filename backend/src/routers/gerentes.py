@@ -6,7 +6,7 @@ from src.services import obtener_rol
 from src.database import get_db
 from src.security import hash_password
 from src.models import Usuario
-from src.schemas import GerenteCreate, GerenteBase, UsuarioOut
+from src.schemas import GerenteCreate, UsuarioOut
 
 router = APIRouter(
     prefix="/gerentes",
@@ -77,4 +77,29 @@ def listar_gerentes(db: Session = Depends(get_db),):
 
     return lista_gerentes
 
-# Listar un Gerente
+# Obtener un Gerente
+@router.get("/{gerente_id}", response_model=UsuarioOut, status_code=status.HTTP_200_OK)
+def obtener_gerente(gerente_id: int, db: Session = Depends(get_db),): # FastAPI valida el tipo antes de ejecutar la función: si no es entero, responde 422
+    """Obtiene un gerente especifico. Solo Administrador General."""
+
+    # Obtiene el rol de gerente_sede para usarlo en la consulta
+    rol_gerente = obtener_rol(db, "gerente_sede")
+    # Consulta con dos condiciones para obtener el usuario con el id deseado y asegurandose de que el rol sea gerente_sede
+    gerente = db.query(Usuario).filter(Usuario.id == gerente_id, Usuario.rol_id == rol_gerente.id).first()
+
+    # Si el id no existe o no es de un gerente, se responde 404 en ambos casos:
+    # un 403 revelaría que el id existe pero pertenece a otro tipo de usuario
+    if gerente is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Usuario no encontrado",
+        )
+
+    # Muestra el usuario con el id deseado con el esquema UsuarioOut
+    return UsuarioOut(
+        id=gerente.id,
+        nombre=gerente.nombre,
+        email=gerente.email,
+        rol=rol_gerente.nombre,
+        sucursal_id=gerente.sucursal_id,
+    )
