@@ -6,7 +6,7 @@ from src.services import obtener_rol, llenar_usuario_out
 from src.database import get_db
 from src.security import hash_password
 from src.models import Usuario, Sucursal
-from src.schemas import GerenteCreate, GerenteUpdate, UsuarioOut
+from src.schemas import GerenteCreate, GerenteUpdate, UsuarioOut, SucursalUpdate
 
 router = APIRouter(
     prefix="/gerentes",
@@ -46,12 +46,19 @@ def crear_gerente(gerente_in: GerenteCreate, db: Session = Depends(get_db),):
 
 # Endpoint Listar Gerentes
 @router.get("", response_model=list[UsuarioOut], status_code=status.HTTP_200_OK)
-def listar_gerentes(db: Session = Depends(get_db),):
+def listar_gerentes(incluir_inactivos: bool = False, db: Session = Depends(get_db),):
     """Lista a todos los usuarios con rol gerente_sede. Solo Administrador General."""
 
     # Guardar en "gerentes" todos los usuarios con el rol "gerente_sede"
     rol_gerente = obtener_rol(db, "gerente_sede")
-    gerentes = db.query(Usuario).filter(Usuario.rol_id == rol_gerente.id).all()
+
+    # Consulta todos los gerentes, incluyendo los inactivos
+    # Si no se requiere incluir los inactivos, se guardan unicamente los activos dentro del if,
+    # Si se requieren todos los gerentes, se salta el if y se guardan en gerentes
+    consulta = db.query(Usuario).filter(Usuario.rol_id == rol_gerente.id)
+    if not incluir_inactivos:
+        consulta = consulta.filter(Usuario.activo == True)
+    gerentes = consulta.all()
 
     lista_gerentes = []
 
@@ -71,8 +78,8 @@ def obtener_gerente(gerente_id: int, db: Session = Depends(get_db),): # FastAPI 
 
     # Obtiene el rol de gerente_sede para usarlo en la consulta
     rol_gerente = obtener_rol(db, "gerente_sede")
-    # Consulta con dos condiciones para obtener el usuario con el id deseado y asegurandose de que el rol sea gerente_sede
-    gerente = db.query(Usuario).filter(Usuario.id == gerente_id, Usuario.rol_id == rol_gerente.id).first()
+    # Consulta con dos condiciones para obtener el usuario con el id deseado, asegurandose de que el rol sea gerente_sede y sea un usuario activo
+    gerente = db.query(Usuario).filter(Usuario.id == gerente_id, Usuario.rol_id == rol_gerente.id, Usuario.activo == True).first()
 
     # Si el id no existe o no es de un gerente, se responde 404 en ambos casos:
     # un 403 revelaría que el id existe pero pertenece a otro tipo de usuario
@@ -92,10 +99,10 @@ def editar_gerente(gerente_id: int, gerente_in: GerenteUpdate, db:Session = Depe
     # Obtener el rol de gerente_sede para usarlo en la consulta
     rol_gerente = obtener_rol(db, "gerente_sede")
 
-    # Consulta usada para encontrar al usuario con el id deseado y asegurandose de que el rol sea gerente_sede
-    gerente = db.query(Usuario).filter(Usuario.id == gerente_id, Usuario.rol_id == rol_gerente.id).first()
+    # Consulta usada para encontrar al usuario con el id deseado, asegurandose de que el rol sea gerente_sede y sea un usuario activo
+    gerente = db.query(Usuario).filter(Usuario.id == gerente_id, Usuario.rol_id == rol_gerente.id, Usuario.activo == True).first()
 
-    # Si el id no existe o no es de un gerente, se responde 404 en ambos casos:
+    # Si el id no existe, no es de un gerente o esta desactivado, se responde 404 en los tres casos:
     # un 403 revelaría que el id existe pero pertenece a otro tipo de usuario
     if gerente is None:
         raise HTTPException(
@@ -123,3 +130,37 @@ def editar_gerente(gerente_id: int, gerente_in: GerenteUpdate, db:Session = Depe
 
     return llenar_usuario_out(gerente)
 
+@router.delete("/{gerente_id}", status_code=status.HTTP_200_OK)
+def eliminar_gerente(gerente_id: int, db: Session = Depends(get_db)):
+    """Elimina un gerente (desactivar). Solo Administrador General"""
+    
+    # Obtener el rol de gerente_sede para usarlo en la consulta
+    rol_gerente = obtener_rol(db, "gerente_sede")
+    
+    # Consulta usada para encontrar al usuario con el id deseado, asegurandose de que el rol sea gerente_sede y sea un usuario activo
+    gerente = db.query(Usuario).filter(Usuario.id == gerente_id, Usuario.rol_id == rol_gerente.id, Usuario.activo == True).first()
+    
+    # Si el id no existe, no es de un gerente o esta desactivado, se responde 404 en los tres casos:
+    # un 403 revelaría que el id existe pero pertenece a otro tipo de usuario
+    if gerente is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Gerente con ID {gerente_id} no encontrado",
+        )
+
+    sucursal = db.query(Sucursal).filter(Sucursal.gerente_id == gerente.id).first()
+    sucursal_desasignada = None
+
+    # Si estaba asignado, se desasigna para que la sucursal no quede con un gerente que no puede entrar
+    if sucursal:
+        sucursal.gerente_id = None
+        sucursal_desasignada = sucursal.id
+    
+    gerente.activo = False    
+    db.commit()
+    
+    return {
+        "message": "Gerente desactivado exitosamente en la base de datos.",
+        "gerente_id": gerente_id,
+        "sucursal_desasignada": sucursal_desasignada,
+    }
