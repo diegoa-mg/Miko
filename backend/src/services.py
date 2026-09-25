@@ -1,7 +1,8 @@
 from fastapi import status, HTTPException
 from sqlalchemy.orm import Session
 
-from src.models import Rol
+from src.models import Rol, Usuario
+from src.schemas import UsuarioOut
 
 # Función para obtener el rol del usuario
 def obtener_rol(db: Session, nombre: str):
@@ -16,3 +17,14 @@ def obtener_rol(db: Session, nombre: str):
         raise rol_invalido
 
     return rol
+
+# Función para llenar UsuarioOut
+def llenar_usuario_out(usuario: Usuario) -> UsuarioOut:
+    return UsuarioOut(
+        id=usuario.id,
+        nombre=usuario.nombre,
+        email=usuario.email,
+        rol=usuario.rol.nombre,
+        sucursal_id=usuario.sucursal_id,
+        activo=usuario.activo,
+    )

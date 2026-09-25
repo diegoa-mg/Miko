@@ -34,16 +34,11 @@ def get_current_user(
     if credenciales is None:
         raise credenciales_invalidas
 
-    """
-    jwt.PyJWTError: cubre un token con firma inválida (alterado o con otra clave) y un token expirado. PyJWT revisa el campo exp al decodificar y lanza la excepción si ya pasó.
-
-    KeyError: si el payload no lleva la llave "sub".
-
-    ValueError: si payload["sub"] existe pero no se puede convertir a entero con int(...).
-
-    Todas devuelven el mismo mensaje: credenciales_invalidas
-    """
-
+    # jwt.PyJWTError: cubre un token con firma inválida (alterado o con otra clave) y un token expirado. PyJWT revisa el campo exp al decodificar y lanza la excepción si ya pasó.
+    # KeyError: si el payload no lleva la llave "sub".
+    # ValueError: si payload["sub"] existe pero no se puede convertir a entero con int(...).
+    # Todas devuelven el mismo mensaje: credenciales_invalidas
+    
     try:
         payload = decodificar_access_token(credenciales.credentials)
         usuario_id = int(payload["sub"])
@@ -52,11 +47,11 @@ def get_current_user(
 
     usuario = db.get(Usuario, usuario_id) # Consulta el id del usuario
     #         db.get(Modelo, id)
-    """
-    Este chequeo es importante debido a que el JWT puede ser válido (firma correcta, no expirado) y aun así apuntar a un usuario que ya no existe, por ejemplo, si un admin elimina a un gerente mientras ese gerente todavía tiene una sesión activa con un token de 8 horas. 
-    Sin este chequeo, usuario sería None y la siguiente linea tendría un error 500 feo, en lugar del error 401 limpio que el front maneja.
-    """
-    if usuario is None:
+    
+    # None: el id del token ya no existe en la BD
+    # not activo: Un usuario desactivado no puede usar ninguna parte del sistema, así que su sesión deja de ser válida y el frontend debe mandarlo al login, 
+    # así desactivar a alguien corta su acceso en el siguiente request, sin esperar a que el token expire.
+    if usuario is None or not usuario.activo:
         raise credenciales_invalidas
-
+    
     return usuario

@@ -6,6 +6,7 @@ from src.database import get_db
 from src.models import Usuario
 from src.schemas import LoginRequest, TokenResponse, UsuarioOut
 from src.security import crear_access_token, verify_password
+from src.services import llenar_usuario_out
 
 """
 APIRouter es un mini FastAPI, agrupa rutas relaciones para no meterlas en main.py. 
@@ -25,13 +26,11 @@ def login(credenciales: LoginRequest, db: Session = Depends(get_db)): # db: Sess
     # credenciales.password se compara contra usuario.password_hash.
     usuario = db.query(Usuario).filter(Usuario.email == credenciales.email).first()
 
-    """
-    Mismo mensaje exista o no el usuario, para no revelar cuál campo
-    falló.
-    El orden del or no es casualidad. Python evalúa or de izquierda a derecha y se detiene en cuanto encuentra algo verdadero (short-circuit evaluation).
-    Si usuario is None es True y no se evalúa la otra parte de la condición.
-    """
-    if usuario is None or not verify_password(credenciales.password, usuario.password_hash):
+    # Mismo mensaje exista o no el usuario, para no revelar cuál campo falló.
+    # activo va al final para que un usuario desactivado también pase por bcrypt
+    # y tarde lo mismo que uno activo: así el tiempo de respuesta no revela su estado.
+    # Limitación conocida: si el email no existe, responde más rápido (no llega a bcrypt).
+    if usuario is None or not verify_password(credenciales.password, usuario.password_hash) or not usuario.activo:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Correo o contraseña incorrectos",
@@ -45,10 +44,4 @@ def login(credenciales: LoginRequest, db: Session = Depends(get_db)): # db: Sess
 @router.get("/me", response_model=UsuarioOut)
 # Se llama al endpoint me y se ejecuta
 def me(usuario: Usuario = Depends(get_current_user)): # usuario es un parametro que llega resuelto por Depends(get_current_user), es el que valida el usuario
-    return UsuarioOut(
-        id=usuario.id,
-        nombre=usuario.nombre,
-        email=usuario.email,
-        rol=usuario.rol.nombre,
-        sucursal_id=usuario.sucursal_id,
-    )
+    return llenar_usuario_out(usuario)

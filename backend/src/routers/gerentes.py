@@ -2,10 +2,10 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from src.dependencies import requiere_rol
-from src.services import obtener_rol
+from src.services import obtener_rol, llenar_usuario_out
 from src.database import get_db
 from src.security import hash_password
-from src.models import Usuario
+from src.models import Usuario, Sucursal
 from src.schemas import GerenteCreate, GerenteUpdate, UsuarioOut
 
 router = APIRouter(
@@ -41,14 +41,8 @@ def crear_gerente(gerente_in: GerenteCreate, db: Session = Depends(get_db),):
     db.commit()
     db.refresh(usuario)
 
-    # Regresar el usuario con el esquema UsuarioOut, excluyendo el password_hash y convirtiendo el rol a texto
-    return UsuarioOut(
-        id=usuario.id,
-        nombre=usuario.nombre,
-        email=usuario.email,
-        rol=rol_gerente.nombre,
-        sucursal_id=usuario.sucursal_id,
-    )
+    # Regresar el usuario con el esquema UsuarioOut mediante la funcion llenar_usuario_out
+    return llenar_usuario_out(usuario)
 
 # Endpoint Listar Gerentes
 @router.get("", response_model=list[UsuarioOut], status_code=status.HTTP_200_OK)
@@ -63,17 +57,10 @@ def listar_gerentes(db: Session = Depends(get_db),):
 
     # Guardar en una lista a todos los gerentes
     # gerente: usuario que viene de la db
-    # gerente_out: usuario que sale del esquema UsuarioOut, el cual se agrega a la lista_gerentes
+    # llenar_usuario_out llena el esquema UsuarioOut y lista_gerentes.append agrega cada gerente a la lista
 
     for gerente in gerentes:
-        gerente_out = UsuarioOut(
-            id=gerente.id,
-            nombre=gerente.nombre,
-            email=gerente.email,
-            rol=rol_gerente.nombre,
-            sucursal_id=gerente.sucursal_id,
-        )
-        lista_gerentes.append(gerente_out)
+        lista_gerentes.append(llenar_usuario_out(gerente))
 
     return lista_gerentes
 
@@ -95,14 +82,8 @@ def obtener_gerente(gerente_id: int, db: Session = Depends(get_db),): # FastAPI 
             detail=f"Gerente con ID {gerente_id} no encontrado",
         )
 
-    # Muestra el usuario con el id deseado con el esquema UsuarioOut
-    return UsuarioOut(
-        id=gerente.id,
-        nombre=gerente.nombre,
-        email=gerente.email,
-        rol=rol_gerente.nombre,
-        sucursal_id=gerente.sucursal_id,
-    )
+    # Muestra el usuario con el id deseado con el esquema UsuarioOut mediante la funcion llenar_usuario_out
+    return llenar_usuario_out(gerente)
 
 @router.put("/{gerente_id}", response_model=UsuarioOut, status_code=status.HTTP_200_OK)
 def editar_gerente(gerente_id: int, gerente_in: GerenteUpdate, db:Session = Depends(get_db),):
@@ -124,8 +105,7 @@ def editar_gerente(gerente_id: int, gerente_in: GerenteUpdate, db:Session = Depe
 
     # Consulta para obtener un usuario mediante el correo ingresado.
     # Si el correo ingresado mediante gerente_in coincide con un correo ya existente,
-    # y el rol del usuario del correo no coincide con el id de gerente (el usuario gerente que se obtuvo en la consulta anterior), 
-    # significa que otro usuario, que no es el que buscamos, tiene el correo que se busca modificar
+    # y su id no es el del gerente que estamos editando, significa que otro usuario ya tiene ese correo
     email_nuevo = db.query(Usuario).filter(Usuario.email == gerente_in.email, Usuario.id != gerente.id).first()
     # Si el email utilizado en la consulta ya existe, se responde con 400
     if email_nuevo:
@@ -141,10 +121,5 @@ def editar_gerente(gerente_id: int, gerente_in: GerenteUpdate, db:Session = Depe
     db.commit()
     db.refresh(gerente)
 
-    return UsuarioOut(
-        id=gerente.id,
-        nombre=gerente.nombre,
-        email=gerente.email,
-        rol=rol_gerente.nombre,
-        sucursal_id=gerente.sucursal_id,
-    )
+    return llenar_usuario_out(gerente)
+

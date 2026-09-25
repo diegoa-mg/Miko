@@ -18,6 +18,7 @@ class UsuarioOut(BaseModel):
     email: str
     rol: str
     sucursal_id: int | None = None # Puede venir vacio
+    activo: bool
 
     model_config = ConfigDict(from_attributes=True)
 
