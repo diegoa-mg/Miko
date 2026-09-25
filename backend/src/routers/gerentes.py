@@ -103,3 +103,10 @@ def obtener_gerente(gerente_id: int, db: Session = Depends(get_db),): # FastAPI 
         rol=rol_gerente.nombre,
         sucursal_id=gerente.sucursal_id,
     )
+
+@router.put("", response_model=UsuarioOut, status_code=status.HTTP_200_OK)
+def editar_gerente(gerente_id: int, db:Session = Depends(get_db),):
+    """Edita un gerente. Solo Administrador General"""
+
+    rol_gerente = obtener_rol(db, "gerente_sede")
+    gerente = db.query=(Usuario).filter(Usuario.id == gerente_id, Usuario)
