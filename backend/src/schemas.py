@@ -52,3 +52,7 @@ class GerenteCreate(BaseModel):
     nombre: str
     email: str
     password: str
+
+class GerenteUpdate(BaseModel):
+    nombre: str
+    email: str

@@ -6,7 +6,7 @@ from src.services import obtener_rol
 from src.database import get_db
 from src.security import hash_password
 from src.models import Usuario
-from src.schemas import GerenteCreate, UsuarioOut
+from src.schemas import GerenteCreate, GerenteUpdate, UsuarioOut
 
 router = APIRouter(
     prefix="/gerentes",
@@ -92,7 +92,7 @@ def obtener_gerente(gerente_id: int, db: Session = Depends(get_db),): # FastAPI 
     if gerente is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="Usuario no encontrado",
+            detail=f"Gerente con ID {gerente_id} no encontrado",
         )
 
     # Muestra el usuario con el id deseado con el esquema UsuarioOut
@@ -104,9 +104,47 @@ def obtener_gerente(gerente_id: int, db: Session = Depends(get_db),): # FastAPI 
         sucursal_id=gerente.sucursal_id,
     )
 
-@router.put("", response_model=UsuarioOut, status_code=status.HTTP_200_OK)
-def editar_gerente(gerente_id: int, db:Session = Depends(get_db),):
+@router.put("/{gerente_id}", response_model=UsuarioOut, status_code=status.HTTP_200_OK)
+def editar_gerente(gerente_id: int, gerente_in: GerenteUpdate, db:Session = Depends(get_db),):
     """Edita un gerente. Solo Administrador General"""
 
+    # Obtener el rol de gerente_sede para usarlo en la consulta
     rol_gerente = obtener_rol(db, "gerente_sede")
-    gerente = db.query=(Usuario).filter(Usuario.id == gerente_id, Usuario)
+
+    # Consulta usada para encontrar al usuario con el id deseado y asegurandose de que el rol sea gerente_sede
+    gerente = db.query(Usuario).filter(Usuario.id == gerente_id, Usuario.rol_id == rol_gerente.id).first()
+
+    # Si el id no existe o no es de un gerente, se responde 404 en ambos casos:
+    # un 403 revelaría que el id existe pero pertenece a otro tipo de usuario
+    if gerente is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Gerente con ID {gerente_id} no encontrado",
+        )
+
+    # Consulta para obtener un usuario mediante el correo ingresado.
+    # Si el correo ingresado mediante gerente_in coincide con un correo ya existente,
+    # y el rol del usuario del correo no coincide con el id de gerente (el usuario gerente que se obtuvo en la consulta anterior), 
+    # significa que otro usuario, que no es el que buscamos, tiene el correo que se busca modificar
+    email_nuevo = db.query(Usuario).filter(Usuario.email == gerente_in.email, Usuario.id != gerente.id).first()
+    # Si el email utilizado en la consulta ya existe, se responde con 400
+    if email_nuevo:
+       raise HTTPException(
+           status_code=status.HTTP_400_BAD_REQUEST,
+           detail=f"El email {gerente_in.email} ya está en uso"
+       ) 
+
+    # Guardar los datos en la db
+    gerente.nombre = gerente_in.nombre
+    gerente.email = gerente_in.email
+    
+    db.commit()
+    db.refresh(gerente)
+
+    return UsuarioOut(
+        id=gerente.id,
+        nombre=gerente.nombre,
+        email=gerente.email,
+        rol=rol_gerente.nombre,
+        sucursal_id=gerente.sucursal_id,
+    )
