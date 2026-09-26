@@ -47,7 +47,7 @@ class Usuario(Base):
     sucursal = relationship(
         "Sucursal", back_populates="empleados", foreign_keys=[sucursal_id]
     )
-
+    activo = Column(Boolean, nullable=False, server_default="true")
 
 class Sucursal(Base):
     __tablename__ = "sucursales"

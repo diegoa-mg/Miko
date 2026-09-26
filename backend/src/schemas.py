@@ -11,12 +11,14 @@ class TokenResponse(BaseModel):
     token_type: str = "bearer" # tipo del token
 
 # Se declaran los unicos campos que se quieren exponer, evita poner la password_hash
+# Se usa tambien para gerente
 class UsuarioOut(BaseModel):
     id: int
     nombre: str
     email: str
     rol: str
     sucursal_id: int | None = None # Puede venir vacio
+    activo: bool
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -45,3 +47,13 @@ class SucursalOut(SucursalBase):
     id: int
 
     model_config = ConfigDict(from_attributes=True)
+
+# Esquemas de Gerentes
+class GerenteCreate(BaseModel):
+    nombre: str
+    email: str
+    password: str
+
+class GerenteUpdate(BaseModel):
+    nombre: str
+    email: str
