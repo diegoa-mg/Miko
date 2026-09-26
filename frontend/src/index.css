@@ -108,3 +108,110 @@ html {
 .miko-edit-button:hover .miko-edit-icon {
   transform: rotate(360deg);
 }
+
+.loader {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  transform: rotate(45deg);
+}
+
+.loader:before,
+.loader:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50% 50% 0 50%;
+  background: #0000;
+  background-image: radial-gradient(
+    circle 6px at 50% 50%,
+    #0000 94%,
+    #ff4747
+  );
+}
+
+.loader:after {
+  animation: pulse-ytk0dhmd 1s infinite;
+  transform: perspective(180px) translateZ(0px);
+}
+
+@keyframes pulse-ytk0dhmd {
+  to {
+    transform: perspective(180px) translateZ(90px);
+    opacity: 0;
+  }
+}
+
+/* Calendario Miko */
+.miko-calendar-icon {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  animation: miko-calendar-float 2.2s ease-in-out infinite;
+}
+
+/* Parte superior del calendario */
+.miko-calendar-icon .calendar-top {
+  position: absolute;
+  top: 3px;
+  left: 2px;
+  width: 20px;
+  height: 7px;
+  background: #d9829a;
+  border-radius: 5px 5px 2px 2px;
+}
+
+/* Base del calendario */
+.miko-calendar-icon .calendar-body {
+  position: absolute;
+  top: 7px;
+  left: 2px;
+  width: 20px;
+  height: 16px;
+  background: #fffaf2;
+  border: 2px solid #d9829a;
+  border-top: none;
+  border-radius: 0 0 5px 5px;
+  padding: 4px;
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 2px;
+}
+
+/* Los dos pequeños soportes de arriba */
+.miko-calendar-icon .calendar-top span {
+  position: absolute;
+  width: 3px;
+  height: 6px;
+  background: #875d69;
+  border-radius: 3px;
+  top: -2px;
+}
+
+.miko-calendar-icon .calendar-top span:first-child {
+  left: 4px;
+}
+
+.miko-calendar-icon .calendar-top span:last-child {
+  right: 4px;
+}
+
+/* Cuadritos del calendario */
+.miko-calendar-icon .calendar-body i {
+  width: 3px;
+  height: 3px;
+  background: #d9829a;
+  border-radius: 50%;
+}
+
+/* Movimiento suave */
+@keyframes miko-calendar-float {
+  0%,
+  100% {
+    transform: translateY(0) rotate(0deg);
+  }
+
+  50% {
+    transform: translateY(-2px) rotate(-3deg);
+  }
+}

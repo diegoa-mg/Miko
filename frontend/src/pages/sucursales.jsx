@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   obtenerSucursales,
   crearSucursal,
@@ -7,6 +8,8 @@ import {
 } from "../api/sucursales";
 
 function Sucursales() {
+  const { t } = useTranslation();
+
   const [sucursales, setSucursales] = useState([]);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [cargando, setCargando] = useState(true);
@@ -33,7 +36,7 @@ function Sucursales() {
       setSucursales(data);
     } catch (error) {
       console.error(error);
-      setError("No se pudieron cargar las sucursales.");
+      setError(t("sucursales.errorCarga"));
     } finally {
       setCargando(false);
     }
@@ -85,10 +88,10 @@ function Sucursales() {
   } catch (error) {
     console.error(error);
 
-    setError(
-      error.response?.data?.detail ||
-        "No se pudo guardar la sucursal."
-    );
+        setError(
+          error.response?.data?.detail ||
+            t("sucursales.errorGuardar")
+        );
   }
 };
 
@@ -108,7 +111,7 @@ function Sucursales() {
 
   const manejarEliminar = async (id) => {
     const confirmar = window.confirm(
-      "¿Estás seguro de que deseas eliminar esta sucursal?"
+      t("sucursales.confirmarEliminar")
     );
 
     if (!confirmar) {
@@ -126,7 +129,7 @@ function Sucursales() {
 
       setError(
         error.response?.data?.detail ||
-          "No se pudo eliminar la sucursal."
+          t("sucursales.errorEliminar")
       );
     }
   };
@@ -139,11 +142,11 @@ function Sucursales() {
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-[#875d69]">
-              Sucursales
+              {t("sucursales.titulo")}
             </h1>
 
             <p className="font-sans text-gray-600 mt-1">
-              Administra las sucursales de Miko
+              {t("sucursales.descripcion")}
             </p>
           </div>
 
@@ -161,8 +164,8 @@ function Sucursales() {
             className="font-sans bg-rose-800 hover:bg-rose-900 text-white px-5 py-3 rounded-lg transition-colors"
           >
             {mostrarFormulario
-              ? "Cancelar"
-              : "+ Nueva sucursal"}
+                ? t("sucursales.cancelar")
+                : `+ ${t("sucursales.nueva")}`}
           </button>
         </div>
 
@@ -177,7 +180,9 @@ function Sucursales() {
         {mostrarFormulario && (
           <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
             <h2 className="text-xl font-semibold text-[#875d69] mb-5">
-              {sucursalEditando ? "Editar sucursal" : "Nueva sucursal"}
+                {sucursalEditando
+                    ? t("sucursales.editar")
+                    : t("sucursales.nueva")}
             </h2>
 
             <form
@@ -187,7 +192,7 @@ function Sucursales() {
               {/* Nombre */}
               <div>
                 <label className="font-sans block text-sm font-medium mb-2">
-                  Nombre *
+                    {t("sucursales.nombre")} *
                 </label>
 
                 <input
@@ -197,14 +202,14 @@ function Sucursales() {
                   onChange={manejarCambio}
                   required
                   className="font-sans w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-rose-800"
-                  placeholder="Ej. Sucursal Colima"
+                  placeholder={t("sucursales.nombrePlaceholder")}
                 />
               </div>
 
               {/* Dirección */}
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  Dirección *
+                  {t("sucursales.direccion")} *
                 </label>
 
                 <input
@@ -214,14 +219,14 @@ function Sucursales() {
                   onChange={manejarCambio}
                   required
                   className="font-sans w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-rose-800"
-                  placeholder="Ej. Av. principal #123"
+                  placeholder={t("sucursales.direccionPlaceholder")}
                 />
               </div>
 
               {/* Teléfono */}
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  Teléfono
+                  {t("sucursales.telefono")}
                 </label>
 
                 <input
@@ -230,14 +235,14 @@ function Sucursales() {
                   value={formulario.telefono}
                   onChange={manejarCambio}
                   className="font-sans w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-rose-800"
-                  placeholder="Ej. 3121234567"
+                  placeholder={t("sucursales.telefonoPlaceholder")}
                 />
               </div>
 
               {/* Gerente */}
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  ID del gerente
+                  {t("sucursales.gerente")}
                 </label>
 
                 <input
@@ -246,7 +251,7 @@ function Sucursales() {
                   value={formulario.gerente_id}
                   onChange={manejarCambio}
                   className="font-sans w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-rose-800"
-                  placeholder="Opcional"
+                  placeholder={t("sucursales.gerentePlaceholder")}
                 />
               </div>
 
@@ -256,7 +261,9 @@ function Sucursales() {
                   type="submit"
                   className="font-sans bg-rose-800 hover:bg-rose-900 text-white px-6 py-3 rounded-lg transition-colors"
                 >
-                  {sucursalEditando ? "Guardar cambios" : "Crear sucursal"}
+                  {sucursalEditando
+                        ? t("sucursales.guardarCambios")
+                        : t("sucursales.crear")}
                 </button>
               </div>
             </form>
@@ -267,17 +274,17 @@ function Sucursales() {
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
           <div className="p-6 border-b">
             <h2 className="text-xl font-semibold text-[#875d69]">
-              Lista de sucursales
+                {t("sucursales.lista")}
             </h2>
           </div>
 
           {cargando ? (
             <div className="p-8 text-center text-gray-500">
-              Cargando sucursales...
+              {t("sucursales.cargando")}
             </div>
           ) : sucursales.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
-              No hay sucursales registradas.
+              {t("sucursales.sinRegistros")}
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -285,31 +292,31 @@ function Sucursales() {
                 <thead className="bg-[#f9eeb4]">
                   <tr>
                     <th className="text-left px-6 py-4">
-                      ID
+                      {t("sucursales.id")}
                     </th>
 
                     <th className="text-left px-6 py-4">
-                      Nombre
+                      {t("sucursales.nombre")}
                     </th>
 
                     <th className="text-left px-6 py-4">
-                      Dirección
+                      {t("sucursales.direccion")}
                     </th>
 
                     <th className="text-left px-6 py-4">
-                      Teléfono
+                      {t("sucursales.telefono")}
                     </th>
 
                     <th className="text-left px-6 py-4">
-                      Estado
+                      {t("sucursales.estado")}
                     </th>
 
                     <th className="text-left px-6 py-4">
-                      Gerente
+                      {t("sucursales.gerente")}
                     </th>
 
                     <th className="text-left px-6 py-4">
-                        Acciones
+                        {t("sucursales.acciones")}
                     </th>
                   </tr>
                 </thead>
@@ -349,7 +356,7 @@ function Sucursales() {
                       </td>
 
                       <td className="px-6 py-4">
-                        {sucursal.gerente_id || "Sin gerente"}
+                        {sucursal.gerente_id || t("sucursales.sinGerente")}
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex gap-2">
@@ -357,7 +364,7 @@ function Sucursales() {
                             type="button"
                             onClick={() => manejarEditar(sucursal)}
                             className="miko-edit-button"
-                            aria-label="Editar sucursal"
+                            aria-label={t("sucursales.editar")}
                           >
                             <svg
                               className="miko-edit-icon"
@@ -374,7 +381,7 @@ function Sucursales() {
                             type="button"
                             onClick={() => manejarEliminar(sucursal.id)}
                             className="miko-delete-button"
-                            aria-label="Eliminar sucursal"
+                            aria-label={t("sucursales.eliminar")}
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
