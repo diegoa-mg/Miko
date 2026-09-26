@@ -1,5 +1,59 @@
 {
   "app": { "name": "POS Multi-branch" },
   "login": { "title": "Login" },
-  "common": { "notFound": "Page not found" }
+  "common": { "notFound": "Page not found" },
+
+  "sucursales": {
+    "titulo": "Branches",
+    "descripcion": "Manage Miko branches",
+    "nueva": "New branch",
+    "editar": "Edit",
+    "cancelar": "Cancel",
+    "lista": "Branch list",
+    "cargando": "Loading branches...",
+    "errorCarga": "Could not load the branches.",
+    "sinRegistros": "No registered branches.",
+    "id": "ID",
+    "nombre": "Name",
+    "direccion": "Address",
+    "telefono": "Phone",
+    "estado": "Status",
+    "gerente": "Manager",
+    "acciones": "Actions",
+    "sinGerente": "No manager",
+    "crear": "Create branch",
+    "guardarCambios": "Save changes",
+    "eliminar": "Delete",
+    "nombrePlaceholder": "E.g. Colima Branch",
+    "direccionPlaceholder": "E.g. Main Ave. #123",
+    "telefonoPlaceholder": "E.g. 3121234567",
+    "gerentePlaceholder": "Optional"
+  }
+
+  ,
+"gerentes": {
+  "titulo": "Managers",
+  "descripcion": "Manage Miko managers",
+  "nuevo": "New manager",
+  "lista": "Manager list",
+  "buscar": "Search manager...",
+  "sinResultados": "No managers found",
+  "masOpciones": "More options",
+  "agregaNuevo": "Add a new manager",
+  "descripcionFormulario": "Complete the information to register a new manager in Miko.",
+  "nombreCompleto": "Full name",
+  "correo": "Email address",
+  "sucursalAsignada": "Assigned branch",
+  "telefono": "Phone",
+  "ultimoAcceso": "Last access",
+  "activo": "Active",
+  "editar": "Edit",
+  "eliminar": "Delete",
+  "crear": "Create manager",
+  "cancelar": "Cancel",
+  "seleccionaSucursal": "Select a branch",
+  "nombrePlaceholder": "E.g. Ana Torres",
+  "correoPlaceholder": "E.g. ana.torres@miko.com",
+  "telefonoPlaceholder": "E.g. 312 123 4567"
+}
 }

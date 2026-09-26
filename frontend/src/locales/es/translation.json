@@ -1,5 +1,69 @@
 {
-  "app": { "name": "POS Multi-sede" },
-  "login": { "title": "Iniciar sesión" },
-  "common": { "notFound": "Página no encontrada" }
+  "app": {
+    "name": "POS Multi-sede"
+  },
+
+  "login": {
+    "title": "Iniciar sesión"
+  },
+
+  "common": {
+    "notFound": "Página no encontrada"
+  },
+
+  "sucursales": {
+    "titulo": "Sucursales",
+    "descripcion": "Administra las sucursales de Miko",
+    "nueva": "Nueva sucursal",
+    "cancelar": "Cancelar",
+    "lista": "Lista de sucursales",
+    "cargando": "Cargando sucursales...",
+    "errorCarga": "No se pudieron cargar las sucursales.",
+    "errorGuardar": "No se pudo guardar la sucursal.",
+    "confirmarEliminar": "¿Estás seguro de que deseas eliminar esta sucursal?",
+    "errorEliminar": "No se pudo eliminar la sucursal.",
+    "sinRegistros": "No hay sucursales registradas.",
+    "id": "ID",
+    "nombre": "Nombre",
+    "direccion": "Dirección",
+    "telefono": "Teléfono",
+    "estado": "Estado",
+    "gerente": "Gerente",
+    "acciones": "Acciones",
+    "sinGerente": "Sin gerente",
+    "crear": "Crear sucursal",
+    "guardarCambios": "Guardar cambios",
+    "editar": "Editar",
+    "eliminar": "Eliminar",
+    "nombrePlaceholder": "Ej. Sucursal Colima",
+    "direccionPlaceholder": "Ej. Av. principal #123",
+    "telefonoPlaceholder": "Ej. 3121234567",
+    "gerentePlaceholder": "Opcional"
+  },
+
+  "gerentes": {
+    "titulo": "Gerentes",
+    "descripcion": "Administra los gerentes de Miko",
+    "nuevo": "Nuevo gerente",
+    "lista": "Lista de gerentes",
+    "buscar": "Buscar gerente...",
+    "sinResultados": "No se encontraron gerentes",
+    "masOpciones": "Más opciones",
+    "agregaNuevo": "Agrega un nuevo gerente",
+    "descripcionFormulario": "Completa la información para registrar un nuevo gerente en Miko.",
+    "nombreCompleto": "Nombre completo",
+    "correo": "Correo electrónico",
+    "sucursalAsignada": "Sucursal asignada",
+    "telefono": "Teléfono",
+    "ultimoAcceso": "Último acceso",
+    "activo": "Activo",
+    "editar": "Editar",
+    "eliminar": "Eliminar",
+    "crear": "Crear gerente",
+    "cancelar": "Cancelar",
+    "seleccionaSucursal": "Selecciona una sucursal",
+    "nombrePlaceholder": "Ej. Ana Torres",
+    "correoPlaceholder": "Ej. ana.torres@miko.com",
+    "telefonoPlaceholder": "Ej. 312 123 4567"
+  }
 }
