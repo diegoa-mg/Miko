@@ -39,58 +39,70 @@ function Sucursales() {
     }
   };
 
-  const manejarCambio = (e) => {
+ const manejarCambio = (e) => {
     const { name, value } = e.target;
 
+    // Si es teléfono, elimina cualquier carácter que no sea número
+    if (name === "telefono") {
+      e.target.setCustomValidity("");
+    }
     setFormulario({
       ...formulario,
       [name]: value,
     });
   };
 
-  const manejarCrear = async (e) => {
-  e.preventDefault();
-  setError("");
+const manejarCrear = async (e) => {
+    e.preventDefault();
+    setError("");
 
-  try {
-    const datosSucursal = {
-      nombre: formulario.nombre,
-      direccion: formulario.direccion,
-      telefono: formulario.telefono || null,
-      gerente_id: formulario.gerente_id
-        ? Number(formulario.gerente_id)
-        : null,
-    };
 
-    if (sucursalEditando) {
-      await actualizarSucursal(
-        sucursalEditando.id,
-        datosSucursal
-      );
-    } else {
-      await crearSucursal(datosSucursal);
+    if (formulario.telefono && !/^\d+$/.test(formulario.telefono)) {
+      setError("Por favor, ingresa solo números en el teléfono.");
+      return;
     }
 
-    setFormulario({
-      nombre: "",
-      direccion: "",
-      telefono: "",
-      gerente_id: "",
-    });
+    try {
+      const datosSucursal = {
+        nombre: formulario.nombre,
+        direccion: formulario.direccion,
+        telefono: formulario.telefono || null,
+        // Si está vacío o es 0/menor, manda null para que no falle el backend
+        gerente_id:
+          formulario.gerente_id && Number(formulario.gerente_id) > 0
+            ? Number(formulario.gerente_id)
+            : null,
+      };
 
-    setSucursalEditando(null);
-    setMostrarFormulario(false);
+      if (sucursalEditando) {
+        await actualizarSucursal(
+          sucursalEditando.id,
+          datosSucursal
+        );
+      } else {
+        await crearSucursal(datosSucursal);
+      }
 
-    await cargarSucursales();
-  } catch (error) {
-    console.error(error);
+      setFormulario({
+        nombre: "",
+        direccion: "",
+        telefono: "",
+        gerente_id: "",
+      });
 
-    setError(
-      error.response?.data?.detail ||
-        "No se pudo guardar la sucursal."
-    );
-  }
-};
+      setSucursalEditando(null);
+      setMostrarFormulario(false);
+
+      await cargarSucursales();
+    } catch (error) {
+      console.error(error);
+
+      setError(
+        error.response?.data?.detail ||
+          "No se pudo guardar la sucursal."
+      );
+    }
+  };
 
   const manejarEditar = (sucursal) => {
     setSucursalEditando(sucursal);
@@ -225,10 +237,14 @@ function Sucursales() {
                 </label>
 
                 <input
-                  type="text"
+                  type="tel"
+                  inputMode="numeric" 
                   name="telefono"
                   value={formulario.telefono}
                   onChange={manejarCambio}
+                  pattern="[0-9]*"
+                  onInvalid={(e) =>
+                    e.target.setCustomValidity("Por favor, ingresa solo números.")}
                   className="font-sans w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-rose-800"
                   placeholder="Ej. 3121234567"
                 />
