@@ -1,5 +1,50 @@
 {
   "app": { "name": "POS Multi-branch" },
-  "login": { "title": "Login" },
-  "common": { "notFound": "Page not found" }
+  "login": {
+    "title": "Login",
+    "subtitle": "POINT OF SALE",
+    "user": "Username",
+    "password": "Password",
+    "remember": "Remember me",
+    "forgotPassword": "Forgot your password?",
+    "submit": "Sign in",
+    "error": "Incorrect email or password"
+  },
+  "sidebar": {
+    "subtitle": "POINT OF SALE",
+    "dashboard": "Dashboard",
+    "pos": "Point of sale",
+    "inventory": "Inventory",
+    "sales": "Sales",
+    "purchases": "Purchases",
+    "clients": "Customers",
+    "suppliers": "Suppliers",
+    "branches": "Branches",
+    "reports": "Reports",
+    "promotions": "Promotions",
+    "settings": "Settings",
+    "managers": "Managers"
+  },
+  "roles": {
+    "admin_general": "Administrator",
+    "gerente_sede": "Branch Manager",
+    "cajero": "Cashier"
+  },
+  "settings": {
+    "title": "Settings",
+    "subtitle": "General system preferences",
+    "language": {
+      "title": "Language",
+      "description": "Change the interface language",
+      "spanish": "Español",
+      "english": "English"
+    },
+    "notifications": { "title": "Notifications", "comingSoon": "Coming soon" },
+    "security": { "title": "Security", "comingSoon": "Coming soon" }
+  },
+  "common": {
+    "notFound": "Page not found",
+    "loading": "Loading...",
+    "noAccess": "You do not have access to this section"
+  }
 }

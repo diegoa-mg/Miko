@@ -1,4 +1,4 @@
-import { Routes, Route, useNavigate ,Navigate} from "react-router-dom";
+import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import { useState } from "react";
 import { login as loginApi } from "./api/auth";
@@ -7,10 +7,14 @@ import ProtectedRoute from "./routes/protectedRoute";
 import RoleRoute from "./routes/roleRoute";
 import logoMiko from "./assets/logo_claro.png";
 import Sucursales from "./pages/sucursales";
+import AdminLayout from "./layouts/AdminLayout";
+import Configuracion from "./pages/Configuracion";
+import LanguageSwitcher from "./components/LanguageSwitcher";
 
 function Login() {
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -33,7 +37,7 @@ function Login() {
       }
     } catch (error) {
       console.error(error);
-      setError("Correo electrónico o contraseña incorrectos");
+      setError(t("login.error"));
     }
   };
 
@@ -45,16 +49,16 @@ function Login() {
       <div className="blob w-56 h-56 bg-amber-100 bottom-1/4 left-[8%]" style={{ animationDelay: "10s" }} />
 
       <div className="shadow-sm p-10 w-full max-w-sm">
-        <div className="flex flex-col items-center mb-500">
-          <img src={logoMiko} alt="Miko" className="h-19 mb-4" />
+        <div className="flex flex-col items-center mb-6">
+          <img src={logoMiko} alt="Miko" className="h-20 mb-4" />
           <span className="font-logo font-light text-rose-400">
-            PUNTO DE VENTA
+            {t("login.subtitle")}
           </span>
         </div>
 
         <form onSubmit={handleLogin} className="flex flex-col gap-4">
           <div>
-            <label className="block text-sm font-medium mb-1">Usuario</label>
+            <label className="block text-sm font-medium mb-1">{t("login.user")}</label>
             <div className="relative">
               <span className="material-icons absolute left-4 top-1/2 -translate-y-1/2  mt-5 text-[#cda4b4]">
                 person
@@ -71,7 +75,7 @@ function Login() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium mb-1">Contraseña</label>
+            <label className="block text-sm font-medium mb-1">{t("login.password")}</label>
             <div className="relative">
               <span className="material-icons absolute left-4 top-1/2 -translate-y-1/2  mt-5 text-[#cda4b4]">
                 lock
@@ -89,10 +93,10 @@ function Login() {
           <div className="flex items-center justify-between text-sm">
             <label className="flex items-center gap-2">
               <input type="checkbox" />
-              Recordarme
+              {t("login.remember")}
             </label>
             <a href="#" className="text-rose-400 hover:underline">
-              ¿Olvidaste tu contraseña?
+              {t("login.forgotPassword")}
             </a>
           </div>
 
@@ -102,7 +106,7 @@ function Login() {
             type="submit"
             className="bg-rose-800 hover:bg-rose-900 text-white rounded-lg py-2 mt-2 transition-colors"
           >
-            Iniciar sesión
+            {t("login.submit")}
           </button>
         </form>
       </div>
@@ -128,11 +132,9 @@ function PuntoDeVenta() {
 }
 
 export default function App() {
-  const { t, i18n } = useTranslation();
-  const cambiarIdioma = (lng) => i18n.changeLanguage(lng);
-
   return (
     <AuthProvider>
+      <LanguageSwitcher />
       <div>
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
@@ -140,8 +142,11 @@ export default function App() {
 
           <Route element={<ProtectedRoute />}>
             <Route element={<RoleRoute allowedRoles={["admin_general"]} />}>
-              <Route path="/admin/*" element={<Dashboard />} />
-              <Route path="/admin/sucursales" element={<Sucursales />} />
+              <Route path="/admin" element={<AdminLayout />}>
+                <Route index element={<Dashboard />} />
+                <Route path="sucursales" element={<Sucursales />} />
+                <Route path="configuracion" element={<Configuracion />} />
+              </Route>
             </Route>
 
             <Route element={<RoleRoute allowedRoles={["admin_general", "gerente_sede"]} />}>

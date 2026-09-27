@@ -1,5 +1,50 @@
 {
   "app": { "name": "POS Multi-sede" },
-  "login": { "title": "Iniciar sesión" },
-  "common": { "notFound": "Página no encontrada" }
+  "login": {
+    "title": "Iniciar sesión",
+    "subtitle": "PUNTO DE VENTA",
+    "user": "Usuario",
+    "password": "Contraseña",
+    "remember": "Recordarme",
+    "forgotPassword": "¿Olvidaste tu contraseña?",
+    "submit": "Iniciar sesión",
+    "error": "Correo electrónico o contraseña incorrectos"
+  },
+  "sidebar": {
+    "subtitle": "PUNTO DE VENTA",
+    "dashboard": "Dashboard",
+    "pos": "Punto de venta",
+    "inventory": "Inventario",
+    "sales": "Ventas",
+    "purchases": "Compras",
+    "clients": "Clientes",
+    "suppliers": "Proveedores",
+    "branches": "Sucursales",
+    "reports": "Reportes",
+    "promotions": "Promociones",
+    "settings": "Configuración",
+    "managers": "Gerentes"
+  },
+  "roles": {
+    "admin_general": "Administrador",
+    "gerente_sede": "Gerente de sede",
+    "cajero": "Cajero"
+  },
+  "settings": {
+    "title": "Configuración",
+    "subtitle": "Preferencias generales del sistema",
+    "language": {
+      "title": "Idioma",
+      "description": "Cambia el idioma de la interfaz",
+      "spanish": "Español",
+      "english": "English"
+    },
+    "notifications": { "title": "Notificaciones", "comingSoon": "Próximamente" },
+    "security": { "title": "Seguridad", "comingSoon": "Próximamente" }
+  },
+  "common": {
+    "notFound": "Página no encontrada",
+    "loading": "Cargando...",
+    "noAccess": "No tienes acceso a esta sección"
+  }
 }
