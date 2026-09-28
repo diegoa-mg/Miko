@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
 import {
   obtenerSucursales,
   crearSucursal,
@@ -7,11 +8,14 @@ import {
 } from "../api/sucursales";
 
 function Sucursales() {
+  const { t } = useTranslation();
+
   const [sucursales, setSucursales] = useState([]);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
   const [sucursalEditando, setSucursalEditando] = useState(null);
+  const [sucursalAEliminar, setSucursalAEliminar] = useState(null);
 
   const [formulario, setFormulario] = useState({
     nombre: "",
@@ -33,7 +37,7 @@ function Sucursales() {
       setSucursales(data);
     } catch (error) {
       console.error(error);
-      setError("No se pudieron cargar las sucursales.");
+      setError(t("sucursales.errorCarga"));
     } finally {
       setCargando(false);
     }
@@ -90,7 +94,7 @@ const manejarCrear = async (e) => {
         gerente_id: "",
       });
 
-      setSucursalEditando(null);
+setSucursalEditando(null);
       setMostrarFormulario(false);
 
       await cargarSucursales();
@@ -99,7 +103,7 @@ const manejarCrear = async (e) => {
 
       setError(
         error.response?.data?.detail ||
-          "No se pudo guardar la sucursal."
+          t("sucursales.errorGuardar")
       );
     }
   };
@@ -118,44 +122,94 @@ const manejarCrear = async (e) => {
     setError("");
   };
 
-  const manejarEliminar = async (id) => {
-    const confirmar = window.confirm(
-      "¿Estás seguro de que deseas eliminar esta sucursal?"
+  const manejarEliminar = (sucursal) => {
+  setSucursalAEliminar(sucursal);
+};
+
+const confirmarEliminar = async () => {
+  try {
+    setError("");
+
+    await eliminarSucursal(sucursalAEliminar.id);
+
+    await cargarSucursales();
+
+    setSucursalAEliminar(null);
+  } catch (error) {
+    console.error(error);
+
+    setError(
+      error.response?.data?.detail ||
+      t("sucursales.errorEliminar")
     );
+  }
+};
 
-    if (!confirmar) {
-      return;
-    }
-
-    try {
-      setError("");
-
-      await eliminarSucursal(id);
-
-      await cargarSucursales();
-    } catch (error) {
-      console.error(error);
-
-      setError(
-        error.response?.data?.detail ||
-          "No se pudo eliminar la sucursal."
-      );
-    }
-  };
+const cancelarEliminar = () => {
+  setSucursalAEliminar(null);
+};
 
   return (
     <div className="min-h-screen bg-[#fdf6e3] p-8">
+      {sucursalAEliminar && (
+  <div className="miko-confirm-overlay">
+    <div className="miko-confirm-modal">
+
+      <div className="miko-confirm-icon">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          className="h-8 w-8"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 9v4m0 4h.01M10.3 3.8h3.4L21 17.2a1.8 1.8 0 0 1-1.56 2.7H4.56A1.8 1.8 0 0 1 3 17.2L10.3 3.8Z"
+          />
+        </svg>
+      </div>
+
+      <h2>Eliminar sucursal</h2>
+
+      <p>
+        {t("sucursales.confirmarEliminar")}
+      </p>
+
+      <div className="miko-confirm-actions">
+        <button
+          type="button"
+          className="miko-confirm-cancel"
+          onClick={cancelarEliminar}
+        >
+          {t("sucursales.cancelar")}
+        </button>
+
+        <button
+          type="button"
+          className="miko-confirm-accept"
+          onClick={confirmarEliminar}
+        >
+          {t("Aceptar")}
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
       <div className="max-w-6xl mx-auto">
 
         {/* Encabezado */}
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="text-3xl font-bold text-[#875d69]">
-              Sucursales
+              {t("sucursales.titulo")}
             </h1>
 
             <p className="font-sans text-gray-600 mt-1">
-              Administra las sucursales de Miko
+              {t("sucursales.descripcion")}
             </p>
           </div>
 
@@ -173,8 +227,8 @@ const manejarCrear = async (e) => {
             className="font-sans bg-rose-800 hover:bg-rose-900 text-white px-5 py-3 rounded-lg transition-colors"
           >
             {mostrarFormulario
-              ? "Cancelar"
-              : "+ Nueva sucursal"}
+                ? t("sucursales.cancelar")
+                : `+ ${t("sucursales.nueva")}`}
           </button>
         </div>
 
@@ -189,7 +243,9 @@ const manejarCrear = async (e) => {
         {mostrarFormulario && (
           <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
             <h2 className="text-xl font-semibold text-[#875d69] mb-5">
-              {sucursalEditando ? "Editar sucursal" : "Nueva sucursal"}
+                {sucursalEditando
+                    ? t("sucursales.editar")
+                    : t("sucursales.nueva")}
             </h2>
 
             <form
@@ -199,7 +255,7 @@ const manejarCrear = async (e) => {
               {/* Nombre */}
               <div>
                 <label className="font-sans block text-sm font-medium mb-2">
-                  Nombre *
+                    {t("sucursales.nombre")} *
                 </label>
 
                 <input
@@ -209,14 +265,14 @@ const manejarCrear = async (e) => {
                   onChange={manejarCambio}
                   required
                   className="font-sans w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-rose-800"
-                  placeholder="Ej. Sucursal Colima"
+                  placeholder={t("sucursales.nombrePlaceholder")}
                 />
               </div>
 
               {/* Dirección */}
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  Dirección *
+                  {t("sucursales.direccion")} *
                 </label>
 
                 <input
@@ -226,14 +282,14 @@ const manejarCrear = async (e) => {
                   onChange={manejarCambio}
                   required
                   className="font-sans w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-rose-800"
-                  placeholder="Ej. Av. principal #123"
+                  placeholder={t("sucursales.direccionPlaceholder")}
                 />
               </div>
 
               {/* Teléfono */}
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  Teléfono
+                  {t("sucursales.telefono")}
                 </label>
 
                 <input
@@ -246,14 +302,14 @@ const manejarCrear = async (e) => {
                   onInvalid={(e) =>
                     e.target.setCustomValidity("Por favor, ingresa solo números.")}
                   className="font-sans w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-rose-800"
-                  placeholder="Ej. 3121234567"
+                  placeholder={t("sucursales.telefonoPlaceholder")}
                 />
               </div>
 
               {/* Gerente */}
               <div>
                 <label className="block text-sm font-medium mb-2">
-                  ID del gerente
+                  {t("sucursales.gerente")}
                 </label>
 
                 <input
@@ -262,7 +318,7 @@ const manejarCrear = async (e) => {
                   value={formulario.gerente_id}
                   onChange={manejarCambio}
                   className="font-sans w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-rose-800"
-                  placeholder="Opcional"
+                  placeholder={t("sucursales.gerentePlaceholder")}
                 />
               </div>
 
@@ -272,7 +328,9 @@ const manejarCrear = async (e) => {
                   type="submit"
                   className="font-sans bg-rose-800 hover:bg-rose-900 text-white px-6 py-3 rounded-lg transition-colors"
                 >
-                  {sucursalEditando ? "Guardar cambios" : "Crear sucursal"}
+                  {sucursalEditando
+                        ? t("sucursales.guardarCambios")
+                        : t("sucursales.crear")}
                 </button>
               </div>
             </form>
@@ -283,17 +341,17 @@ const manejarCrear = async (e) => {
         <div className="bg-white rounded-xl shadow-sm overflow-hidden">
           <div className="p-6 border-b">
             <h2 className="text-xl font-semibold text-[#875d69]">
-              Lista de sucursales
+                {t("sucursales.lista")}
             </h2>
           </div>
 
           {cargando ? (
             <div className="p-8 text-center text-gray-500">
-              Cargando sucursales...
+              {t("sucursales.cargando")}
             </div>
           ) : sucursales.length === 0 ? (
             <div className="p-8 text-center text-gray-500">
-              No hay sucursales registradas.
+              {t("sucursales.sinRegistros")}
             </div>
           ) : (
             <div className="overflow-x-auto">
@@ -301,31 +359,31 @@ const manejarCrear = async (e) => {
                 <thead className="bg-[#f9eeb4]">
                   <tr>
                     <th className="text-left px-6 py-4">
-                      ID
+                      {t("sucursales.id")}
                     </th>
 
                     <th className="text-left px-6 py-4">
-                      Nombre
+                      {t("sucursales.nombre")}
                     </th>
 
                     <th className="text-left px-6 py-4">
-                      Dirección
+                      {t("sucursales.direccion")}
                     </th>
 
                     <th className="text-left px-6 py-4">
-                      Teléfono
+                      {t("sucursales.telefono")}
                     </th>
 
                     <th className="text-left px-6 py-4">
-                      Estado
+                      {t("sucursales.estado")}
                     </th>
 
                     <th className="text-left px-6 py-4">
-                      Gerente
+                      {t("sucursales.gerente")}
                     </th>
 
                     <th className="text-left px-6 py-4">
-                        Acciones
+                        {t("sucursales.acciones")}
                     </th>
                   </tr>
                 </thead>
@@ -365,7 +423,7 @@ const manejarCrear = async (e) => {
                       </td>
 
                       <td className="px-6 py-4">
-                        {sucursal.gerente_id || "Sin gerente"}
+                        {sucursal.gerente_id || t("sucursales.sinGerente")}
                       </td>
                       <td className="px-6 py-4">
                         <div className="flex gap-2">
@@ -373,7 +431,7 @@ const manejarCrear = async (e) => {
                             type="button"
                             onClick={() => manejarEditar(sucursal)}
                             className="miko-edit-button"
-                            aria-label="Editar sucursal"
+                            aria-label={t("sucursales.editar")}
                           >
                             <svg
                               className="miko-edit-icon"
@@ -388,9 +446,9 @@ const manejarCrear = async (e) => {
 
                           <button
                             type="button"
-                            onClick={() => manejarEliminar(sucursal.id)}
+                            onClick={() => manejarEliminar(sucursal)}
                             className="miko-delete-button"
-                            aria-label="Eliminar sucursal"
+                            aria-label={t("sucursales.eliminar")}
                           >
                             <svg
                               xmlns="http://www.w3.org/2000/svg"
