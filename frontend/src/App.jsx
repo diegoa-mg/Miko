@@ -8,6 +8,7 @@ import RoleRoute from "./routes/roleRoute";
 import logoMiko from "./assets/logo_claro.png";
 import Sucursales from "./pages/sucursales";
 import Gerentes from "./pages/gerentes";
+import Cajeros from "./pages/cajeros";
 import AdminLayout from "./layouts/AdminLayout";
 import Configuracion from "./pages/Configuracion";
 import LanguageSwitcher from "./components/LanguageSwitcher";
@@ -147,6 +148,7 @@ export default function App() {
                 <Route index element={<Dashboard />} />
                 <Route path="sucursales" element={<Sucursales />} />
                 <Route path="gerentes" element={<Gerentes />} />
+                <Route path="cajeros" element={<Cajeros />} />
                 <Route path="configuracion" element={<Configuracion />} />
               </Route>
             </Route>

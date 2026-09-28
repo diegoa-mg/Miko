@@ -57,3 +57,15 @@ class GerenteCreate(BaseModel):
 class GerenteUpdate(BaseModel):
     nombre: str
     email: str
+
+# Esquemas de Cajeros
+class CajeroCreate(BaseModel):
+    nombre: str
+    email: str
+    password: str
+    sucursal_id: int | None = None
+
+class CajeroUpdate(BaseModel):
+    nombre: str | None = None
+    email: str | None = None
+    sucursal_id: int | None = None
