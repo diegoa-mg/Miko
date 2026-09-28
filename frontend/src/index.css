@@ -142,76 +142,113 @@ html {
   }
 }
 
-/* Calendario Miko */
-.miko-calendar-icon {
-  width: 24px;
-  height: 24px;
-  position: relative;
-  animation: miko-calendar-float 2.2s ease-in-out infinite;
+/* ============================= */
+/* Confirmación de eliminación */
+/* ============================= */
+
+.miko-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 25, 27, 0.55);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: miko-overlay-show 0.2s ease;
 }
 
-/* Parte superior del calendario */
-.miko-calendar-icon .calendar-top {
-  position: absolute;
-  top: 3px;
-  left: 2px;
-  width: 20px;
-  height: 7px;
-  background: #d9829a;
-  border-radius: 5px 5px 2px 2px;
-}
-
-/* Base del calendario */
-.miko-calendar-icon .calendar-body {
-  position: absolute;
-  top: 7px;
-  left: 2px;
-  width: 20px;
-  height: 16px;
+.miko-confirm-modal {
+  width: min(420px, calc(100% - 40px));
   background: #fffaf2;
-  border: 2px solid #d9829a;
-  border-top: none;
-  border-radius: 0 0 5px 5px;
-  padding: 4px;
-  display: grid;
-  grid-template-columns: repeat(3, 1fr);
-  gap: 2px;
+  border-radius: 24px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(76, 45, 55, 0.25);
+  animation: miko-modal-show 0.25s ease;
 }
 
-/* Los dos pequeños soportes de arriba */
-.miko-calendar-icon .calendar-top span {
-  position: absolute;
-  width: 3px;
-  height: 6px;
-  background: #875d69;
-  border-radius: 3px;
-  top: -2px;
-}
-
-.miko-calendar-icon .calendar-top span:first-child {
-  left: 4px;
-}
-
-.miko-calendar-icon .calendar-top span:last-child {
-  right: 4px;
-}
-
-/* Cuadritos del calendario */
-.miko-calendar-icon .calendar-body i {
-  width: 3px;
-  height: 3px;
-  background: #d9829a;
+.miko-confirm-icon {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 18px;
   border-radius: 50%;
+  background: #fde7e7;
+  color: #875d69;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
-/* Movimiento suave */
-@keyframes miko-calendar-float {
-  0%,
-  100% {
-    transform: translateY(0) rotate(0deg);
+.miko-confirm-modal h2 {
+  margin: 0;
+  color: #875d69;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.miko-confirm-modal p {
+  margin: 12px 0 25px;
+  color: #6b5a60;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.miko-confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.miko-confirm-cancel,
+.miko-confirm-accept {
+  border: none;
+  border-radius: 10px;
+  padding: 11px 22px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.miko-confirm-cancel {
+  background: #eee7e3;
+  color: #6b5a60;
+}
+
+.miko-confirm-cancel:hover {
+  background: #ddd3ce;
+  transform: translateY(-1px);
+}
+
+.miko-confirm-accept {
+  background: #875d69;
+  color: white;
+}
+
+.miko-confirm-accept:hover {
+  background: #704a57;
+  transform: translateY(-1px);
+}
+
+@keyframes miko-overlay-show {
+  from {
+    opacity: 0;
   }
 
-  50% {
-    transform: translateY(-2px) rotate(-3deg);
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes miko-modal-show {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
   }
 }

@@ -1,5 +1,17 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+
+import {
+  obtenerGerentes,
+  crearGerente,
+  actualizarGerente,
+  eliminarGerente,
+} from "../api/gerentes";
+
+import {
+  obtenerSucursales,
+  actualizarSucursal,
+} from "../api/sucursales";
 
 function Gerentes() {
   const { t } = useTranslation();
@@ -7,39 +19,131 @@ function Gerentes() {
   const [buscar, setBuscar] = useState("");
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
 
-  // Datos temporales mientras se termina el backend
-  const [gerentes] = useState([
-    {
-      id: 1,
-      nombre: "Ana Torres",
-      email: "ana.torres@miko.com",
-      telefono: "312 123 4567",
-      sucursal: "Manzanillo",
-      estado: "Activo",
-      ultimoAcceso: "Hoy, 10:24 a. m.",
-      iniciales: "AT",
-    },
-    {
-      id: 2,
-      nombre: "Luis Pérez",
-      email: "luis.perez@miko.com",
-      telefono: "312 555 0199",
-      sucursal: "Centro",
-      estado: "Activo",
-      ultimoAcceso: "Ayer, 5:47 p. m.",
-      iniciales: "LP",
-    },
-    {
-      id: 3,
-      nombre: "Mariana López",
-      email: "mariana.lopez@miko.com",
-      telefono: "312 456 7821",
-      sucursal: "Colima",
-      estado: "Activo",
-      ultimoAcceso: "Hoy, 8:15 a. m.",
-      iniciales: "ML",
-    },
-  ]);
+  const [gerentes, setGerentes] = useState([]);
+  const [sucursales, setSucursales] = useState([]);
+  const [gerenteAEliminar, setGerenteAEliminar] = useState(null);
+
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
+
+  const [editandoGerente, setEditandoGerente] = useState(null);
+
+  const [formulario, setFormulario] = useState({
+     nombre: "",
+     email: "",
+     password:"",
+    });
+
+  useEffect(() => {
+  cargarDatos();
+}, []);
+
+  const cargarDatos = async () => {
+  try {
+    setCargando(true);
+    setError("");
+
+    const [gerentesData, sucursalesData] = await Promise.all([
+      obtenerGerentes(),
+      obtenerSucursales(),
+    ]);
+
+    console.log("GERENTES: ", gerentesData);
+    console.log("SUCURSALES JSON NUEVO:", JSON.stringify(sucursalesData, null, 2));
+
+    setGerentes(gerentesData);
+    setSucursales(sucursalesData);
+  } catch (err) {
+    console.error("Error al cargar los datos:", err);
+    setError("No se pudieron cargar los datos.");
+  } finally {
+    setCargando(false);
+  }
+};
+
+    const manejarCambio = (e) => {
+  const { name, value } = e.target;
+
+  setFormulario((prev) => ({
+    ...prev,
+    [name]: value,
+  }));
+};
+
+const limpiarFormulario = () => {
+  setFormulario({
+    nombre: "",
+    email: "",
+    password: "",
+  });
+
+  setEditandoGerente(null);
+};
+const abrirNuevoGerente = () => {
+  limpiarFormulario();
+  setMostrarFormulario(true);
+};
+
+const abrirEditarGerente = (gerente) => {
+  setEditandoGerente(gerente);
+
+  setFormulario({
+    nombre: gerente.nombre || "",
+    email: gerente.email || "",
+    sucursal_id: gerente.sucursal_id || "",
+  });
+
+  setMostrarFormulario(true);
+};
+
+const manejarGuardar = async (e) => {
+  e.preventDefault();
+
+  try {
+    setError("");
+
+    const datos = {
+        nombre: formulario.nombre,
+        email: formulario.email,
+        password: formulario.password,
+    };
+    if (editandoGerente) {
+      await actualizarGerente(editandoGerente.id, {
+        nombre: formulario.nombre,
+        email: formulario.email,
+      });
+    } else {
+      await crearGerente(datos);
+    }
+
+    await cargarDatos();
+    limpiarFormulario();
+    setMostrarFormulario(false);
+
+  } catch (err) {
+    console.error("Error al guardar gerente:", err);
+    console.error("Respuesta backend:", err.response?.data);
+    setError("No se pudo guardar el gerente.");
+  }
+};
+
+const manejarEliminar = (id) => {
+    setGerenteAEliminar(id);
+};
+
+const confirmarEliminar = async () => {
+    try {
+        setError("");
+
+        await eliminarGerente(gerenteAEliminar);
+        await cargarDatos();
+
+        setGerenteAEliminar(null);
+    } catch (err) {
+        console.error("Error al eliminar gerente:", err);
+        setError("No se pudo eliminar el gerente.");
+    }
+};
 
   const gerentesFiltrados = gerentes.filter((gerente) =>
     gerente.nombre.toLowerCase().includes(buscar.toLowerCase())
@@ -47,6 +151,58 @@ function Gerentes() {
 
   return (
     <div className="min-h-screen bg-[#fdf6e3] p-8">
+        {gerenteAEliminar && (
+    <div className="miko-confirm-overlay">
+        <div className="miko-confirm-modal">
+
+            {/* Icono */}
+            <div className="miko-confirm-icon">
+                <svg
+                    xmlns="http://www.w3.org/2000/svg"
+                    viewBox="0 0 24 24"
+                    fill="none"
+                    stroke="currentColor"
+                    strokeWidth="1.8"
+                    className="h-8 w-8"
+                >
+                    <path
+                        strokeLinecap="round"
+                        strokeLinejoin="round"
+                        d="M12 9v4m0 4h.01M10.3 3.7 2.8 17a2 2 0 0 0 1.7 3h15a2 2 0 0 0 1.7-3L13.7 3.7a2 2 0 0 0-3.4 0Z"
+                    />
+                </svg>
+            </div>
+
+            {/* Título */}
+            <h2>Eliminar gerente</h2>
+
+            {/* Mensaje */}
+            <p>
+                ¿Estás segura de que deseas eliminar este gerente?
+            </p>
+
+            {/* Botones */}
+            <div className="miko-confirm-actions">
+                <button
+                    type="button"
+                    className="miko-confirm-cancel"
+                    onClick={() => setGerenteAEliminar(null)}
+                >
+                    Cancelar
+                </button>
+
+                <button
+                    type="button"
+                    className="miko-confirm-accept"
+                    onClick={confirmarEliminar}
+                >
+                    Aceptar
+                </button>
+            </div>
+
+        </div>
+    </div>
+)}
       <div className="max-w-7xl mx-auto">
 
         {/* Encabezado */}
@@ -63,7 +219,7 @@ function Gerentes() {
 
           <button
             type="button"
-            onClick={() => setMostrarFormulario(true)}
+            onClick={abrirNuevoGerente}
             className="font-sans bg-rose-800 hover:bg-rose-900 text-white px-5 py-3 rounded-lg transition-colors"
           >
             + {t("gerentes.nuevo")}
@@ -121,12 +277,17 @@ function Gerentes() {
 
                       {/* Avatar */}
                       <div className="w-20 h-20 rounded-full bg-[#f6d5ca] flex items-center justify-center text-[#875d69] text-xl font-semibold">
-                        {gerente.iniciales}
+                        {gerente.nombre
+                            ?.split(" ")
+                            .map((nombre) => nombre[0])
+                            .slice(0, 2)
+                            .join("")
+                            .toUpperCase()}
                       </div>
 
                       <div>
                         <div className="flex items-center gap-3">
-                          <h2 className="font-title text-xl font-semibold text-[#875d69]">
+                          <h2 className="text-xl font-semibold text-[#875d69]">
                             {gerente.nombre}
                           </h2>
 
@@ -139,10 +300,7 @@ function Gerentes() {
                           ✉ {gerente.email}
                         </p>
 
-                        <p className="font-sans text-sm text-gray-600 mt-1">
-                          ☎ {gerente.telefono}
-                        </p>
-                      </div>
+                </div>
                     </div>
 
                     {/* Menú */}
@@ -157,61 +315,7 @@ function Gerentes() {
 
                   {/* Separador */}
                   <div className="border-t border-[#eee1dd] my-5" />
-
-                  {/* Sucursal */}
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-3">
-                      <div className="w-11 h-11 rounded-full bg-[#f9eeb4] flex items-center justify-center">
-                        <div className="loader"></div>
-                      </div>
-
-                      <div>
-                        <p className="font-sans text-xs text-gray-500">
-                          {t("gerentes.sucursalAsignada")}
-                        </p>
-
-                        <p className="font-sans font-medium text-[#875d69] mt-1">
-                          {gerente.sucursal}
-                        </p>
-                      </div>
-                    </div>
-
-                    <span className="text-[#875d69] text-xl">
-                      ›
-                    </span>
-                  </div>
-
-                  {/* Último acceso */}
-                  <div className="border-t border-[#eee1dd] mt-5 pt-5 flex items-center gap-3">
-                    <div className="w-11 h-11 rounded-full bg-[#f9eeb4] flex items-center justify-center">
-                      <div className="miko-calendar-icon">
-                        <div className="calendar-top">
-                          <span></span>
-                          <span></span>
-                        </div>
-
-                        <div className="calendar-body">
-                           <i></i>
-                           <i></i>
-                           <i></i>
-                           <i></i>
-                           <i></i>
-                           <i></i>
-                           </div>
-                        </div>
-                      </div>
-
-                    <div>
-                      <p className="font-sans text-xs text-gray-500">
-                        {t("gerentes.ultimoAcceso")}
-                      </p>
-
-                      <p className="font-sans text-sm font-medium text-[#875d69] mt-1">
-                        {gerente.ultimoAcceso}
-                      </p>
-                    </div>
-                  </div>
-                </div>
+            </div>
 
             {/* Acciones */}
             <div className="bg-[#fffaf2] px-6 py-4 flex justify-end">
@@ -220,7 +324,7 @@ function Gerentes() {
                 {/* Editar */}
                 <button
                   type="button"
-                  onClick={() => console.log("Editar gerente", gerente.id)}
+                  onClick={() => abrirEditarGerente(gerente)}
                   className="miko-edit-button"
                   aria-label={t("gerentes.editar")}
                 >
@@ -238,7 +342,7 @@ function Gerentes() {
                 {/* Eliminar */}
                 <button
                   type="button"
-                  onClick={() => console.log("Eliminar gerente", gerente.id)}
+                  onClick={() => manejarEliminar(gerente.id)}
                   className="miko-delete-button"
                   aria-label={t("gerentes.eliminar")}
                 >
@@ -333,7 +437,11 @@ function Gerentes() {
               </div>
 
               {/* Formulario visual */}
-              <form className="space-y-5">
+              <form
+                className="space-y-5"
+                onSubmit={manejarGuardar}
+                noValidate
+              >
 
                 {/* Nombre */}
                 <div>
@@ -343,7 +451,11 @@ function Gerentes() {
 
                   <input
                     type="text"
+                    name="nombre"
+                    value={formulario.nombre}
+                    onChange={manejarCambio}
                     placeholder={t("gerentes.nombrePlaceholder")}
+                    required
                     className="font-sans w-full border-2 border-[#ead8d8] rounded-xl px-4 py-3 bg-white focus:outline-none focus:border-[#cda4b4]"
                   />
                 </div>
@@ -356,67 +468,55 @@ function Gerentes() {
 
                   <input
                     type="email"
+                    name="email"
+                    value={formulario.email}
+                    onChange={manejarCambio}
                     placeholder={t("gerentes.correoPlaceholder")}
-                    className="font-sans w-full border-2 border-[#ead8d8] rounded-xl px-4 py-3 bg-white focus:outline-none focus:border-[#cda4b4]"
+                    required
+                    className="font-sans w-full border-2 border-[#ead8d8] rounded-xl px-4 py-3"
                   />
                 </div>
 
-                {/* Sucursal */}
+                {/* Contraseña */}
                 <div>
-                  <label className="font-sans block text-sm font-medium text-[#875d69] mb-2">
-                    {t("gerentes.sucursalAsignada")} *
-                  </label>
+                 <label className="font-sans block text-sm font-medium text-[#875d69] mb-2">
+                 Contraseña *
+                 </label>
 
-                  <select
-                    className="font-sans w-full border-2 border-[#ead8d8] rounded-xl px-4 py-3 bg-white text-gray-500 focus:outline-none focus:border-[#cda4b4]"
-                  >
-                    <option value="">
-                      {t("gerentes.seleccionaSucursal")}
-                    </option>
-
-                    <option value="manzanillo">
-                      Manzanillo
-                    </option>
-
-                    <option value="centro">
-                      Centro
-                    </option>
-
-                    <option value="colima">
-                      Colima
-                    </option>
-                  </select>
-                </div>
-
-                {/* Teléfono */}
-                <div>
-                  <label className="font-sans block text-sm font-medium text-[#875d69] mb-2">
-                    {t("gerentes.telefono")}
-                  </label>
-
-                  <input
-                    type="text"
-                    placeholder={t("gerentes.telefonoPlaceholder")}
+                 <input
+                    type="password"
+                    name="password"
+                    value={formulario.password}
+                    onChange={manejarCambio}
+                    placeholder="Ingresa una contraseña"
+                    required
                     className="font-sans w-full border-2 border-[#ead8d8] rounded-xl px-4 py-3 bg-white focus:outline-none focus:border-[#cda4b4]"
-                  />
+                />
                 </div>
+
 
                 {/* Botones */}
                 <div className="flex gap-3 pt-3">
 
                   <button
                     type="button"
-                    onClick={() => setMostrarFormulario(false)}
+                    onClick={() => {
+                        console.log("CLICK EN CANCELAR");
+                        setMostrarFormulario(false);
+                    }}
                     className="font-sans flex-1 border-2 border-[#ead8d8] bg-white text-[#875d69] py-3 rounded-xl hover:bg-[#fff4ed] transition-colors"
-                  >
+                >
                     {t("gerentes.cancelar")}
                   </button>
 
                   <button
-                    type="button"
+                    type="submit"
+                    onClick={() => console.log("🔥 CLICK EN CREAR GERENTE")}
                     className="font-sans flex-1 bg-rose-800 hover:bg-rose-900 text-white py-3 rounded-xl transition-colors"
                   >
-                    {t("gerentes.crear")}
+                    {editandoGerente
+                        ? t("Guardar")
+                    : t("gerentes.crear")}
                   </button>
 
                 </div>

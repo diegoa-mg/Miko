@@ -15,6 +15,7 @@ function Sucursales() {
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
   const [sucursalEditando, setSucursalEditando] = useState(null);
+  const [sucursalAEliminar, setSucursalAEliminar] = useState(null);
 
   const [formulario, setFormulario] = useState({
     nombre: "",
@@ -109,33 +110,83 @@ function Sucursales() {
     setError("");
   };
 
-  const manejarEliminar = async (id) => {
-    const confirmar = window.confirm(
-      t("sucursales.confirmarEliminar")
+  const manejarEliminar = (sucursal) => {
+  setSucursalAEliminar(sucursal);
+};
+
+const confirmarEliminar = async () => {
+  try {
+    setError("");
+
+    await eliminarSucursal(sucursalAEliminar.id);
+
+    await cargarSucursales();
+
+    setSucursalAEliminar(null);
+  } catch (error) {
+    console.error(error);
+
+    setError(
+      error.response?.data?.detail ||
+      t("sucursales.errorEliminar")
     );
+  }
+};
 
-    if (!confirmar) {
-      return;
-    }
-
-    try {
-      setError("");
-
-      await eliminarSucursal(id);
-
-      await cargarSucursales();
-    } catch (error) {
-      console.error(error);
-
-      setError(
-        error.response?.data?.detail ||
-          t("sucursales.errorEliminar")
-      );
-    }
-  };
+const cancelarEliminar = () => {
+  setSucursalAEliminar(null);
+};
 
   return (
     <div className="min-h-screen bg-[#fdf6e3] p-8">
+      {sucursalAEliminar && (
+  <div className="miko-confirm-overlay">
+    <div className="miko-confirm-modal">
+
+      <div className="miko-confirm-icon">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          strokeWidth="1.8"
+          className="h-8 w-8"
+        >
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            d="M12 9v4m0 4h.01M10.3 3.8h3.4L21 17.2a1.8 1.8 0 0 1-1.56 2.7H4.56A1.8 1.8 0 0 1 3 17.2L10.3 3.8Z"
+          />
+        </svg>
+      </div>
+
+      <h2>Eliminar sucursal</h2>
+
+      <p>
+        {t("sucursales.confirmarEliminar")}
+      </p>
+
+      <div className="miko-confirm-actions">
+        <button
+          type="button"
+          className="miko-confirm-cancel"
+          onClick={cancelarEliminar}
+        >
+          {t("sucursales.cancelar")}
+        </button>
+
+        <button
+          type="button"
+          className="miko-confirm-accept"
+          onClick={confirmarEliminar}
+        >
+          {t("Aceptar")}
+        </button>
+      </div>
+
+    </div>
+  </div>
+)}
       <div className="max-w-6xl mx-auto">
 
         {/* Encabezado */}
@@ -379,7 +430,7 @@ function Sucursales() {
 
                           <button
                             type="button"
-                            onClick={() => manejarEliminar(sucursal.id)}
+                            onClick={() => manejarEliminar(sucursal)}
                             className="miko-delete-button"
                             aria-label={t("sucursales.eliminar")}
                           >
