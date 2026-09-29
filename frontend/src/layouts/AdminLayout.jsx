@@ -6,6 +6,7 @@ const adminNavItems = [
   { icon: "inventory_2", key: "sidebar.inventory", to: "/admin/inventario" },
   { icon: "trending_up", key: "sidebar.sales", to: "/admin/ventas" },
   { icon: "supervisor_account", key: "sidebar.managers", to: "/admin/gerentes" },
+  { icon: "badge", key: "sidebar.cashiers", to: "/admin/cajeros" },
   { icon: "store", key: "sidebar.branches", to: "/admin/sucursales" },
 ];
 

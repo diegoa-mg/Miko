@@ -108,3 +108,147 @@ html {
 .miko-edit-button:hover .miko-edit-icon {
   transform: rotate(360deg);
 }
+
+.loader {
+  width: 24px;
+  height: 24px;
+  position: relative;
+  transform: rotate(45deg);
+}
+
+.loader:before,
+.loader:after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: 50% 50% 0 50%;
+  background: #0000;
+  background-image: radial-gradient(
+    circle 6px at 50% 50%,
+    #0000 94%,
+    #ff4747
+  );
+}
+
+.loader:after {
+  animation: pulse-ytk0dhmd 1s infinite;
+  transform: perspective(180px) translateZ(0px);
+}
+
+@keyframes pulse-ytk0dhmd {
+  to {
+    transform: perspective(180px) translateZ(90px);
+    opacity: 0;
+  }
+}
+
+/* ============================= */
+/* Confirmación de eliminación */
+/* ============================= */
+
+.miko-confirm-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(30, 25, 27, 0.55);
+  backdrop-filter: blur(5px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+  animation: miko-overlay-show 0.2s ease;
+}
+
+.miko-confirm-modal {
+  width: min(420px, calc(100% - 40px));
+  background: #fffaf2;
+  border-radius: 24px;
+  padding: 30px;
+  text-align: center;
+  box-shadow: 0 20px 60px rgba(76, 45, 55, 0.25);
+  animation: miko-modal-show 0.25s ease;
+}
+
+.miko-confirm-icon {
+  width: 70px;
+  height: 70px;
+  margin: 0 auto 18px;
+  border-radius: 50%;
+  background: #fde7e7;
+  color: #875d69;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.miko-confirm-modal h2 {
+  margin: 0;
+  color: #875d69;
+  font-size: 24px;
+  font-weight: 700;
+}
+
+.miko-confirm-modal p {
+  margin: 12px 0 25px;
+  color: #6b5a60;
+  font-size: 16px;
+  line-height: 1.5;
+}
+
+.miko-confirm-actions {
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+}
+
+.miko-confirm-cancel,
+.miko-confirm-accept {
+  border: none;
+  border-radius: 10px;
+  padding: 11px 22px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.miko-confirm-cancel {
+  background: #eee7e3;
+  color: #6b5a60;
+}
+
+.miko-confirm-cancel:hover {
+  background: #ddd3ce;
+  transform: translateY(-1px);
+}
+
+.miko-confirm-accept {
+  background: #875d69;
+  color: white;
+}
+
+.miko-confirm-accept:hover {
+  background: #704a57;
+  transform: translateY(-1px);
+}
+
+@keyframes miko-overlay-show {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes miko-modal-show {
+  from {
+    opacity: 0;
+    transform: translateY(10px) scale(0.96);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

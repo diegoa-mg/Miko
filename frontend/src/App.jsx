@@ -7,6 +7,8 @@ import ProtectedRoute from "./routes/protectedRoute";
 import RoleRoute from "./routes/roleRoute";
 import logoMiko from "./assets/logo_claro.png";
 import Sucursales from "./pages/sucursales";
+import Gerentes from "./pages/gerentes";
+import Cajeros from "./pages/cajeros";
 import AdminLayout from "./layouts/AdminLayout";
 import DashboardAdmin from "./pages/Dashboardadmin";
 import Configuracion from "./pages/Configuracion";
@@ -146,6 +148,8 @@ export default function App() {
               <Route path="/admin" element={<AdminLayout />}>
                 <Route index element={<Dashboard />} />
                 <Route path="sucursales" element={<Sucursales />} />
+                <Route path="gerentes" element={<Gerentes />} />
+                <Route path="cajeros" element={<Cajeros />} />
                 <Route path="configuracion" element={<Configuracion />} />
               </Route>
             </Route>
