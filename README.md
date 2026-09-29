@@ -56,15 +56,48 @@ cd Miko
 
 ### Paso 2: Crear archivos .env
 
-```
+```bash
 cp .env.example .env
 cp frontend/.env.example frontend/.env
 ```
 
-### Paso 3: Levantar el contenedor
+### Paso 3: Generar la `JWT_SECRET_KEY`
+
+La clave con la que el backend firma los tokens de sesión debe ser larga y aleatoria. Genera una con:
+
+```bash
+docker run --rm python:3.12-slim python -c "import secrets; print(secrets.token_hex(32))"
 ```
+
+Copia el resultado en tu `.env`:
+
+```
+JWT_SECRET_KEY=<la_clave_generada>
+```
+>⚠️ Cada integrante genera su propia clave; nunca la subas a GitHub ni la pongas en .env.example
+
+### Paso 4: Levantar los contenedores
+```bash
 docker compose up -d --build
 ```
+
+### Paso 5: Aplicar migraciones de Alembic
+```bash
+docker compose exec backend alembic upgrade head
+```
+
+### Paso 6: Crear el usuario admin de prueba 
+```bash
+docker compose exec backend python -m scripts.crear_usuario_prueba
+```
+
+Esto crea un usuario Administrador General para poder iniciar sesión:
+
+| Correo | Contraseña |
+|---|---|
+| `admin@miko.test` | `admin123` |
+
+>⚠️ Estas credenciales son **solo para desarrollo local**. No uses este script en el servidor de producción.
 
 Verifica que los 3 contenedores estén `Up` con `docker compose ps`, y abre:
 
@@ -74,7 +107,7 @@ Verifica que los 3 contenedores estén `Up` con `docker compose ps`, y abre:
 | Backend (API) | http://localhost:8000 |
 | Documentación de la API (Swagger) | http://localhost:8000/docs |
 
-**⚠️ No modifiques el `Dockerfile` del frontend** sin saber por qué está así — usa una versión específica de Node y pnpm a propósito; cambiarlo rompe el build para todo el equipo.
+>⚠️ No modifiques el `Dockerfile` del frontend sin saber por qué está así — usa una versión específica de Node y pnpm a propósito; cambiarlo rompe el build para todo el equipo.
 
 ## 📂 Estructura del proyecto
 
