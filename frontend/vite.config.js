@@ -6,5 +6,9 @@ export default defineConfig({
   server: {
     host: true, // permite conexiones desde fuera del contenedor
     port: 5173,
+    watch: {
+      usePolling: true,
+      interval: 300,
+    },
   },
 });
