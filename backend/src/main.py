@@ -6,8 +6,11 @@ from fastapi.middleware.cors import CORSMiddleware
 from src.routers import auth as auth_router
 from src.routers import sucursales as sucursales_router
 from src.routers import gerentes as gerentes_router
+from src.routers import admin_dashboard as admin_dashboard_router
 
 app = FastAPI(title="POS Multi-sede API")
+
+app.include_router(admin_dashboard_router.router)
 
 """
 CORS Middleware: resuelve un problema que se genera cuando el frontend intenta llamar al backend (localhost:8000), 

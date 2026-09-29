@@ -8,6 +8,7 @@ import RoleRoute from "./routes/roleRoute";
 import logoMiko from "./assets/logo_claro.png";
 import Sucursales from "./pages/sucursales";
 import AdminLayout from "./layouts/AdminLayout";
+import DashboardAdmin from "./pages/Dashboardadmin";
 import Configuracion from "./pages/Configuracion";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 
@@ -120,7 +121,7 @@ function NotFound() {
 }
 
 function Dashboard() {
-  return <h1 className="text-2xl font-bold p-6">Panel Admin General</h1>;
+  return <DashboardAdmin />;
 }
 
 function MiSucursal() {

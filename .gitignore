@@ -36,3 +36,4 @@ Thumbs.db
 
 # Alembic
 # (los archivos de versions/ SÍ se suben, son parte del historial de migraciones)
+frontend/.pnpm-store/

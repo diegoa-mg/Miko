@@ -30,6 +30,18 @@
     "gerente_sede": "Gerente de sede",
     "cajero": "Cajero"
   },
+  "dashboard": {
+    "title": "Dashboard de Administrador General",
+    "activeBranches": "Sucursales activas",
+    "periodSales": "Ventas del período",
+    "periodRange": "{{start}} a {{end}}",
+    "inventoryAlerts": "Alertas de inventario",
+    "lowStockTitle": "Productos con bajo inventario",
+    "noAlerts": "No hay alertas de inventario por el momento.",
+    "stock": "Existencia",
+    "threshold": "Umbral",
+    "error": "No se pudo cargar el dashboard. Intenta de nuevo más tarde."
+  },
   "settings": {
     "title": "Configuración",
     "subtitle": "Preferencias generales del sistema",

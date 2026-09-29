@@ -30,6 +30,18 @@
     "gerente_sede": "Branch Manager",
     "cajero": "Cashier"
   },
+  "dashboard": {
+    "title": "General Administrator Dashboard",
+    "activeBranches": "Active branches",
+    "periodSales": "Period sales",
+    "periodRange": "{{start}} to {{end}}",
+    "inventoryAlerts": "Inventory alerts",
+    "lowStockTitle": "Low stock products",
+    "noAlerts": "There are no inventory alerts at the moment.",
+    "stock": "Stock",
+    "threshold": "Threshold",
+    "error": "The dashboard could not be loaded. Please try again later."
+  },
   "settings": {
     "title": "Settings",
     "subtitle": "General system preferences",
