@@ -41,6 +41,8 @@
   "descripcionFormulario": "Complete the information to register a new manager in Miko.",
   "nombreCompleto": "Full name",
   "correo": "Email address",
+  "contraseña": "Password",
+  "contraseñaPlaceholder": "Enter a password",
   "sucursalAsignada": "Assigned branch",
   "telefono": "Phone",
   "ultimoAcceso": "Last access",

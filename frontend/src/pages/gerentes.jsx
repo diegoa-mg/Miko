@@ -480,7 +480,7 @@ const confirmarEliminar = async () => {
                 {/* Contraseña */}
                 <div>
                  <label className="font-sans block text-sm font-medium text-[#875d69] mb-2">
-                 Contraseña *
+                 {t("gerentes.contraseña")} *
                  </label>
 
                  <input
@@ -488,7 +488,7 @@ const confirmarEliminar = async () => {
                     name="password"
                     value={formulario.password}
                     onChange={manejarCambio}
-                    placeholder="Ingresa una contraseña"
+                    placeholder={t("gerentes.contraseñaPlaceholder")}
                     required
                     className="font-sans w-full border-2 border-[#ead8d8] rounded-xl px-4 py-3 bg-white focus:outline-none focus:border-[#cda4b4]"
                 />

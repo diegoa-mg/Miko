@@ -45,6 +45,8 @@
     "descripcionFormulario": "Completa la información para registrar un nuevo gerente en Miko.",
     "nombreCompleto": "Nombre completo",
     "correo": "Correo electrónico",
+    "contraseña": "Contraseña",
+   "contraseñaPlaceholder": "Ingresa una contraseña",
     "sucursalAsignada": "Sucursal asignada",
     "telefono": "Teléfono",
     "ultimoAcceso": "Último acceso",
