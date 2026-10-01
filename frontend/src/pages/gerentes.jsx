@@ -405,7 +405,9 @@ const confirmarEliminar = async () => {
               {/* Encabezado */}
               <div className="flex items-center justify-between mb-6">
                 <h2 className="font-sans text-2xl font-bold text-[#875d69]">
-                  {t("gerentes.nuevo")}
+                  {editandoGerente
+                    ? t("gerentes.editarGerente")
+                    : t("gerentes.nuevo")}
                 </h2>
 
                 <button
@@ -426,11 +428,15 @@ const confirmarEliminar = async () => {
 
                   <div>
                     <h3 className="font-sans font-semibold text-[#875d69]">
-                      {t("gerentes.agregaNuevo")}
+                      {editandoGerente
+                        ? t("gerentes.editarInformacion")
+                        : t("gerentes.agregaNuevo")}
                     </h3>
 
                     <p className="font-sans text-xs text-gray-600 mt-1">
-                      {t("gerentes.descripcionFormulario")}
+                      {editandoGerente
+                        ? t("gerentes.descripcionEdicion")
+                        : t("gerentes.descripcionFormulario")}
                     </p>
                   </div>
                 </div>
@@ -478,21 +484,23 @@ const confirmarEliminar = async () => {
                 </div>
 
                 {/* Contraseña */}
-                <div>
-                 <label className="font-sans block text-sm font-medium text-[#875d69] mb-2">
-                 {t("gerentes.contraseña")} *
-                 </label>
+                  {!editandoGerente && (
+                    <div>
+                      <label className="font-sans block text-sm font-medium text-[#875d69] mb-2">
+                        {t("gerentes.contraseña")} *
+                      </label>
 
-                 <input
-                    type="password"
-                    name="password"
-                    value={formulario.password}
-                    onChange={manejarCambio}
-                    placeholder={t("gerentes.contraseñaPlaceholder")}
-                    required
-                    className="font-sans w-full border-2 border-[#ead8d8] rounded-xl px-4 py-3 bg-white focus:outline-none focus:border-[#cda4b4]"
-                />
-                </div>
+                      <input
+                        type="password"
+                        name="password"
+                        value={formulario.password}
+                        onChange={manejarCambio}
+                        placeholder={t("gerentes.contraseñaPlaceholder")}
+                        required
+                        className="font-sans w-full border-2 border-[#ead8d8] rounded-xl px-4 py-3 bg-white focus:outline-none focus:border-[#cda4b4]"
+                      />
+                    </div>
+                  )}
 
 
                 {/* Botones */}
@@ -511,12 +519,18 @@ const confirmarEliminar = async () => {
 
                   <button
                     type="submit"
-                    onClick={() => console.log("🔥 CLICK EN CREAR GERENTE")}
+                    onClick={() =>
+                      console.log(
+                        editandoGerente
+                          ? "🔥 CLICK EN GUARDAR CAMBIOS"
+                          : "🔥 CLICK EN CREAR GERENTE"
+                      )
+                    }
                     className="font-sans flex-1 bg-rose-800 hover:bg-rose-900 text-white py-3 rounded-xl transition-colors"
                   >
                     {editandoGerente
-                        ? t("Guardar")
-                    : t("gerentes.crear")}
+                      ? t("gerentes.guardarCambios")
+                      : t("gerentes.crear")}
                   </button>
 
                 </div>
