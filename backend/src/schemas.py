@@ -1,4 +1,13 @@
-from pydantic import BaseModel, ConfigDict
+from pydantic import BaseModel, ConfigDict, EmailStr
+"""
+EmailStr valida el formato del correo electrónico (requiere el paquete email-validator).
+Se usa solo en los esquemas de entrada que crean o modifican correos (Ej: GerenteCreate, GerenteUpdate,).
+
+- LoginRequest no lo usa: un correo mal formado simplemente no coincide con ningún usuario
+  y recibe el 401 genérico. Con EmailStr respondería 422 y cambiaría el contrato con el frontend.
+- UsuarioOut no lo usa: es de salida. Si en la BD existiera un correo que EmailStr considere
+  inválido, la respuesta fallaría con un error 500.
+"""
 
 # Es lo que el cliente manda para el login
 class LoginRequest(BaseModel):
@@ -51,21 +60,21 @@ class SucursalOut(SucursalBase):
 # Esquemas de Gerentes
 class GerenteCreate(BaseModel):
     nombre: str
-    email: str
+    email: EmailStr
     password: str
 
 class GerenteUpdate(BaseModel):
     nombre: str
-    email: str
+    email: EmailStr
 
 # Esquemas de Cajeros
 class CajeroCreate(BaseModel):
     nombre: str
-    email: str
+    email: EmailStr
     password: str
     sucursal_id: int | None = None
 
 class CajeroUpdate(BaseModel):
     nombre: str | None = None
-    email: str | None = None
+    email: EmailStr | None = None
     sucursal_id: int | None = None

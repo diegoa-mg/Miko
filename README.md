@@ -95,7 +95,7 @@ Esto crea un usuario Administrador General para poder iniciar sesión:
 
 | Correo | Contraseña |
 |---|---|
-| `admin@miko.test` | `admin123` |
+| `admintest@miko.com` | `admin123` |
 
 >⚠️ Estas credenciales son **solo para desarrollo local**. No uses este script en el servidor de producción.
 

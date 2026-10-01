@@ -2,8 +2,6 @@
 Provisional, solo para probar login/JWT mientras no existe el endpoint
 de registro. Ejecutar dentro del contenedor:
 
-    docker compose exec backend python scripts/crear_usuario_prueba.py
-    o
     docker compose exec backend python -m scripts.crear_usuario_prueba
 """
 from src.database import SessionLocal
@@ -19,16 +17,16 @@ if rol is None:
     db.commit()
     db.refresh(rol)
 
-if not db.query(Usuario).filter(Usuario.email == "admin@miko.test").first():
+if not db.query(Usuario).filter(Usuario.email == "admintest@miko.com").first():
     usuario = Usuario(
         nombre="Admin de prueba",
-        email="admin@miko.test",
+        email="admintest@miko.com",
         password_hash=hash_password("admin123"),
         rol_id=rol.id,
     )
     db.add(usuario)
     db.commit()
-    print("Usuario admin@miko.test / admin123 creado.")
+    print("Usuario admintest@miko.com / admin123 creado.")
 else:
     print("Ya existía.")
 
