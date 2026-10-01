@@ -76,7 +76,7 @@ export default function DashboardAdmin() {
         {/* Tarjetas resumen */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
           <div className="bg-white rounded-xl shadow p-5 flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-pink-100 flex items-center justify-center text-pink-500">
+            <div className="w-10 h-10 shrink-0 rounded-full bg-pink-100 flex items-center justify-center text-pink-500">
               <Store size={20} />
             </div>
             <div>
@@ -88,7 +88,7 @@ export default function DashboardAdmin() {
           </div>
 
           <div className="bg-white rounded-xl shadow p-5 flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+            <div className="w-10 h-10 shrink-0 rounded-full bg-green-100 flex items-center justify-center text-green-600">
               <CircleDollarSign size={20} />
             </div>
             <div>
@@ -107,7 +107,7 @@ export default function DashboardAdmin() {
           </div>
 
           <div className="bg-white rounded-xl shadow p-5 flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600">
+            <div className="w-10 h-10 shrink-0 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600">
               <TriangleAlert size={20} />
             </div>
             <div>
@@ -119,7 +119,7 @@ export default function DashboardAdmin() {
           </div>
 
           <div className="bg-white rounded-xl shadow p-5 flex items-center gap-4">
-            <div className="w-10 h-10 rounded-full bg-[#f4d0d0] flex items-center justify-center text-[#875d69]">
+            <div className="w-10 h-10 shrink-0 rounded-full bg-[#f4d0d0] flex items-center justify-center text-[#875d69]">
               <Users size={20} />
             </div>
             <div>
