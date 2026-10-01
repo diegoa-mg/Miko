@@ -1,7 +1,8 @@
 import { useState } from "react";
 import { NavLink } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import logoMiko from "../assets/icono.png";
+import iconoMiko from "../assets/icono.png";
+import logoOscuro from "../assets/logo_oscuro.png";
 import { useAuth } from "../context/AuthContext";
 
 export default function Sidebar({ items, bottomItems = [] }) {
@@ -17,14 +18,18 @@ export default function Sidebar({ items, bottomItems = [] }) {
       end={item.end}
       onClick={() => setMenuOpen(false)}
       className={({ isActive }) =>
-        `w-full flex items-center px-3 py-2 rounded-lg text-sm transition-colors ${
+        `w-full flex items-center px-3 py-2 rounded-lg text-sm ${
           isActive
             ? "bg-rose-300 text-[#5c3a42] font-semibold"
             : "text-rose-100 hover:bg-white/10"
         }`
       }
     >
-      <span className="material-icons text-xl shrink-0 w-6 flex justify-center">
+      <span
+        className={`material-icons text-xl shrink-0 w-6 flex justify-center transition-all duration-300 ease-in-out ${
+          open ? "ml-0" : "ml-1"
+        }`}
+      >
         {item.icon}
       </span>
       <span
@@ -60,13 +65,29 @@ export default function Sidebar({ items, bottomItems = [] }) {
             {open ? "chevron_left" : "chevron_right"}
           </span>
         </button>
-        <img
-          src={logoMiko}
-          alt="Miko"
-          className={`object-contain transition-all duration-300 ease-in-out ${
-            open ? "h-12 w-12" : "h-8 w-8"
-          }`}
-        />
+
+        {/* Contenedor con las 2 versiones del logo superpuestas, cruzando opacidad */}
+        <div className="relative h-12 w-full flex items-center justify-center">
+          <img
+            src={logoOscuro}
+            alt="Miko"
+            className={`absolute object-contain h-10 transition-all duration-300 ease-in-out ${
+              open
+                ? "opacity-100 scale-100"
+                : "opacity-0 scale-90 pointer-events-none"
+            }`}
+          />
+          <img
+            src={iconoMiko}
+            alt="Miko"
+            className={`absolute object-contain h-8 w-8 transition-all duration-300 ease-in-out ${
+              open
+                ? "opacity-0 scale-90 pointer-events-none"
+                : "opacity-100 scale-100"
+            }`}
+          />
+        </div>
+
         <div
           className={`overflow-hidden transition-all duration-300 ease-in-out ${
             open ? "max-h-6 opacity-100 mt-1" : "max-h-0 opacity-0 mt-0"
@@ -118,7 +139,11 @@ export default function Sidebar({ items, bottomItems = [] }) {
             onClick={() => setMenuOpen((v) => !v)}
             className="w-full flex items-center p-3 hover:bg-white/5 transition-colors text-left overflow-hidden"
           >
-            <div className="relative shrink-0">
+            <div
+              className={`relative shrink-0 transition-all duration-300 ease-in-out ${
+                open ? "ml-0" : "ml-2"
+              }`}
+            >
               <div className="w-10 h-10 rounded-full bg-rose-200 flex items-center justify-center text-lg">
                 🧁
               </div>
