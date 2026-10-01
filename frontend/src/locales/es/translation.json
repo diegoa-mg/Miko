@@ -1,8 +1,7 @@
 {
-"app": {
+  "app": {
     "name": "POS Multi-sede"
   },
-
   "sucursales": {
     "titulo": "Sucursales",
     "descripcion": "Administra las sucursales de Miko",
@@ -32,15 +31,10 @@
     "telefonoPlaceholder": "Ej. 3121234567",
     "gerentePlaceholder": "Opcional"
   },
-
   "gerentes": {
     "titulo": "Gerentes",
     "descripcion": "Administra los gerentes de Miko",
     "nuevo": "Nuevo gerente",
-    "editarGerente": "Editar gerente",
-    "editarInformacion": "Editar información del gerente",
-    "descripcionEdicion": "Modifica la información del gerente en Miko.",
-    "guardarCambios": "Guardar cambios",
     "lista": "Lista de gerentes",
     "buscar": "Buscar gerente...",
     "sinResultados": "No se encontraron gerentes",
@@ -50,7 +44,7 @@
     "nombreCompleto": "Nombre completo",
     "correo": "Correo electrónico",
     "contraseña": "Contraseña",
-   "contraseñaPlaceholder": "Ingresa una contraseña",
+    "contraseñaPlaceholder": "Ingresa una contraseña",
     "sucursalAsignada": "Sucursal asignada",
     "telefono": "Teléfono",
     "ultimoAcceso": "Último acceso",
@@ -129,7 +123,7 @@
     "cajero": "Cajero"
   },
   "dashboard": {
-    "title": "Dashboard de Administrador General",
+    "title": "Dashboard",
     "activeBranches": "Sucursales activas",
     "periodSales": "Ventas del período",
     "periodRange": "{{start}} a {{end}}",
@@ -138,7 +132,12 @@
     "noAlerts": "No hay alertas de inventario por el momento.",
     "stock": "Existencia",
     "threshold": "Umbral",
-    "error": "No se pudo cargar el dashboard. Intenta de nuevo más tarde."
+    "error": "No se pudo cargar el dashboard. Intenta de nuevo más tarde.",
+    "descripcion": "Resumen general del sistema",
+    "managersTitle": "Gerentes",
+    "registeredManagers": "Gerentes registrados",
+    "noManagers": "No hay gerentes registrados.",
+    "noBranch": "Sin sucursal asignada"
   },
   "settings": {
     "title": "Configuración",
@@ -149,8 +148,14 @@
       "spanish": "Español",
       "english": "English"
     },
-    "notifications": { "title": "Notificaciones", "comingSoon": "Próximamente" },
-    "security": { "title": "Seguridad", "comingSoon": "Próximamente" }
+    "notifications": {
+      "title": "Notificaciones",
+      "comingSoon": "Próximamente"
+    },
+    "security": {
+      "title": "Seguridad",
+      "comingSoon": "Próximamente"
+    }
   },
   "common": {
     "notFound": "Página no encontrada",
