@@ -51,7 +51,7 @@ function Login() {
       <div className="blob w-64 h-64 bg-rose-200 top-1/3 right-[10%]" style={{ animationDelay: "7s" }} />
       <div className="blob w-56 h-56 bg-amber-100 bottom-1/4 left-[8%]" style={{ animationDelay: "10s" }} />
 
-      <div className="shadow-sm p-10 w-full max-w-sm">
+      <div className="p-10 w-full max-w-sm">
         <div className="flex flex-col items-center mb-6">
           <img src={logoMiko} alt="Miko" className="h-20 mb-4" />
           <span className="font-logo font-light text-rose-400">
