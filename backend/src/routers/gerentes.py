@@ -164,3 +164,33 @@ def eliminar_gerente(gerente_id: int, db: Session = Depends(get_db)):
         "gerente_id": gerente_id,
         "sucursal_desasignada": sucursal_desasignada,
     }
+
+# Endpoint para re activar un gerente
+@router.patch("/{gerente_id}/reactivar", status_code=status.HTTP_200_OK)
+def reactivar_gerente(gerente_id: int, db: Session = Depends(get_db)):
+    "Re activa un gerente. Solo Administrador General."
+
+    # Obtener rol de gerente
+    rol_gerente = obtener_rol(db, "gerente_sede")
+
+    # Obtener el gerente con la ID deseado y asegurandose de que tenga el rol gerente_sede
+    gerente = db.query(Usuario).filter(Usuario.id == gerente_id, Usuario.rol_id == rol_gerente.id).first()
+
+    if gerente is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Gerente con ID {gerente_id} no encontrado",
+        )
+    if gerente.activo:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"Gerente con ID {gerente_id} ya está activo"
+        )
+    if not gerente.activo:
+        gerente.activo = True
+        db.commit()
+
+    return {
+        "message": "Gerente activado exitosamente en la base de datos.",
+        "gerente_id": gerente_id
+    }
