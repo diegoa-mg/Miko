@@ -2,7 +2,8 @@
 Provisional, solo para probar login/JWT mientras no existe el endpoint
 de registro. Ejecutar dentro del contenedor:
 
-    docker compose exec backend python -m scripts.crear_usuario_prueba
+    
+    
 """
 from src.database import SessionLocal
 from src.models import Rol, Usuario
