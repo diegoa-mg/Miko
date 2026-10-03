@@ -1,7 +1,14 @@
+import os
+from datetime import date, datetime, timezone
+from decimal import Decimal
+from typing import Optional
+from zoneinfo import ZoneInfo
+
 from fastapi import status, HTTPException
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 
-from src.models import Rol, Usuario
+from src.models import Inventario, Producto, Rol, Sucursal, Usuario, Venta
 from src.schemas import UsuarioOut
 
 # Función para obtener el rol del usuario
@@ -28,3 +35,74 @@ def llenar_usuario_out(usuario: Usuario) -> UsuarioOut:
         sucursal_id=usuario.sucursal_id,
         activo=usuario.activo,
     )
+
+# Zona horaria del negocio: "hoy" se define con esta zona, nunca con la del
+# servidor (UTC) ni la del navegador del usuario. Se configura en .env con
+# BUSINESS_TIMEZONE; si no está definida, usa America/Mexico_City por default.
+# Aplica también a HU-09, HU-21 y HU-22.
+ZONA_NEGOCIO = ZoneInfo(os.getenv("BUSINESS_TIMEZONE", "America/Mexico_City"))
+
+
+def rango_del_dia_en_utc(dia: date) -> tuple[datetime, datetime]:
+    """
+    Convierte el inicio (00:00:00) y fin (23:59:59.999999) de `dia`,
+    interpretado en la zona horaria del negocio, a datetimes en UTC.
+    Las ventas se guardan en UTC, así que el filtro debe hacerse en UTC
+    pero calculado a partir del día "local" del negocio.
+    """
+    inicio_local = datetime.combine(dia, datetime.min.time(), tzinfo=ZONA_NEGOCIO)
+    fin_local = datetime.combine(dia, datetime.max.time(), tzinfo=ZONA_NEGOCIO)
+    return inicio_local.astimezone(timezone.utc), fin_local.astimezone(timezone.utc)
+
+
+def calcular_ventas_total(
+    db: Session,
+    fecha_inicio: date,
+    fecha_fin: date,
+    sucursal_id: Optional[int] = None,
+) -> Decimal:
+    """
+    Suma Venta.total en el rango [fecha_inicio, fecha_fin] (días del negocio).
+    Si sucursal_id es None, suma todas las sucursales (vista del admin);
+    si se da, solo esa sucursal (vista del gerente).
+    """
+    inicio_utc, _ = rango_del_dia_en_utc(fecha_inicio)
+    _, fin_utc = rango_del_dia_en_utc(fecha_fin)
+
+    query = db.query(func.coalesce(func.sum(Venta.total), 0)).filter(
+        Venta.fecha >= inicio_utc, Venta.fecha <= fin_utc
+    )
+    if sucursal_id is not None:
+        query = query.filter(Venta.sucursal_id == sucursal_id)
+
+    resultado = query.scalar()
+    return Decimal(str(resultado)) if resultado is not None else Decimal("0")
+
+
+def calcular_alertas_inventario(
+    db: Session,
+    umbral: int,
+    sucursal_id: Optional[int] = None,
+):
+    """
+    Devuelve filas (producto_id, producto_nombre, sucursal_id, sucursal_nombre,
+    existencia) para productos con existencia <= umbral, solo en sucursales
+    activas. Si sucursal_id es None, revisa todas las sucursales activas
+    (admin); si se da, solo esa sucursal (gerente).
+    """
+    query = (
+        db.query(
+            Producto.id.label("producto_id"),
+            Producto.nombre.label("producto_nombre"),
+            Sucursal.id.label("sucursal_id"),
+            Sucursal.nombre.label("sucursal_nombre"),
+            Inventario.existencia.label("existencia"),
+        )
+        .join(Producto, Producto.id == Inventario.producto_id)
+        .join(Sucursal, Sucursal.id == Inventario.sucursal_id)
+        .filter(Inventario.existencia <= umbral, Sucursal.estado == "activa")
+    )
+    if sucursal_id is not None:
+        query = query.filter(Sucursal.id == sucursal_id)
+
+    return query.all()

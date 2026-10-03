@@ -1,0 +1,116 @@
+"""
+Dashboards por rol (pantalla de inicio): Administrador General y Gerente de sede.
+Es la misma funcionalidad con distinto alcance:
+- /dashboard/admin  -> todas las sucursales (solo rol admin_general)
+- /dashboard/gerente -> solo la sucursal del usuario (solo rol gerente_sede)
+El cálculo compartido (ventas del período, alertas de inventario) vive en
+services.py. El dashboard del cajero, al ser otra pantalla distinta, va en
+su propio archivo.
+
+Antes: admin_dashboard.py (un solo endpoint /admin/dashboard). Se renombró
+y reestructuró según la revisión de código.
+"""
+
+from datetime import date
+
+from fastapi import APIRouter, Depends, HTTPException, Query, status
+from sqlalchemy import func
+from sqlalchemy.orm import Session
+
+from src.database import get_db
+from src.dependencies import requiere_rol
+from src.models import Sucursal
+from src.schemas import AlertaInventario, DashboardAdminResponse, DashboardGerenteResponse
+from src.services import calcular_alertas_inventario, calcular_ventas_total
+
+router = APIRouter(prefix="/dashboard", tags=["dashboard"])
+
+
+def _resolver_periodo(fecha_inicio: date | None, fecha_fin: date | None) -> tuple[date, date]:
+    """Aplica los defaults (hoy) y valida que el rango tenga sentido."""
+    hoy = date.today()
+    inicio = fecha_inicio or hoy
+    fin = fecha_fin or hoy
+    if inicio > fin:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="fecha_inicio no puede ser posterior a fecha_fin",
+        )
+    return inicio, fin
+
+
+def _construir_alertas(filas) -> list[AlertaInventario]:
+    return [
+        AlertaInventario(
+            producto_id=fila.producto_id,
+            producto_nombre=fila.producto_nombre,
+            sucursal_id=fila.sucursal_id,
+            sucursal_nombre=fila.sucursal_nombre,
+            existencia=fila.existencia,
+        )
+        for fila in filas
+    ]
+
+
+@router.get(
+    "/admin",
+    response_model=DashboardAdminResponse,
+    dependencies=[Depends(requiere_rol("admin_general"))],
+)
+def obtener_dashboard_admin(
+    fecha_inicio: date | None = Query(None, description="Inicio del período (default: hoy)"),
+    fecha_fin: date | None = Query(None, description="Fin del período (default: hoy)"),
+    umbral_bajo_inventario: int = Query(
+        5, ge=0, description="Existencia igual o menor a este número genera alerta"
+    ),
+    db: Session = Depends(get_db),
+):
+    """
+    Resumen para el Administrador General: todas las sucursales.
+    """
+    inicio, fin = _resolver_periodo(fecha_inicio, fecha_fin)
+
+    sucursales_activas = (
+        db.query(func.count(Sucursal.id)).filter(Sucursal.estado == "activa").scalar() or 0
+    )
+    ventas_total = calcular_ventas_total(db, inicio, fin)
+    filas_bajo_stock = calcular_alertas_inventario(db, umbral_bajo_inventario)
+
+    return DashboardAdminResponse(
+        sucursales_activas=sucursales_activas,
+        ventas_total_periodo=ventas_total,
+        periodo_inicio=inicio,
+        periodo_fin=fin,
+        umbral_bajo_inventario=umbral_bajo_inventario,
+        alertas_inventario=_construir_alertas(filas_bajo_stock),
+    )
+
+
+@router.get("/gerente", response_model=DashboardGerenteResponse)
+def obtener_dashboard_gerente(
+    fecha_inicio: date | None = Query(None, description="Inicio del período (default: hoy)"),
+    fecha_fin: date | None = Query(None, description="Fin del período (default: hoy)"),
+    umbral_bajo_inventario: int = Query(
+        5, ge=0, description="Existencia igual o menor a este número genera alerta"
+    ),
+    db: Session = Depends(get_db),
+    usuario_actual=Depends(requiere_rol("gerente_sede")),
+):
+    """
+    Resumen para el Gerente de sede: solo su propia sucursal.
+    """
+    inicio, fin = _resolver_periodo(fecha_inicio, fecha_fin)
+    sucursal_id = usuario_actual.sucursal_id
+
+    ventas_total = calcular_ventas_total(db, inicio, fin, sucursal_id=sucursal_id)
+    filas_bajo_stock = calcular_alertas_inventario(
+        db, umbral_bajo_inventario, sucursal_id=sucursal_id
+    )
+
+    return DashboardGerenteResponse(
+        ventas_total_periodo=ventas_total,
+        periodo_inicio=inicio,
+        periodo_fin=fin,
+        umbral_bajo_inventario=umbral_bajo_inventario,
+        alertas_inventario=_construir_alertas(filas_bajo_stock),
+    )
