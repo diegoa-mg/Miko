@@ -36,12 +36,16 @@ def llenar_usuario_out(usuario: Usuario) -> UsuarioOut:
         activo=usuario.activo,
     )
 
-# Zona horaria del negocio: "hoy" se define con esta zona, nunca con la del
-# servidor (UTC) ni la del navegador del usuario. Se configura en .env con
-# BUSINESS_TIMEZONE; si no está definida, usa America/Mexico_City por default.
-# Aplica también a HU-09, HU-21 y HU-22.
 ZONA_NEGOCIO = ZoneInfo(os.getenv("BUSINESS_TIMEZONE", "America/Mexico_City"))
 
+def hoy_en_negocio() -> date:
+    """
+    Fecha actual según la zona horaria del negocio, no la del servidor (UTC).
+    Usar esto en vez de date.today() para cualquier default de "hoy" que
+    vea el usuario (dashboards, reportes, etc.) — si no, después de las
+    6pm hora de México el servidor ya cree que es el día siguiente.
+    """
+    return datetime.now(ZONA_NEGOCIO).date()
 
 def rango_del_dia_en_utc(dia: date) -> tuple[datetime, datetime]:
     """
@@ -106,3 +110,18 @@ def calcular_alertas_inventario(
         query = query.filter(Sucursal.id == sucursal_id)
 
     return query.all()
+
+def obtener_sucursal_del_gerente(db: Session, usuario_id: int) -> Sucursal:
+    """
+    La sucursal de un gerente se determina por sucursales.gerente_id, NO por
+    usuarios.sucursal_id (ese campo siempre es null para gerentes — ver
+    revisión de código). Si el gerente no tiene sucursal asignada, se
+    responde un error claro en vez de devolver datos de toda la empresa.
+    """
+    sucursal = db.query(Sucursal).filter(Sucursal.gerente_id == usuario_id).first()
+    if sucursal is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="Este gerente no tiene una sucursal asignada",
+        )
+    return sucursal

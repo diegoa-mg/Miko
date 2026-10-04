@@ -1,16 +1,3 @@
-"""
-Dashboards por rol (pantalla de inicio): Administrador General y Gerente de sede.
-Es la misma funcionalidad con distinto alcance:
-- /dashboard/admin  -> todas las sucursales (solo rol admin_general)
-- /dashboard/gerente -> solo la sucursal del usuario (solo rol gerente_sede)
-El cálculo compartido (ventas del período, alertas de inventario) vive en
-services.py. El dashboard del cajero, al ser otra pantalla distinta, va en
-su propio archivo.
-
-Antes: admin_dashboard.py (un solo endpoint /admin/dashboard). Se renombró
-y reestructuró según la revisión de código.
-"""
-
 from datetime import date
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -21,14 +8,19 @@ from src.database import get_db
 from src.dependencies import requiere_rol
 from src.models import Sucursal
 from src.schemas import AlertaInventario, DashboardAdminResponse, DashboardGerenteResponse
-from src.services import calcular_alertas_inventario, calcular_ventas_total
+from src.services import (
+    calcular_alertas_inventario,
+    calcular_ventas_total,
+    hoy_en_negocio,
+    obtener_sucursal_del_gerente,
+)
 
 router = APIRouter(prefix="/dashboard", tags=["dashboard"])
 
 
 def _resolver_periodo(fecha_inicio: date | None, fecha_fin: date | None) -> tuple[date, date]:
-    """Aplica los defaults (hoy) y valida que el rango tenga sentido."""
-    hoy = date.today()
+    """Aplica los defaults (hoy, según la zona del negocio) y valida el rango."""
+    hoy = hoy_en_negocio()
     inicio = fecha_inicio or hoy
     fin = fecha_fin or hoy
     if inicio > fin:
@@ -98,13 +90,15 @@ def obtener_dashboard_gerente(
 ):
     """
     Resumen para el Gerente de sede: solo su propia sucursal.
+    La sucursal se resuelve por Sucursal.gerente_id, no por
+    usuario_actual.sucursal_id (ese campo es null para gerentes).
     """
+    sucursal = obtener_sucursal_del_gerente(db, usuario_actual.id)
     inicio, fin = _resolver_periodo(fecha_inicio, fecha_fin)
-    sucursal_id = usuario_actual.sucursal_id
 
-    ventas_total = calcular_ventas_total(db, inicio, fin, sucursal_id=sucursal_id)
+    ventas_total = calcular_ventas_total(db, inicio, fin, sucursal_id=sucursal.id)
     filas_bajo_stock = calcular_alertas_inventario(
-        db, umbral_bajo_inventario, sucursal_id=sucursal_id
+        db, umbral_bajo_inventario, sucursal_id=sucursal.id
     )
 
     return DashboardGerenteResponse(

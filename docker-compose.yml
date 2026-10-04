@@ -21,6 +21,7 @@ services:
       JWT_SECRET_KEY: ${JWT_SECRET_KEY}
       JWT_EXPIRE_MINUTES: ${JWT_EXPIRE_MINUTES}
       CORS_ORIGINS: ${CORS_ORIGINS}
+      BUSINESS_TIMEZONE: ${BUSINESS_TIMEZONE:-America/Mexico_City}
     ports:
       - "8000:8000"
     volumes:
