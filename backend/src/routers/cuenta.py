@@ -5,7 +5,8 @@ from src.auth import get_current_user
 from src.database import get_db
 from src.models import Usuario
 from src.services import llenar_usuario_out
-from src.schemas import CuentaUpdate, UsuarioOut
+from src.schemas import CuentaUpdateData, CuentaUpdatePassword, UsuarioOut
+from src.security import verify_password, hash_password
 
 router = APIRouter(
     prefix="/cuenta",
@@ -13,14 +14,14 @@ router = APIRouter(
 )
 
 @router.patch("", response_model=UsuarioOut, status_code=status.HTTP_200_OK)
-def editar_cuenta(usuario_in: CuentaUpdate, usuario: Usuario = Depends(get_current_user), db: Session = Depends(get_db)):
+def editar_datos(usuario_in: CuentaUpdateData, usuario: Usuario = Depends(get_current_user), db: Session = Depends(get_db)):
     """Editar nombre o email en los ajustes de cuenta."""
     
     # Agregar nuevo nombre si se requiere. Ignora None y tambien si viene vacio
     if usuario_in.nombre:
         usuario.nombre = usuario_in.nombre
 
-    # Si hay cambios en el correo pasa a la validacion
+    # Si hay cambios en el correo pasa a la validación
     if usuario_in.email:
         # Consulta para obtener un usuario mediante el correo ingresado.
         # Si el correo ingresado mediante usuario_in coincide con un correo ya existente
@@ -38,3 +39,33 @@ def editar_cuenta(usuario_in: CuentaUpdate, usuario: Usuario = Depends(get_curre
     db.refresh(usuario)
 
     return llenar_usuario_out(usuario)
+
+@router.put("/password")
+def editar_password(password_in: CuentaUpdatePassword, usuario: Usuario = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Editar la contraseña en los ajustes de cuenta."""
+
+    # Con la función verify_password, se valida que la contraseña actual ingresada sea correcta
+    # Si la contraseña actual es incorrecta lanza el error 400
+    if not verify_password(password_in.password_actual, usuario.password_hash):
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La contraseña actual es incorrecta"
+        )
+
+    # Se valida que las contraseñas actual y nueva sean diferentes, 
+    # en caso de sean igual lanza el error 400.
+    # se compara con password_in.password_actual debido a que en este punto ya se verificó que sea correcta
+    if password_in.password_nueva == password_in.password_actual:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La contraseña ingresada es igual a la contraseña actual"
+        )
+
+    # Se guarda la contraseña ya hasheada utilizando la función hash_password
+    usuario.password_hash = hash_password(password_in.password_nueva)
+    db.commit()
+
+    return {
+        "message": "La contraseña fue cambiada exitosamente en la base de datos.",
+        "usuario_id": usuario.id
+    }
