@@ -132,7 +132,7 @@
     "error": "The dashboard could not be loaded. Please try again later.",
     "descripcion": "General system overview",
     "managersTitle": "Managers",
-    "registeredManagers": "Registered managers",
+    "registeredManagers": "Active managers",
     "noManagers": "No managers registered.",
     "noBranch": "No assigned branch"
   },

@@ -3,16 +3,24 @@ import { useTranslation } from "react-i18next";
 import { Store, CircleDollarSign, TriangleAlert, Users } from "lucide-react";
 import { getDashboardAdmin } from "../api/adminDashboard";
 import { obtenerGerentes } from "../api/gerentes";
+import { obtenerSucursales } from "../api/sucursales";
 
 export default function DashboardAdmin() {
   const { t, i18n } = useTranslation();
+
+  // Resumen del dashboard (sucursales, ventas, alertas) — crítico
   const [data, setData] = useState(null);
-  const [gerentes, setGerentes] = useState([]);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
 
-  // ventas_total_periodo ahora llega como Decimal (string) desde el backend
-  // para no perder precisión en centavos. Number(...) lo convierte para el
+  // Gerentes + sucursales — se cargan aparte para que, si esto falla,
+  // las tarjetas de arriba igual se vean.
+  const [gerentes, setGerentes] = useState([]);
+  const [cargandoGerentes, setCargandoGerentes] = useState(true);
+  const [errorGerentes, setErrorGerentes] = useState(null);
+
+  // ventas_total_periodo llega como Decimal (string) desde el backend para
+  // no perder precisión en centavos. Number(...) lo convierte para el
   // formateador; si llegara como número ya, Number() lo deja igual.
   const formatMoney = (valor) =>
     new Intl.NumberFormat(i18n.language === "en" ? "en-US" : "es-MX", {
@@ -20,21 +28,53 @@ export default function DashboardAdmin() {
       currency: "MXN",
     }).format(Number(valor));
 
+  // Si el backend manda un mensaje (err.response.data.detail, como el 404
+  // de "este gerente no tiene sucursal asignada"), se muestra ese texto
+  // en vez del genérico.
+  const mensajeError = (err, textoPorDefecto) =>
+    err?.response?.data?.detail || textoPorDefecto;
+
   useEffect(() => {
     let activo = true;
     setCargando(true);
-    Promise.all([getDashboardAdmin(), obtenerGerentes()])
-      .then(([dashboardRes, gerentesRes]) => {
-        if (activo) {
-          setData(dashboardRes);
-          setGerentes(gerentesRes);
-        }
+    getDashboardAdmin()
+      .then((res) => {
+        if (activo) setData(res);
       })
       .catch((err) => {
         if (activo) setError(err);
       })
       .finally(() => {
         if (activo) setCargando(false);
+      });
+    return () => {
+      activo = false;
+    };
+  }, []);
+
+  useEffect(() => {
+    let activo = true;
+    setCargandoGerentes(true);
+    Promise.all([obtenerGerentes(), obtenerSucursales()])
+      .then(([gerentesRes, sucursalesRes]) => {
+        if (!activo) return;
+        // La sucursal de un gerente vive en sucursales.gerente_id, no en
+        // gerente.sucursal_id (ese campo no existe en UsuarioOut) ni en
+        // gerente.sucursal_nombre (tampoco existe). Se cruza manualmente,
+        // igual que en la página de Gerentes.
+        const gerentesConSucursal = gerentesRes.map((gerente) => {
+          const sucursal = sucursalesRes.find(
+            (s) => s.gerente_id === gerente.id
+          );
+          return { ...gerente, sucursal_nombre: sucursal?.nombre ?? null };
+        });
+        setGerentes(gerentesConSucursal);
+      })
+      .catch((err) => {
+        if (activo) setErrorGerentes(err);
+      })
+      .finally(() => {
+        if (activo) setCargandoGerentes(false);
       });
     return () => {
       activo = false;
@@ -55,7 +95,7 @@ export default function DashboardAdmin() {
     return (
       <div className="min-h-screen bg-[#fdf6e3] p-8">
         <div className="max-w-7xl mx-auto text-red-500">
-          {t("dashboard.error")}
+          {mensajeError(error, t("dashboard.error"))}
         </div>
       </div>
     );
@@ -128,7 +168,7 @@ export default function DashboardAdmin() {
             <div className="min-w-0">
               <p className="text-sm text-gray-500">{t("dashboard.registeredManagers")}</p>
               <p className="text-2xl font-bold text-gray-800">
-                {gerentes.length}
+                {cargandoGerentes ? "—" : gerentes.length}
               </p>
             </div>
           </div>
@@ -176,7 +216,13 @@ export default function DashboardAdmin() {
             <h2 className="font-sans text-lg font-semibold text-[#875d69] mb-3">
               {t("dashboard.managersTitle")}
             </h2>
-            {gerentes.length === 0 ? (
+            {cargandoGerentes ? (
+              <p className="text-gray-500 text-sm">{t("gerentes.cargando")}</p>
+            ) : errorGerentes ? (
+              <p className="text-red-500 text-sm">
+                {mensajeError(errorGerentes, t("gerentes.errorCarga"))}
+              </p>
+            ) : gerentes.length === 0 ? (
               <p className="text-gray-500 text-sm">{t("dashboard.noManagers")}</p>
             ) : (
               <ul className="divide-y divide-gray-100">
