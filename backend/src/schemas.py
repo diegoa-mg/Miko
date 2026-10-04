@@ -116,3 +116,12 @@ class DashboardGerenteResponse(BaseModel):
     periodo_fin: date
     umbral_bajo_inventario: int
     alertas_inventario: list[AlertaInventario]
+
+# Esquemas para inventarios
+class InventarioOut(BaseModel):
+    producto_id: int
+    producto_nombre: str
+    categoria_nombre: str
+    sucursal_id: int
+    sucursal_nombre: str
+    existencia: int
