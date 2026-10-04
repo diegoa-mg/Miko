@@ -135,7 +135,7 @@
     "error": "No se pudo cargar el dashboard. Intenta de nuevo más tarde.",
     "descripcion": "Resumen general del sistema",
     "managersTitle": "Gerentes",
-    "registeredManagers": "Gerentes registrados",
+    "registeredManagers": "Gerentes activos",
     "noManagers": "No hay gerentes registrados.",
     "noBranch": "Sin sucursal asignada"
   },
