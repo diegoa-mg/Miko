@@ -34,6 +34,11 @@ class UsuarioOut(BaseModel):
 
     model_config = ConfigDict(from_attributes=True)
 
+# Esquemas para la configuración de cuenta
+class CuentaUpdate(BaseModel):
+    nombre: str | None = None
+    email: EmailStr | None = None
+
 # Esquemas para Sucursales
 class SucursalBase(BaseModel):
     nombre: str
