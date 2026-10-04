@@ -9,6 +9,7 @@ from src.routers import gerentes as gerentes_router
 from src.routers import cajeros as cajeros_router
 from src.routers import dashboard as dashboard_router
 from src.routers import cuenta as cuenta_router
+from src.routers import inventarios as inventarios_router
 
 app = FastAPI(title="POS Multi-sede API")
 
@@ -45,6 +46,7 @@ app.include_router(gerentes_router.router)
 app.include_router(cajeros_router.router)
 app.include_router(dashboard_router.router)
 app.include_router(cuenta_router.router)
+app.include_router(inventarios_router.router)
 
 
 # Health check básico
