@@ -1,12 +1,14 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, UploadFile
 from sqlalchemy.orm import Session
 
 from src.auth import get_current_user
 from src.database import get_db
 from src.models import Usuario
-from src.services import llenar_usuario_out
+from src.services import llenar_usuario_out, subir_foto, borrar_foto, procesar_imagen
 from src.schemas import CuentaUpdateData, CuentaUpdatePassword, UsuarioOut
 from src.security import verify_password, hash_password
+
+TAMANO_MAXIMO_FOTO = 10 * 1024 * 1024  # 10 MB
 
 router = APIRouter(
     prefix="/cuenta",
@@ -69,3 +71,38 @@ def editar_password(password_in: CuentaUpdatePassword, usuario: Usuario = Depend
         "message": "La contraseña fue cambiada exitosamente en la base de datos.",
         "usuario_id": usuario.id
     }
+
+@router.put("/foto", response_model=UsuarioOut)
+def editar_foto(foto: UploadFile, usuario: Usuario = Depends(get_current_user), db: Session = Depends(get_db)):
+    """Editar la foto de perfil en los ajustes de cuenta."""
+    # Guardar la url de la foto vieja
+    url_vieja = usuario.foto_url
+
+    # Leer los bytes (el contenido) de la nueva foto y guardarlos en la variable img_bytes
+    # Se lee un byte más que el límite para saber si lo excede, sin cargar archivos grandes en memoria
+    img_bytes = foto.file.read(TAMANO_MAXIMO_FOTO + 1)
+
+    # Verificar que la foto no pese más de 10MB
+    if len(img_bytes) > TAMANO_MAXIMO_FOTO:
+        raise HTTPException(
+            status_code=status.HTTP_413_CONTENT_TOO_LARGE,
+            detail="La imagen subida es muy pesada"
+        )
+
+    # Orden: primero se sube y se guarda la nueva foto, al final se borra
+    # De este modo, si algo falla, el usuario no se queda sin foto
+
+    # Procesar la imagen con la función procesar_imagen() y guardarla en imagen_procesada
+    imagen_procesada = procesar_imagen(img_bytes)
+    # Subir la foto al bucket de supabase y guardar la URL nueva
+    url = subir_foto(imagen_procesada, usuario.id)
+
+    # Actualizar la URL en la base de datos
+    usuario.foto_url = url
+    db.commit()
+    db.refresh(usuario)
+
+    # Eliminar la foto anterior en el bucket de supabase
+    borrar_foto(url_vieja)
+
+    return llenar_usuario_out(usuario)

@@ -31,6 +31,7 @@ class UsuarioOut(BaseModel):
     rol: str
     sucursal_id: int | None = None # Puede venir vacio
     activo: bool
+    foto_url: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
