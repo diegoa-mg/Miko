@@ -114,8 +114,7 @@ def calcular_alertas_inventario(
 def obtener_sucursal_del_gerente(db: Session, usuario_id: int) -> Sucursal:
     """
     La sucursal de un gerente se determina por sucursales.gerente_id, NO por
-    usuarios.sucursal_id (ese campo siempre es null para gerentes — ver
-    revisión de código). Si el gerente no tiene sucursal asignada, se
+    usuarios.sucursal_id (ese campo siempre es null para gerentes). Si el gerente no tiene sucursal asignada, se
     responde un error claro en vez de devolver datos de toda la empresa.
     """
     sucursal = db.query(Sucursal).filter(Sucursal.gerente_id == usuario_id).first()
