@@ -48,6 +48,7 @@ class Usuario(Base):
         "Sucursal", back_populates="empleados", foreign_keys=[sucursal_id]
     )
     activo = Column(Boolean, nullable=False, server_default="true")
+    foto_url = Column(String(255), nullable=True)
 
 class Sucursal(Base):
     __tablename__ = "sucursales"

@@ -76,17 +76,25 @@ JWT_SECRET_KEY=<la_clave_generada>
 ```
 >⚠️ Cada integrante genera su propia clave; nunca la subas a GitHub ni la pongas en .env.example
 
-### Paso 4: Levantar los contenedores
+### Paso 4: Agregar la URL del proyecto y la Secret Key de Supabase al .env
+La URL está en Supabase > Project Overview, debajo del nombre del proyecto. La clave está en Project Settings > API Keys > Publishable and secret API keys > Secret keys. Usa la clave secreta, nunca la publishable.
+```
+SUPABASE_URL=https://tu-proyecto.supabase.co
+SUPABASE_SERVICE_KEY=cambia-esto-por-la-clave-secreta-de-supabase
+```
+>⚠️ Nunca subas la Secret Key a GitHub ni la pongas en .env.example
+
+### Paso 5: Levantar los contenedores
 ```bash
 docker compose up -d --build
 ```
 
-### Paso 5: Aplicar migraciones de Alembic
+### Paso 6: Aplicar migraciones de Alembic
 ```bash
 docker compose exec backend alembic upgrade head
 ```
 
-### Paso 6: Crear el usuario admin de prueba 
+### Paso 7: Crear el usuario admin de prueba 
 ```bash
 docker compose exec backend python -m scripts.crear_usuario_prueba
 ```

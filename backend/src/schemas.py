@@ -31,8 +31,18 @@ class UsuarioOut(BaseModel):
     rol: str
     sucursal_id: int | None = None # Puede venir vacio
     activo: bool
+    foto_url: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
+
+# Esquemas para la configuración de cuenta
+class CuentaUpdateData(BaseModel):
+    nombre: str | None = None
+    email: EmailStr | None = None
+
+class CuentaUpdatePassword(BaseModel):
+    password_actual: str
+    password_nueva: str
 
 # Esquemas para Sucursales
 class SucursalBase(BaseModel):
