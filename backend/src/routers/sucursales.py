@@ -4,13 +4,32 @@ from sqlalchemy.orm import Session
 from src.database import get_db
 from src.dependencies import requiere_rol
 from src.models import Inventario, Sucursal, Usuario, Venta
-from src.schemas import SucursalCreate, SucursalOut, SucursalUpdate
+from src.schemas import (
+    SucursalCreate,
+    SucursalEliminarResponse,
+    SucursalOut,
+    SucursalUpdate,
+)
+from src.services import obtener_sucursal_del_gerente
 
 router = APIRouter(
     prefix="/sucursales",
     tags=["sucursales"],
     dependencies=[Depends(requiere_rol("admin_general", "admin"))],
 )
+
+
+def _desasignar_personal_sucursal(sucursal: Sucursal, db: Session):
+    """
+    Desasigna el gerente y los cajeros/empleados vinculados a la sucursal.
+    """
+    # 1. Desasignar gerente
+    sucursal.gerente_id = None
+
+    # 2. Desasignar cajeros/empleados que apuntaban a esta sucursal
+    db.query(Usuario).filter(Usuario.sucursal_id == sucursal.id).update(
+        {Usuario.sucursal_id: None}, synchronize_session=False
+    )
 
 
 @router.post("", response_model=SucursalOut, status_code=status.HTTP_201_CREATED)
@@ -38,17 +57,17 @@ def crear_sucursal(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"No se encontró ningún usuario con el ID {sucursal_in.gerente_id}",
             )
-        # Verificar que el usuario no sea ya gerente de otra sucursal
-        otra_sucursal = (
-            db.query(Sucursal)
-            .filter(Sucursal.gerente_id == sucursal_in.gerente_id)
-            .first()
-        )
-        if otra_sucursal:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"El usuario ya es gerente de la sucursal '{otra_sucursal.nombre}'",
-            )
+        # Verificar si el usuario ya es gerente de otra sucursal
+        try:
+            otra_sucursal = obtener_sucursal_del_gerente(db, sucursal_in.gerente_id)
+            if otra_sucursal:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"El usuario ya es gerente de la sucursal '{otra_sucursal.nombre}'",
+                )
+        except HTTPException as e:
+            if e.status_code != status.HTTP_404_NOT_FOUND:
+                raise e
 
     nueva_sucursal = Sucursal(
         nombre=sucursal_in.nombre,
@@ -84,6 +103,7 @@ def obtener_sucursal(
 ):
     """
     Obtiene los detalles de una sucursal específica por su ID.
+    Permitido tanto para sucursales activas como inactivas.
     """
     sucursal = db.query(Sucursal).filter(Sucursal.id == sucursal_id).first()
     if not sucursal:
@@ -94,6 +114,7 @@ def obtener_sucursal(
     return sucursal
 
 
+@router.patch("/{sucursal_id}", response_model=SucursalOut)
 @router.put("/{sucursal_id}", response_model=SucursalOut)
 def modificar_sucursal(
     sucursal_id: int,
@@ -101,7 +122,9 @@ def modificar_sucursal(
     db: Session = Depends(get_db),
 ):
     """
-    Modifica una sucursal existente. Solo se actualizan los campos enviados.
+    Modifica una sucursal existente (vía PATCH o PUT).
+    Si la sucursal está inactiva, bloquea cualquier edición salvo la reactivación (estado='activa').
+    Si se desactiva (estado='inactiva'), desasigna automáticamente al gerente y a los cajeros.
     """
     sucursal = db.query(Sucursal).filter(Sucursal.id == sucursal_id).first()
     if not sucursal:
@@ -110,7 +133,15 @@ def modificar_sucursal(
             detail=f"Sucursal con ID {sucursal_id} no encontrada",
         )
 
-    # Validar nombre único si se desea cambiar
+    # Bloquear toda modificación si la sucursal está inactiva, a menos que se solicite reactivarla
+    if sucursal.estado == "inactiva":
+        if sucursal_in.estado != "activa":
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="La sucursal está inactiva. Solo se permite consultarla o reactivarla (estado='activa').",
+            )
+
+    # Validar nombre único si se envía para cambio
     if sucursal_in.nombre is not None and sucursal_in.nombre != sucursal.nombre:
         nombre_repetido = (
             db.query(Sucursal)
@@ -131,40 +162,42 @@ def modificar_sucursal(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"No se encontró ningún usuario con el ID {sucursal_in.gerente_id}",
             )
-        otra_sucursal = (
-            db.query(Sucursal)
-            .filter(
-                Sucursal.gerente_id == sucursal_in.gerente_id,
-                Sucursal.id != sucursal_id,
-            )
-            .first()
-        )
-        if otra_sucursal:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"El usuario ya es gerente de la sucursal '{otra_sucursal.nombre}'",
-            )
+        try:
+            otra_sucursal = obtener_sucursal_del_gerente(db, sucursal_in.gerente_id)
+            if otra_sucursal and otra_sucursal.id != sucursal_id:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"El usuario ya es gerente de la sucursal '{otra_sucursal.nombre}'",
+                )
+        except HTTPException as e:
+            if e.status_code != status.HTTP_404_NOT_FOUND:
+                raise e
 
     # Aplicar cambios enviados
     datos_actualizar = sucursal_in.model_dump(exclude_unset=True)
     for campo, valor in datos_actualizar.items():
         setattr(sucursal, campo, valor)
 
+    # Si el estado cambió a 'inactiva', desasignar automáticamente al gerente y cajeros
+    if sucursal_in.estado == "inactiva":
+        _desasignar_personal_sucursal(sucursal, db)
+
     db.commit()
     db.refresh(sucursal)
     return sucursal
 
 
-@router.delete("/{sucursal_id}")
+@router.delete("/{sucursal_id}", response_model=SucursalEliminarResponse)
 def eliminar_sucursal(
     sucursal_id: int,
     db: Session = Depends(get_db),
 ):
     """
-    Elimina una sucursal.
-    Si tiene registros asociados (empleados, inventario o ventas), se realiza un borrado lógico
-    cambiando su estado a 'inactiva' para proteger la integridad referencial.
-    Si no tiene registros asociados, se elimina definitivamente.
+    Elimina o desactiva una sucursal.
+    Si la sucursal ya está inactiva, bloquea la acción.
+    Si tiene registros asociados (empleados, inventario o ventas), realiza un borrado lógico (inactiva)
+    y desasigna al gerente y cajeros.
+    Si no tiene registros asociados, la elimina físicamente.
     """
     sucursal = db.query(Sucursal).filter(Sucursal.id == sucursal_id).first()
     if not sucursal:
@@ -173,25 +206,37 @@ def eliminar_sucursal(
             detail=f"Sucursal con ID {sucursal_id} no encontrada",
         )
 
+    if sucursal.estado == "inactiva":
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La sucursal ya se encuentra inactiva. Solo se permite consultarla o reactivarla.",
+        )
+
     # Revisar si tiene empleados, inventario o ventas asociadas
     tiene_empleados = db.query(Usuario).filter(Usuario.sucursal_id == sucursal_id).first()
     tiene_inventario = db.query(Inventario).filter(Inventario.sucursal_id == sucursal_id).first()
     tiene_ventas = db.query(Venta).filter(Venta.sucursal_id == sucursal_id).first()
 
-    if tiene_empleados or tiene_inventario or tiene_ventas:
-        # Borrado lógico: desactivar
+    if tiene_empleados or tiene_inventario or tiene_ventas or sucursal.gerente_id is not None:
+        # Borrado lógico: desactivar y desasignar personal
         sucursal.estado = "inactiva"
+        _desasignar_personal_sucursal(sucursal, db)
         db.commit()
-        return {
-            "message": "La sucursal tiene registros asociados (empleados, inventario o ventas). Se ha desactivado (estado = 'inactiva') para mantener la integridad de los datos.",
-            "sucursal_id": sucursal_id,
-            "estado": "inactiva",
-        }
+
+        return SucursalEliminarResponse(
+            sucursal_id=sucursal_id,
+            estado="inactiva",
+            eliminada_definitivamente=False,
+            message="La sucursal tiene registros asociados. Se ha desactivado (estado='inactiva') y desasignado su personal.",
+        )
 
     # Borrado físico
     db.delete(sucursal)
     db.commit()
-    return {
-        "message": "Sucursal eliminada exitosamente de la base de datos.",
-        "sucursal_id": sucursal_id,
-    }
+
+    return SucursalEliminarResponse(
+        sucursal_id=sucursal_id,
+        estado="eliminada",
+        eliminada_definitivamente=True,
+        message="Sucursal eliminada exitosamente de la base de datos.",
+    )

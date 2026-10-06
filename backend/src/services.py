@@ -11,8 +11,9 @@ import logging
 from pillow_heif import register_heif_opener
 register_heif_opener()
 
-from supabase import create_client
-supabase = create_client(os.getenv("SUPABASE_URL"), os.getenv("SUPABASE_SERVICE_KEY"))
+supabase_url = os.getenv("SUPABASE_URL")
+supabase_key = os.getenv("SUPABASE_SERVICE_KEY")
+supabase = create_client(supabase_url, supabase_key) if (supabase_url and supabase_key) else None
 SUPABASE_BUCKET = os.getenv("SUPABASE_BUCKET", "fotos-perfil-dev")
 
 from fastapi import status, HTTPException
