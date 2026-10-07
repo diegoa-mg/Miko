@@ -9,10 +9,13 @@ import logoMiko from "./assets/logo_claro.png";
 import Sucursales from "./pages/sucursales";
 import Gerentes from "./pages/gerentes";
 import Cajeros from "./pages/cajeros";
+import Inventarios from "./pages/inventarios";
+import Ventas from "./pages/ventas";
 import AdminLayout from "./layouts/AdminLayout";
 import DashboardAdmin from "./pages/Dashboardadmin";
 import Configuracion from "./pages/Configuracion";
 import LanguageSwitcher from "./components/LanguageSwitcher";
+
 
 function Login() {
   const { login } = useAuth();
@@ -151,6 +154,8 @@ export default function App() {
                 <Route path="gerentes" element={<Gerentes />} />
                 <Route path="cajeros" element={<Cajeros />} />
                 <Route path="configuracion" element={<Configuracion />} />
+                <Route path="inventarios" element={<Inventarios />} />
+                <Route path="ventas" element={<Ventas />} />
               </Route>
             </Route>
 

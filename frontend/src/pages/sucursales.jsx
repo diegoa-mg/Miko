@@ -172,13 +172,14 @@ const cancelarEliminar = () => {
         </svg>
       </div>
 
-      <h2>Eliminar sucursal</h2>
+      <h2>{t("sucursales.eliminarTitulo")}</h2>
 
-      <p>
-        {t("sucursales.confirmarEliminar")}
-      </p>
+        <p>
+          {t("sucursales.confirmarEliminar")}
+        </p>
 
-      <div className="miko-confirm-actions">
+        <div className="miko-confirm-actions">
+
         <button
           type="button"
           className="miko-confirm-cancel"
@@ -192,7 +193,7 @@ const cancelarEliminar = () => {
           className="miko-confirm-accept"
           onClick={confirmarEliminar}
         >
-          {t("Aceptar")}
+          {t("sucursales.aceptar")}
         </button>
       </div>
 
@@ -411,16 +412,14 @@ const cancelarEliminar = () => {
                       </td>
 
                       <td className="px-6 py-4">
-                        <span
-                          className={
-                            sucursal.estado === "activa"
-                              ? "text-green-600 font-medium"
-                              : "text-red-600 font-medium"
-                          }
-                        >
-                          {sucursal.estado}
-                        </span>
-                      </td>
+                          <span
+                            className={`inline-block w-11 h-3 rounded-full ${
+                              sucursal.estado === "activa"
+                                ? "bg-green-400"
+                                : "bg-red-400"
+                            }`}
+                          ></span>
+                        </td>
 
                       <td className="px-6 py-4">
                         {sucursal.gerente_id || t("sucursales.sinGerente")}

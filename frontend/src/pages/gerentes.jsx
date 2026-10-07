@@ -174,31 +174,29 @@ const confirmarEliminar = async () => {
             </div>
 
             {/* Título */}
-            <h2>Eliminar gerente</h2>
+            <h2>{t("gerentes.eliminarTitulo")}</h2>
 
-            {/* Mensaje */}
-            <p>
-                ¿Estás segura de que deseas eliminar este gerente?
-            </p>
+              <p>
+                {t("gerentes.confirmarEliminar")}
+              </p>
 
-            {/* Botones */}
-            <div className="miko-confirm-actions">
+              <div className="miko-confirm-actions">
                 <button
-                    type="button"
-                    className="miko-confirm-cancel"
-                    onClick={() => setGerenteAEliminar(null)}
+                  type="button"
+                  className="miko-confirm-cancel"
+                  onClick={() => setGerenteAEliminar(null)}
                 >
-                    Cancelar
+                  {t("gerentes.cancelar")}
                 </button>
 
                 <button
-                    type="button"
-                    className="miko-confirm-accept"
-                    onClick={confirmarEliminar}
+                  type="button"
+                  className="miko-confirm-accept"
+                  onClick={confirmarEliminar}
                 >
-                    Aceptar
+                  {t("gerentes.aceptar")}
                 </button>
-            </div>
+              </div>
 
         </div>
     </div>
@@ -291,13 +289,22 @@ const confirmarEliminar = async () => {
                             {gerente.nombre}
                           </h2>
 
-                          <span className="font-sans text-xs font-medium text-green-700 bg-green-100 px-3 py-1 rounded-full">
-                            {gerente.estado}
-                          </span>
+                          <span
+                            className={`w-8 h-2 rounded-full ${
+                              gerente.activo
+                                ? "bg-green-300"
+                                : "bg-red-300"
+                            }`}
+                            title={gerente.activo ? "Activo" : "Inactivo"}
+                          ></span>
                         </div>
 
                         <p className="font-sans text-sm text-gray-600 mt-2">
                           ✉ {gerente.email}
+                        </p>
+
+                        <p className="font-sans text-sm text-gray-600 mt-1">
+                          # {gerente.id}
                         </p>
 
                 </div>
