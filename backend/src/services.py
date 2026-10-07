@@ -11,6 +11,7 @@ import logging
 from pillow_heif import register_heif_opener
 register_heif_opener()
 
+from supabase import create_client
 supabase_url = os.getenv("SUPABASE_URL")
 supabase_key = os.getenv("SUPABASE_SERVICE_KEY")
 supabase = create_client(supabase_url, supabase_key) if (supabase_url and supabase_key) else None
