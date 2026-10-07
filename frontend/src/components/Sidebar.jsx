@@ -49,6 +49,13 @@ export default function Sidebar({ items, bottomItems = [] }) {
     </NavLink>
   );
 
+  const avatarSrc = user
+    ? user.foto_url ||
+      `https://ui-avatars.com/api/?name=${encodeURIComponent(
+        user.nombre || "U"
+      )}&background=875d69&color=fff&bold=true`
+    : "";
+
   return (
     <aside
       className={`bg-[#5c3a42] text-white flex flex-col transition-all duration-300 ease-in-out shrink-0 ${
@@ -144,8 +151,12 @@ export default function Sidebar({ items, bottomItems = [] }) {
                 open ? "ml-0" : "ml-2"
               }`}
             >
-              <div className="w-10 h-10 rounded-full bg-rose-200 flex items-center justify-center text-lg">
-                🧁
+              <div className="w-10 h-10 rounded-full bg-rose-200 overflow-hidden flex items-center justify-center">
+                <img
+                  src={avatarSrc}
+                  alt={user.nombre}
+                  className="w-full h-full object-cover"
+                />
               </div>
               <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-400 border-2 border-[#5c3a42]" />
             </div>
