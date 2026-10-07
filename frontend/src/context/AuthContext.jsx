@@ -28,8 +28,12 @@ export function AuthProvider({ children }) {
     setUser(null);
   };
 
+  const updateUser = (nuevosDatos) => {
+    setUser((prev) => ({ ...prev, ...nuevosDatos }));
+  };
+
   return (
-    <AuthContext.Provider value={{ user, login, logout, loading }}>
+    <AuthContext.Provider value={{ user, login, logout, loading , updateUser }}>
       {children}
     </AuthContext.Provider>
   );
