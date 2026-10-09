@@ -19,10 +19,10 @@ SUPABASE_BUCKET = os.getenv("SUPABASE_BUCKET", "fotos-perfil-dev")
 
 from fastapi import status, HTTPException
 from sqlalchemy import func
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, Query
 
-from src.models import Inventario, Producto, Rol, Sucursal, Usuario, Venta
-from src.schemas import UsuarioOut
+from src.models import Inventario, Producto, Rol, Sucursal, Usuario, Venta, Categoria
+from src.schemas import UsuarioOut, InventarioOut
 
 # Función para obtener el rol del usuario
 def obtener_rol(db: Session, nombre: str):
@@ -49,6 +49,52 @@ def llenar_usuario_out(usuario: Usuario) -> UsuarioOut:
         activo=usuario.activo,
         foto_url=usuario.foto_url,
     )
+
+# Función para llenar InventarioOut
+def llenar_inventario_out(inventario: Inventario) -> InventarioOut:
+    return InventarioOut(
+        producto_id=inventario.producto_id,
+        producto_nombre=inventario.producto_nombre,
+        categoria_nombre=inventario.categoria_nombre,
+        sucursal_id=inventario.sucursal_id,
+        sucursal_nombre=inventario.sucursal_nombre,
+        existencia=inventario.existencia
+    )
+
+# Arma (sin ejecutar) la consulta base del inventario de todas las sucursales, para que cada endpoint le agregue sus filtros
+def consulta_inventario(db: Session) -> Query:
+    consulta = ( 
+        db.query(
+            # Las columnas que se requieren en el resultado y de que tabla sale cada una
+            # .label() renombra cada columna: Producto, Sucursal y Categoria tienen columnas
+            # con el mismo nombre (id, nombre), así se distinguen. Deben coincidir con llenar_inventario_out (InventarioOut).
+            Producto.id.label("producto_id"), 
+            Producto.nombre.label("producto_nombre"),
+            Categoria.nombre.label("categoria_nombre"),
+            Sucursal.id.label("sucursal_id"),
+            Sucursal.nombre.label("sucursal_nombre"),
+            Inventario.existencia.label("existencia"),
+        )
+        # Por cada fila de inventario, busca el producto cuyo id sea igual al producto_id de esa fila
+        .join(Producto, Producto.id == Inventario.producto_id)
+        # Une la sucursal a la que pertenece esa fila de inventario
+        .join(Sucursal, Sucursal.id == Inventario.sucursal_id)
+        # Une la categoria cuyo id sea igual a categoria_id de ese producto
+        .join(Categoria, Categoria.id == Producto.categoria_id) # inventario no guarda la categoría; está en el producto (inventario → producto → categoría)
+    )
+
+    return consulta
+
+# Función para recorrer filas de la consulta que recibe, devuelve una lista armada
+def crear_lista_inventario(inventario: Query) -> list[InventarioOut]:
+    lista = []
+
+    # El for ejecuta la consulta en la base de datos y convierte cada fila en InventarioOut,
+    # y se agrega a la lista
+    for fila in inventario:
+        lista.append(llenar_inventario_out(fila))
+    
+    return lista
 
 ZONA_NEGOCIO = ZoneInfo(os.getenv("BUSINESS_TIMEZONE", "America/Mexico_City"))
 

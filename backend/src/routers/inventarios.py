@@ -5,7 +5,7 @@ from src.database import get_db
 from src.dependencies import requiere_rol
 from src.models import Inventario, Producto, Categoria, Sucursal, Usuario
 from src.schemas import InventarioOut
-from src.services import llenar_inventario_out, obtener_sucursal_del_gerente, calcular_alertas_inventario
+from src.services import llenar_inventario_out, consulta_inventario, crear_lista_inventario, obtener_sucursal_del_gerente, calcular_alertas_inventario
 
 router = APIRouter(
     prefix="/inventarios",
@@ -27,25 +27,8 @@ def listar_inventarios(sucursal_id: int | None = None, incluir_inactivas: bool =
                 detail="La sucursal no existe"
             )
 
-    consulta = ( 
-        db.query(
-            # Las columnas que se requieren en el resultado y de que tabla sale cada una
-            # .label() renombra cada columna: Producto, Sucursal y Categoria tienen columnas
-            # con el mismo nombre (id, nombre), así se distinguen. Deben coincidir con InventarioOut.
-            Producto.id.label("producto_id"), 
-            Producto.nombre.label("producto_nombre"),
-            Categoria.nombre.label("categoria_nombre"),
-            Sucursal.id.label("sucursal_id"),
-            Sucursal.nombre.label("sucursal_nombre"),
-            Inventario.existencia.label("existencia"),
-        )
-        # Por cada fila de inventario, busca el producto cuyo id sea igual al producto_id de esa fila
-        .join(Producto, Producto.id == Inventario.producto_id)
-        # Asigna la sucursal a la que pertenece ese inventario
-        .join(Sucursal, Sucursal.id == Inventario.sucursal_id)
-        # Asigna la categoria cuyo id sea igual a categoria_id de ese producto
-        .join(Categoria, Categoria.id == Producto.categoria_id) # inventario no guarda la categoría; está en el producto (inventario → producto → categoría)
-    )
+    # Consulta para obtener todos los productos de las sucursales
+    consulta = consulta_inventario(db)
 
     # Si no se incluye los inventarios de sucursales inactivas, únicamente muestra los inventarios de las sucursales activas
     if not incluir_inactivas:
@@ -53,43 +36,21 @@ def listar_inventarios(sucursal_id: int | None = None, incluir_inactivas: bool =
     # En caso de que venga el ID de una sucursal existente, únicamente muestra el inventario de esa sucursal
     if sucursal_id:
         consulta = consulta.filter(Sucursal.id == sucursal_id)
-    inventarios = consulta.all()
 
-    lista_inventarios = []
-
-    # Guardar en una lista el inventario de todas las sucursales.
-    # La variable inventario se usa para poner la fila actual, cada fila se convierte en InventarioOut
-    # y se agrega a la lista lista_inventarios
-    for inventario in inventarios:
-        lista_inventarios.append(llenar_inventario_out(inventario))
-
-    return lista_inventarios
+    # Se devuelve una lista con todos los productos y sus datos con los filtros aplicados
+    return crear_lista_inventario(consulta)
 
 # Endpoint para mostrar el inventario de la sucursal del gerente
-@router.get("", response_model=list[InventarioOut])
-def mostrar_inventario_sucursal_gerente(usuario: Usuario = Depends(requiere_rol("gerente_sede")), db: Session = Depends(get_db)):
-    """Mostrar el inventario de la sucursal del gerente. Solo gerente sede."""
+@router.get("/mi-sucursal", response_model=list[InventarioOut])
+def listar_inventario_mi_sucursal(usuario: Usuario = Depends(requiere_rol("gerente_sede")), db: Session = Depends(get_db)):
+    """Mostrar el inventario de la sucursal del gerente. Solo Gerente Sede."""
 
+    # Se obtiene la sucursal del gerente para saber que inventario mostrar
     sucursal = obtener_sucursal_del_gerente(db, usuario.id)
 
-    inventario = ( 
-            db.query(
-                # Las columnas que se requieren en el resultado y de que tabla sale cada una
-                # .label() renombra cada columna: Producto, Sucursal y Categoria tienen columnas
-                # con el mismo nombre (id, nombre), así se distinguen. Deben coincidir con InventarioOut.
-                Producto.id.label("producto_id"), 
-                Producto.nombre.label("producto_nombre"),
-                Categoria.nombre.label("categoria_nombre"),
-                Sucursal.id.label("sucursal_id"),
-                Sucursal.nombre.label("sucursal_nombre"),
-                Inventario.existencia.label("existencia"),
-            )
-            # Por cada fila de inventario, busca el producto cuyo id sea igual al producto_id de esa fila
-            .join(Producto, Producto.id == Inventario.producto_id)
-            # Asigna la sucursal a la que pertenece ese inventario
-            .join(Sucursal, Sucursal.id == Inventario.sucursal_id)
-            # Asigna la categoria cuyo id sea igual a categoria_id de ese producto
-            .join(Categoria, Categoria.id == Producto.categoria_id) # inventario no guarda la categoría; está en el producto (inventario → producto → categoría)
-        ).filter(Sucursal.estado == "activa", Sucursal.id == sucursal.id)
+    # Se realiza una consulta de los productos (con sus datos) y luego se filtra para que sean solo los del id de la sucursal del gerente
+    consulta = consulta_inventario(db) 
+    consulta = consulta.filter(Sucursal.estado == "activa", Sucursal.id == sucursal.id) # El filtro Sucursal.estado == "activa", en el flujo normal no hace falta (desactivar la sucursal desasigna al gerente), es protección extra
 
-    return llenar_inventario_out(inventario)
+    # Se devuelve una lista con todos los productos y sus datos de la sucursal del gerente
+    return crear_lista_inventario(consulta)

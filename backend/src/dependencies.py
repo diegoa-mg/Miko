@@ -9,11 +9,11 @@ def requiere_rol(*roles_permitidos: str):
     Fábrica de dependencias para proteger endpoints por rol.
 
     Uso en un router:
-        @router.post("/productos", dependencies=[Depends(requiere_rol("admin"))])
+        @router.post("/productos", dependencies=[Depends(requiere_rol("admin_general"))])
         def crear_producto(...): ...
 
     O si necesitas también el usuario dentro de la función:
-        def crear_producto(usuario: Usuario = Depends(requiere_rol("admin", "gerente"))):
+        def crear_producto(usuario: Usuario = Depends(requiere_rol("admin_general", "gerente_sede"))):
             ...
     """
 
