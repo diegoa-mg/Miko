@@ -1,7 +1,7 @@
 from datetime import date, datetime
 from decimal import Decimal
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 """
 EmailStr valida el formato del correo electrónico (requiere el paquete email-validator).
 Se usa solo en los esquemas de entrada que crean o modifican correos (Ej: GerenteCreate, GerenteUpdate,).
@@ -134,6 +134,17 @@ class InventarioOut(BaseModel):
     sucursal_nombre: str
     existencia: int
 
+class InventarioUpdate(BaseModel):
+    cantidad: int # cantidad es un delta (positivo suma, negativo resta)
+    
+    # @ es un decorador, le agrega un comportamiento a la función sin cambiar el código
+    # Al llenar el campo 'cantidad', le pasa el valor a la función 'no_cero' 
+    @field_validator("cantidad") 
+    @classmethod # classmethod recibe cls no self, cls es InventarioUpdate (clase)
+    def no_cero(cls, valor):
+        if valor == 0:
+            raise ValueError("La cantidad no puede ser 0") # Pydantic alcanza ValueError y lanza un 422 con el mensaje1
+        return valor
 
 # Esquemas para Ventas y Métodos de Pago
 class MetodoPagoOut(BaseModel):
