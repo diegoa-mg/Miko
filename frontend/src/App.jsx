@@ -10,12 +10,12 @@ import Sucursales from "./pages/sucursales";
 import Gerentes from "./pages/gerentes";
 import Cajeros from "./pages/cajeros";
 import Inventarios from "./pages/inventarios";
-import InventarioGerente from "./pages/Inventariogerente";
+import InventarioGerente from "./pages/InventarioGerente";
 import Ventas from "./pages/ventas";
 import AdminLayout from "./layouts/AdminLayout";
 import DashboardAdmin from "./pages/Dashboardadmin";
 import DashboardGerente from "./pages/Dashboardgerente";
-import GerenteLayout from "./layouts/Gerentelayout";
+import GerenteLayout from "./layouts/GerenteLayout";
 import Configuracion from "./pages/Configuracion";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 
