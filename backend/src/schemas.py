@@ -1,5 +1,6 @@
 from datetime import date, datetime
 from decimal import Decimal
+from typing import Literal
 
 from pydantic import BaseModel, ConfigDict, EmailStr, Field, field_validator
 """
@@ -49,7 +50,7 @@ class SucursalBase(BaseModel):
     nombre: str
     direccion: str
     telefono: str | None = None
-    estado: str = "activa"
+    estado: Literal["activa", "inactiva"] = "activa"
     gerente_id: int | None = None
 
 class SucursalCreate(BaseModel):
@@ -62,7 +63,7 @@ class SucursalUpdate(BaseModel):
     nombre: str | None = None
     direccion: str | None = None
     telefono: str | None = None
-    estado: str | None = None
+    estado: Literal["activa", "inactiva"] | None = None
     gerente_id: int | None = None
 
 class SucursalOut(SucursalBase):
@@ -73,9 +74,10 @@ class SucursalOut(SucursalBase):
 
 class SucursalEliminarResponse(BaseModel):
     sucursal_id: int
-    estado: str
-    eliminada_definitivamente: bool
+    estado: Literal["inactiva"] = "inactiva"
+    eliminada_definitivamente: bool = False
     message: str
+
 
 
 # Esquemas de Gerentes
