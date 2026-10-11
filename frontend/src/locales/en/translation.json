@@ -88,7 +88,8 @@
     "promotions": "Promotions",
     "settings": "Settings",
     "managers": "Managers",
-    "cashiers": "Cashiers"
+    "cashiers": "Cashiers",
+    "products": "Products"
   },
   "cajeros": {
     "titulo": "Cashiers",
@@ -122,7 +123,10 @@
     "errorGuardar": "Could not save cashier.",
     "errorEliminar": "Could not delete cashier.",
     "nombrePlaceholder": "E.g. Carlos López",
-    "correoPlaceholder": "E.g. carlos@miko.com"
+    "correoPlaceholder": "E.g. carlos@miko.com",
+    "reactivar": "Reactivate", 
+    "mostrarInactivos": "Show inactive", 
+    "errorReactivar": "Could not reactivate the cashier."
   },
   "roles": {
     "admin_general": "Administrator",
@@ -144,7 +148,8 @@
     "managersTitle": "Managers",
     "registeredManagers": "Active managers",
     "noManagers": "No managers registered.",
-    "noBranch": "No assigned branch"
+    "noBranch": "No assigned branch",
+    "descripcionGerente": "Overview of your branch"
   },
   "settings": {
     "title": "Settings",
@@ -168,5 +173,27 @@
     "notFound": "Page not found",
     "loading": "Loading...",
     "noAccess": "You do not have access to this section"
+  },
+  "en": {
+    "inventarioGerente": {
+      "titulo": "Inventory",
+      "descripcion": "View and adjust the stock of your branch.",
+      "buscar": "Search product...",
+      "cargando": "Loading inventory...",
+      "errorCarga": "Could not load the inventory.",
+      "errorActualizar": "Could not update the stock.",
+      "cantidadInvalida": "Enter a whole number greater than 0.",
+      "totalProductos": "Registered products: {{count}}",
+      "producto": "Product",
+      "categoria": "Category",
+      "existencia": "Stock",
+      "ajustar": "Adjust",
+      "cantidad": "Quantity",
+      "agregar": "Add",
+      "restar": "Subtract",
+      "sinResultados": "No products found",
+      "sinExistencias": "No stock registered",
+      "sinExistenciasDetalle": "There are no products in your branch's inventory."
+    }
   }
 }

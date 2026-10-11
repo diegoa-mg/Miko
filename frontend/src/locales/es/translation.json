@@ -90,7 +90,8 @@
     "promotions": "Promociones",
     "settings": "Configuración",
     "managers": "Gerentes",
-    "cashiers": "Cajeros"
+    "cashiers": "Cajeros",
+    "products": "Productos"
   },
   "cajeros": {
     "titulo": "Cajeros",
@@ -124,7 +125,10 @@
     "errorGuardar": "No se pudo guardar el cajero.",
     "errorEliminar": "No se pudo eliminar el cajero.",
     "nombrePlaceholder": "Ej. Carlos López",
-    "correoPlaceholder": "Ej. carlos@miko.com"
+    "correoPlaceholder": "Ej. carlos@miko.com",
+    "reactivar": "Reactivar", 
+    "mostrarInactivos": "Mostrar inactivos", 
+    "errorReactivar": "No se pudo reactivar el cajero."
   },
   "roles": {
     "admin_general": "Administrador",
@@ -146,7 +150,8 @@
     "managersTitle": "Gerentes",
     "registeredManagers": "Gerentes activos",
     "noManagers": "No hay gerentes registrados.",
-    "noBranch": "Sin sucursal asignada"
+    "noBranch": "Sin sucursal asignada",
+    "descripcionGerente": "Overview of your branch"
   },
   "settings": {
     "title": "Configuración",
@@ -170,5 +175,27 @@
     "notFound": "Página no encontrada",
     "loading": "Cargando...",
     "noAccess": "No tienes acceso a esta sección"
+  },
+  "es": {
+    "inventarioGerente": {
+      "titulo": "Inventario",
+      "descripcion": "Consulta y ajusta las existencias de tu sucursal.",
+      "buscar": "Buscar producto...",
+      "cargando": "Cargando inventario...",
+      "errorCarga": "No se pudo cargar el inventario.",
+      "errorActualizar": "No se pudo actualizar la existencia.",
+      "cantidadInvalida": "Escribe una cantidad entera mayor a 0.",
+      "totalProductos": "Productos registrados: {{count}}",
+      "producto": "Producto",
+      "categoria": "Categoría",
+      "existencia": "Existencia",
+      "ajustar": "Ajustar",
+      "cantidad": "Cantidad",
+      "agregar": "Agregar",
+      "restar": "Restar",
+      "sinResultados": "No se encontraron productos",
+      "sinExistencias": "Sin existencias registradas",
+      "sinExistenciasDetalle": "No hay productos registrados en el inventario de tu sucursal."
+    }
   }
 }
