@@ -5,7 +5,11 @@ import iconoMiko from "../assets/icono.png";
 import logoOscuro from "../assets/logo_oscuro.png";
 import { useAuth } from "../context/AuthContext";
 
-export default function Sidebar({ items, bottomItems = [] }) {
+export default function Sidebar({
+  items,
+  bottomItems = [],
+  settingsPath = "/admin/configuracion",
+}) {
   const [open, setOpen] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
   const { user } = useAuth();
@@ -133,7 +137,7 @@ export default function Sidebar({ items, bottomItems = [] }) {
             }`}
           >
             <NavLink
-              to="/admin/configuracion"
+              to={settingsPath}
               onClick={() => setMenuOpen(false)}
               className="flex items-center gap-2 px-4 py-3 text-sm hover:bg-gray-100 transition-colors"
             >

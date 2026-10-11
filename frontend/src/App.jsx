@@ -10,9 +10,12 @@ import Sucursales from "./pages/sucursales";
 import Gerentes from "./pages/gerentes";
 import Cajeros from "./pages/cajeros";
 import Inventarios from "./pages/inventarios";
+import InventarioGerente from "./pages/Inventariogerente";
 import Ventas from "./pages/ventas";
 import AdminLayout from "./layouts/AdminLayout";
 import DashboardAdmin from "./pages/Dashboardadmin";
+import DashboardGerente from "./pages/Dashboardgerente";
+import GerenteLayout from "./layouts/Gerentelayout";
 import Configuracion from "./pages/Configuracion";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 
@@ -129,8 +132,10 @@ function Dashboard() {
   return <DashboardAdmin />;
 }
 
-function MiSucursal() {
-  return <h1 className="text-2xl font-bold p-6">Panel Gerente de Sede</h1>;
+// Placeholder temporal de las secciones del gerente que aún no se construyen
+function EnConstruccion({ titleKey }) {
+  const { t } = useTranslation();
+  return <h1 className="text-2xl font-bold p-6">{t(titleKey)}</h1>;
 }
 
 function PuntoDeVenta() {
@@ -159,8 +164,15 @@ export default function App() {
               </Route>
             </Route>
 
-            <Route element={<RoleRoute allowedRoles={["admin_general", "gerente_sede"]} />}>
-              <Route path="/gerente/*" element={<MiSucursal />} />
+            <Route element={<RoleRoute allowedRoles={["gerente_sede"]} />}>
+              <Route path="/gerente" element={<GerenteLayout />}>
+                <Route index element={<DashboardGerente />} />
+                <Route path="inventario" element={<InventarioGerente />} />
+                <Route path="ventas" element={<EnConstruccion titleKey="sidebar.sales" />} />
+                <Route path="cajeros" element={<Cajeros />} />
+                <Route path="productos" element={<EnConstruccion titleKey="sidebar.products" />} />
+                <Route path="configuracion" element={<Configuracion />} />
+              </Route>
             </Route>
 
             <Route element={<RoleRoute allowedRoles={["admin_general", "gerente_sede", "cajero"]} />}>

@@ -6,14 +6,21 @@ import {
   crearCajero,
   actualizarCajero,
   eliminarCajero,
+  reactivarCajero,
 } from "../api/cajeros";
 
 import { obtenerSucursales } from "../api/sucursales";
+import { useAuth } from "../context/AuthContext";
 
 function Cajeros() {
   const { t } = useTranslation();
+  const { user } = useAuth();
+  // El gerente solo trabaja con su sucursal: no elige sucursal ni la
+  // necesita cargar (el backend ya limita todo a la suya).
+  const esGerente = user?.rol === "gerente_sede";
 
   const [buscar, setBuscar] = useState("");
+  const [mostrarInactivos, setMostrarInactivos] = useState(false);
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
 
   const [cajeros, setCajeros] = useState([]);
@@ -34,7 +41,7 @@ function Cajeros() {
 
   useEffect(() => {
     cargarDatos();
-  }, []);
+  }, [mostrarInactivos]);
 
   const cargarDatos = async () => {
     try {
@@ -42,8 +49,8 @@ function Cajeros() {
       setError("");
 
       const [cajerosData, sucursalesData] = await Promise.all([
-        obtenerCajeros(),
-        obtenerSucursales(),
+        obtenerCajeros(null, mostrarInactivos),
+        esGerente ? Promise.resolve([]) : obtenerSucursales(),
       ]);
 
       setCajeros(cajerosData);
@@ -140,6 +147,20 @@ function Cajeros() {
     } catch (err) {
       console.error("Error al eliminar cajero:", err);
       setError(t("cajeros.errorEliminar", "No se pudo eliminar el cajero."));
+    }
+  };
+
+  const manejarReactivar = async (id) => {
+    try {
+      setError("");
+      await reactivarCajero(id);
+      await cargarDatos();
+    } catch (err) {
+      console.error("Error al reactivar cajero:", err);
+      setError(
+        err.response?.data?.detail ||
+          t("cajeros.errorReactivar", "No se pudo reactivar el cajero.")
+      );
     }
   };
 
@@ -243,6 +264,14 @@ function Cajeros() {
               >
                 👥 {t("cajeros.lista", "Lista de cajeros")}
               </button>
+              <label className="font-sans flex items-center gap-2 text-sm text-[#875d69] cursor-pointer px-3">
+                <input
+                  type="checkbox"
+                  checked={mostrarInactivos}
+                  onChange={(e) => setMostrarInactivos(e.target.checked)}
+                />
+                {t("cajeros.mostrarInactivos", "Mostrar inactivos")}
+              </label>
             </div>
 
             <div className="w-full lg:w-80">
@@ -275,7 +304,9 @@ function Cajeros() {
             {cajerosFiltrados.map((cajero) => (
               <div
                 key={cajero.id}
-                className="bg-white rounded-3xl shadow-sm border border-[#f0dfdc] overflow-hidden hover:shadow-md transition-shadow"
+                className={`bg-white rounded-3xl shadow-sm border border-[#f0dfdc] overflow-hidden hover:shadow-md transition-shadow ${
+                  cajero.activo ? "" : "opacity-75"
+                }`}
               >
                 <div className="p-6">
                   <div className="flex items-start justify-between">
@@ -295,7 +326,13 @@ function Cajeros() {
                           <h2 className="text-xl font-semibold text-[#875d69]">
                             {cajero.nombre}
                           </h2>
-                          <span className="font-sans text-xs font-medium text-green-700 bg-green-100 px-3 py-1 rounded-full">
+                          <span
+                            className={`font-sans text-xs font-medium px-3 py-1 rounded-full ${
+                              cajero.activo
+                                ? "text-green-700 bg-green-100"
+                                : "text-gray-600 bg-gray-200"
+                            }`}
+                          >
                             {cajero.activo ? t("cajeros.activo", "Activo") : t("cajeros.inactivo", "Inactivo")}
                           </span>
                         </div>
@@ -303,9 +340,11 @@ function Cajeros() {
                         <p className="font-sans text-sm text-gray-600 mt-1">
                           ✉ {cajero.email}
                         </p>
-                        <p className="font-sans text-xs text-[#875d69] mt-1 font-medium">
-                          🏪 {obtenerNombreSucursal(cajero.sucursal_id)}
-                        </p>
+                        {!esGerente && (
+                          <p className="font-sans text-xs text-[#875d69] mt-1 font-medium">
+                            🏪 {obtenerNombreSucursal(cajero.sucursal_id)}
+                          </p>
+                        )}
                       </div>
                     </div>
                   </div>
@@ -316,6 +355,8 @@ function Cajeros() {
                 {/* Acciones */}
                 <div className="bg-[#fffaf2] px-6 py-4 flex justify-end">
                   <div className="flex gap-2">
+                    {cajero.activo ? (
+                      <>
                     {/* Editar */}
                     <button
                       type="button"
@@ -377,6 +418,16 @@ function Cajeros() {
                         </defs>
                       </svg>
                     </button>
+                      </>
+                    ) : (
+                      <button
+                        type="button"
+                        onClick={() => manejarReactivar(cajero.id)}
+                        className="font-sans bg-rose-800 hover:bg-rose-900 text-white px-5 py-2 rounded-full text-sm transition-colors"
+                      >
+                        {t("cajeros.reactivar", "Reactivar")}
+                      </button>
+                    )}
                   </div>
                 </div>
               </div>
@@ -475,7 +526,8 @@ function Cajeros() {
                   </div>
                 )}
 
-                {/* Sucursal asignada */}
+                {/* Sucursal asignada (solo admin: el gerente trabaja en su sucursal) */}
+                {!esGerente && (
                 <div>
                   <label className="font-sans block text-sm font-medium text-[#875d69] mb-2">
                     {t("cajeros.sucursalAsignada", "Sucursal asignada")}
@@ -496,6 +548,7 @@ function Cajeros() {
                     ))}
                   </select>
                 </div>
+                )}
 
                 {/* Botones */}
                 <div className="flex gap-3 pt-3">

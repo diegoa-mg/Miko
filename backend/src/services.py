@@ -235,3 +235,25 @@ def borrar_foto(foto_url: str | None) -> None:
         supabase.storage.from_(SUPABASE_BUCKET).remove([ruta]) # elimina la imagen en la ruta dentro del bucket
     except Exception:
         logging.warning(f"No se pudo borrar la foto anterior: {foto_url}") # Warning por si falla la eliminacion de la foto
+
+def sucursal_del_alcance(db: Session, usuario: Usuario) -> Optional[int]:
+    """
+    Sucursal a la que está limitado `usuario` al consultar o modificar datos:
+    - admin_general -> None (sin restricción: ve todas las sucursales)
+    - gerente_sede  -> id de su sucursal (Sucursal.gerente_id == usuario.id).
+                       Si no tiene sucursal asignada responde 404, nunca
+                       devuelve datos de toda la empresa.
+    Cualquier otro rol responde 403 (falla cerrado: None solo significa
+    "sin restricción" para el admin). Se reutiliza en cajeros, inventario
+    y ventas.
+    """
+    rol = usuario.rol.nombre
+    if rol == "admin_general":
+        return None
+    if rol == "gerente_sede":
+        return obtener_sucursal_del_gerente(db, usuario.id).id
+    raise HTTPException(
+        status_code=status.HTTP_403_FORBIDDEN,
+        detail="Tu rol no tiene acceso a esta sección",
+    )
+ 
