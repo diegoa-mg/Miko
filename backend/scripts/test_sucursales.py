@@ -4,11 +4,10 @@ import sys
 # Asegurar que backend está en sys.path
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
+from pydantic import ValidationError
 from fastapi import HTTPException
 from src.database import SessionLocal
 from src.models import (
-    Inventario,
-    Producto,
     Rol,
     Sucursal,
     Usuario,
@@ -24,14 +23,17 @@ from src.routers.sucursales import (
     modificar_sucursal,
     obtener_sucursal,
 )
-from src.services import obtener_sucursal_del_gerente
 
 def run_tests():
     db = SessionLocal()
     try:
-        print("--- INICIANDO PRUEBAS DEL MÓDULO DE SUCURSALES ---")
+        print("==================================================")
+        print("VERIFICACIÓN COMPLETA DE SUCURSALES (8 PUNTOS)")
+        print("==================================================")
 
-        # Roles
+        # --------------------------------------------------
+        # Roles necesarios
+        # --------------------------------------------------
         rol_admin = db.query(Rol).filter(Rol.nombre == "admin_general").first()
         if not rol_admin:
             rol_admin = Rol(nombre="admin_general")
@@ -50,109 +52,175 @@ def run_tests():
             db.add(rol_cajero)
             db.commit()
 
-        # Crear usuarios de prueba
-        gerente = db.query(Usuario).filter(Usuario.email == "gerente_suc_test@miko.com").first()
-        if not gerente:
-            gerente = Usuario(
-                nombre="Gerente Sucursal Test",
-                email="gerente_suc_test@miko.com",
-                password_hash="pass123",
-                rol_id=rol_gerente.id,
-            )
-            db.add(gerente)
-            db.commit()
-            db.refresh(gerente)
-
-        cajero = db.query(Usuario).filter(Usuario.email == "cajero_suc_test@miko.com").first()
-        if not cajero:
-            cajero = Usuario(
-                nombre="Cajero Sucursal Test",
-                email="cajero_suc_test@miko.com",
-                password_hash="pass123",
-                rol_id=rol_cajero.id,
-            )
-            db.add(cajero)
-            db.commit()
-            db.refresh(cajero)
-
-        # 1. Crear Sucursal con Gerente
-        suc_in = SucursalCreate(
-            nombre="Sucursal Test Correcciones",
-            direccion="Calle Principal 100",
-            telefono="555-1234",
-            gerente_id=gerente.id,
-        )
-        suc_out = crear_sucursal(suc_in, db)
-        suc_id = suc_out.id
-        print(f"✓ Sucursal creada correctamente (ID: {suc_id}, Gerente ID: {suc_out.gerente_id})")
-
-        # Asignar cajero a la sucursal
-        cajero.sucursal_id = suc_id
+        # Limpiar datos previos de prueba si existen
+        db.query(Sucursal).filter(Sucursal.nombre.in_([
+            "Sucursal Test 1", "Sucursal Test 2", "Sucursal Test A"
+        ])).delete()
         db.commit()
 
-        # Verificar obtener_sucursal_del_gerente
-        suc_gerente = obtener_sucursal_del_gerente(db, gerente.id)
-        assert suc_gerente.id == suc_id
-        print(f"✓ Relación gerente-sucursal resuelta correctamente con obtener_sucursal_del_gerente (Sucursal ID: {suc_gerente.id})")
-
-        # 2. Modificar con PATCH parcial
-        suc_mod = modificar_sucursal(suc_id, SucursalUpdate(telefono="555-9999"), db)
-        assert suc_mod.telefono == "555-9999"
-        assert suc_mod.nombre == "Sucursal Test Correcciones"
-        print("✓ Edición parcial con PATCH / PUT OK (Teléfono actualizado a 555-9999)")
-
-        # Agregar un inventario para forzar borrado lógico al desactivar
-        prod = db.query(Producto).first()
-        if prod:
-            inv = Inventario(sucursal_id=suc_id, producto_id=prod.id, existencia=5)
-            db.add(inv)
+        # Usuarios de prueba
+        gerente_activo = db.query(Usuario).filter(Usuario.email == "gerente_activo_test@miko.com").first()
+        if not gerente_activo:
+            gerente_activo = Usuario(
+                nombre="Gerente Activo",
+                email="gerente_activo_test@miko.com",
+                password_hash="pass123",
+                rol_id=rol_gerente.id,
+                activo=True
+            )
+            db.add(gerente_activo)
             db.commit()
+            db.refresh(gerente_activo)
 
-        # 3. Desactivar / Eliminar sucursal (Borrado lógico)
-        res_del = eliminar_sucursal(suc_id, db)
-        assert res_del.estado == "inactiva"
-        assert res_del.eliminada_definitivamente is False
-        assert isinstance(res_del.eliminada_definitivamente, bool)
-        assert res_del.sucursal_id == suc_id
-        print("✓ Respuesta estructurada en DELETE OK:", res_del.model_dump())
+        gerente_inactivo = db.query(Usuario).filter(Usuario.email == "gerente_inactivo_test@miko.com").first()
+        if not gerente_inactivo:
+            gerente_inactivo = Usuario(
+                nombre="Gerente Inactivo",
+                email="gerente_inactivo_test@miko.com",
+                password_hash="pass123",
+                rol_id=rol_gerente.id,
+                activo=False
+            )
+            db.add(gerente_inactivo)
+            db.commit()
+            db.refresh(gerente_inactivo)
 
-        # Verificar desasignación automática de gerente y cajero
-        db.refresh(suc_mod)
-        db.refresh(cajero)
-        assert suc_mod.gerente_id is None, "El gerente debió ser desasignado de la sucursal inactiva"
-        assert cajero.sucursal_id is None, "El cajero debió ser desasignado de la sucursal inactiva"
-        print("✓ Desasignación automática de gerente y cajero al desactivar OK (gerente_id=None, cajero.sucursal_id=None)")
+        cajero_test = db.query(Usuario).filter(Usuario.email == "cajero_invalido_test@miko.com").first()
+        if not cajero_test:
+            cajero_test = Usuario(
+                nombre="Cajero Invalido",
+                email="cajero_invalido_test@miko.com",
+                password_hash="pass123",
+                rol_id=rol_cajero.id,
+                activo=True
+            )
+            db.add(cajero_test)
+            db.commit()
+            db.refresh(cajero_test)
 
-        # 4. Verificar que la sucursal inactiva SE PUEDE CONSULTAR
-        suc_cons = obtener_sucursal(suc_id, db)
-        assert suc_cons.estado == "inactiva"
-        print("✓ Consultar sucursal inactiva OK (GET /sucursales/{id} responde correctamente)")
-
-        # 5. Verificar que SE BLOQUEAN modificaciones a la sucursal inactiva
+        # --------------------------------------------------
+        # PUNTO 1: estado acepta solo Literal["activa", "inactiva"]
+        # --------------------------------------------------
         try:
-            modificar_sucursal(suc_id, SucursalUpdate(nombre="Nuevo Nombre Bloqueado"), db)
-            assert False, "Debió bloquear modificación sobre sucursal inactiva"
-        except HTTPException as exc:
-            assert exc.status_code == 400
-            print("✓ Bloqueo de edición sobre sucursal inactiva OK:", exc.detail)
+            SucursalUpdate(estado="Inactiva")
+            assert False, "Debió fallar con 'Inactiva' (mayúscula)"
+        except ValidationError:
+            pass
 
-        # 6. Reactivar sucursal inactiva con estado = "activa"
-        suc_reactivada = modificar_sucursal(suc_id, SucursalUpdate(estado="activa"), db)
+        try:
+            SucursalUpdate(estado="cualquier_cosa")
+            assert False, "Debió fallar con texto arbitrario"
+        except ValidationError:
+            pass
+
+        # Válidos deben funcionar
+        assert SucursalUpdate(estado="activa").estado == "activa"
+        assert SucursalUpdate(estado="inactiva").estado == "inactiva"
+        print("✓ PUNTO 1: Validación estricta de Literal['activa', 'inactiva'] superada.")
+
+        # --------------------------------------------------
+        # PUNTO 2: Validar el gerente al asignarlo
+        # --------------------------------------------------
+        # A) No permitir cajero como gerente
+        try:
+            crear_sucursal(SucursalCreate(nombre="Sucursal Test A", direccion="Dir 1", gerente_id=cajero_test.id), db)
+            assert False, "Debió rechazar cajero como gerente"
+        except HTTPException as e:
+            assert e.status_code == 400
+            assert "rol 'gerente_sede'" in e.detail
+
+        # B) No permitir gerente inactivo
+        try:
+            crear_sucursal(SucursalCreate(nombre="Sucursal Test A", direccion="Dir 1", gerente_id=gerente_inactivo.id), db)
+            assert False, "Debió rechazar gerente inactivo"
+        except HTTPException as e:
+            assert e.status_code == 400
+            assert "no está activo" in e.detail
+
+        # C) Crear sucursal 1 con gerente activo
+        suc1 = crear_sucursal(SucursalCreate(nombre="Sucursal Test 1", direccion="Dir 1", gerente_id=gerente_activo.id), db)
+
+        # D) No permitir asignar el mismo gerente a sucursal 2
+        try:
+            crear_sucursal(SucursalCreate(nombre="Sucursal Test 2", direccion="Dir 2", gerente_id=gerente_activo.id), db)
+            assert False, "Debió rechazar gerente duplicado en otra sucursal"
+        except HTTPException as e:
+            assert e.status_code == 400
+            assert "ya es gerente de la sucursal" in e.detail
+
+        print("✓ PUNTO 2: Validación completa de gerente (rol, activo, sin duplicar sucursal) superada.")
+
+        # --------------------------------------------------
+        # PUNTO 8: Relación gerente <-> sucursal y desasignación
+        # --------------------------------------------------
+        cajero_test.sucursal_id = suc1.id
+        db.commit()
+        db.refresh(suc1)
+        assert suc1.gerente_id == gerente_activo.id
+        assert cajero_test.sucursal_id == suc1.id
+        print("✓ PUNTO 8: Relación gerente <-> sucursal confirmada.")
+
+        # --------------------------------------------------
+        # PUNTO 5: DELETE uniforme (solo borrado lógico)
+        # --------------------------------------------------
+        del_res = eliminar_sucursal(suc1.id, db)
+        assert del_res.estado == "inactiva"
+        assert del_res.eliminada_definitivamente is False
+        db.refresh(suc1)
+        db.refresh(cajero_test)
+        assert suc1.estado == "inactiva"
+        assert suc1.gerente_id is None, "El gerente debió ser desasignado"
+        assert cajero_test.sucursal_id is None, "El cajero debió ser desasignado"
+        print("✓ PUNTO 5: DELETE realiza borrado lógico uniforme y desasigna personal.")
+
+        # --------------------------------------------------
+        # PUNTO 3: El listado excluye las inactivas por defecto
+        # --------------------------------------------------
+        listado_defecto = listar_sucursales(incluir_inactivas=False, db=db)
+        assert not any(s.id == suc1.id for s in listado_defecto), "Sucursal inactiva no debe aparecer por defecto"
+
+        listado_con_inactivas = listar_sucursales(incluir_inactivas=True, db=db)
+        assert any(s.id == suc1.id for s in listado_con_inactivas), "Sucursal inactiva debe aparecer si incluir_inactivas=True"
+        print("✓ PUNTO 3: Listado excluye inactivas por defecto y las incluye con incluir_inactivas=True.")
+
+        # --------------------------------------------------
+        # PUNTO 7: Qué se puede hacer con una sucursal inactiva
+        # --------------------------------------------------
+        # Consultar -> permitido
+        suc_inactiva = obtener_sucursal(suc1.id, db)
+        assert suc_inactiva.id == suc1.id
+
+        # Modificar campos normales -> bloqueado (400)
+        try:
+            modificar_sucursal(suc1.id, SucursalUpdate(nombre="Nuevo Nombre"), db)
+            assert False, "Debió bloquear modificación de sucursal inactiva"
+        except HTTPException as e:
+            assert e.status_code == 400
+            assert "Solo se permite consultarla o reactivarla" in e.detail
+
+        print("✓ PUNTO 7: Operaciones sobre sucursal inactiva correctamente restringidas.")
+
+        # --------------------------------------------------
+        # PUNTO 4: Reactivar editando
+        # --------------------------------------------------
+        suc_reactivada = modificar_sucursal(suc1.id, SucursalUpdate(estado="activa"), db)
         assert suc_reactivada.estado == "activa"
-        print("✓ Reactivación de sucursal inactiva con estado='activa' OK")
+        print("✓ PUNTO 4: Reactivación mediante PATCH con estado='activa' superada.")
 
-        # Limpieza: eliminar inventario de prueba para permitir borrado físico
-        if prod:
-            db.query(Inventario).filter(Inventario.sucursal_id == suc_id).delete()
-            db.commit()
+        # --------------------------------------------------
+        # PUNTO 6: PATCH con campos opcionales
+        # --------------------------------------------------
+        suc_parcial = modificar_sucursal(suc1.id, SucursalUpdate(telefono="1234567890"), db)
+        assert suc_parcial.telefono == "1234567890"
+        print("✓ PUNTO 6: PATCH para actualización parcial superado.")
 
-        # 7. Eliminar sucursal vacía (Borrado Físico)
-        res_del_fisico = eliminar_sucursal(suc_id, db)
-        assert res_del_fisico.estado == "eliminada"
-        assert res_del_fisico.eliminada_definitivamente is True
-        print("✓ Borrado físico de sucursal sin registros OK:", res_del_fisico.model_dump())
+        # Limpieza final
+        db.delete(suc1)
+        db.commit()
 
-        print("\n=== TODAS LAS CORRECCIONES DEL MÓDULO DE SUCURSALES FUNCIONAN PERFECTAMENTE ===")
+        print("\n==================================================")
+        print("¡LOS 8 PUNTOS ESTÁN 100% COMPLETOS Y VERIFICADOS!")
+        print("==================================================")
 
     finally:
         db.close()
