@@ -1,9 +1,14 @@
 import api from "./axios";
 
-export const obtenerGerentes = async () => {
+export const obtenerGerentes = async (incluirInactivos = false) => {
   console.log("OBTENIENDO GERENTES...");
-  
-  const { data } = await api.get("/gerentes");
+
+  const { data } = await api.get("/gerentes", {
+    params: {
+      incluir_inactivos: incluirInactivos,
+    },
+  });
+
   return data;
 };
 
@@ -19,5 +24,9 @@ export const actualizarGerente = async (id, gerente) => {
 
 export const eliminarGerente = async (id) => {
   const { data } = await api.delete(`/gerentes/${id}`);
+  return data;
+};
+export const reactivarGerente = async (id) => {
+  const { data } = await api.patch(`/gerentes/${id}/reactivar`);
   return data;
 };

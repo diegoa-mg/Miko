@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { obtenerInventarios } from "../api/inventarios";
 import { obtenerSucursales } from "../api/sucursales";
+import { useTranslation } from "react-i18next";
 
 function Inventarios() {
   const [inventarios, setInventarios] = useState([]);
@@ -8,6 +9,7 @@ function Inventarios() {
   const [sucursalSeleccionada, setSucursalSeleccionada] = useState("");
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
+  const { t } = useTranslation();
 
   // Cargar las sucursales para el filtro
   useEffect(() => {
@@ -39,14 +41,14 @@ function Inventarios() {
 
       setInventarios(data);
     } catch (error) {
-      console.error(error);
-      setError(
-        error.response?.data?.detail ||
-          "No se pudieron cargar los inventarios."
-      );
-    } finally {
-      setCargando(false);
-    }
+  console.error(error);
+  setError(
+    error.response?.data?.detail ||
+      t("inventarios.loadError")
+  );
+} finally {
+  setCargando(false);
+}
   };
 
   return (
@@ -54,11 +56,11 @@ function Inventarios() {
       {/* Encabezado */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-[#875d69]">
-          Inventario
+         {t("inventarios.title")}
         </h1>
 
         <p className="mt-2 text-[#203a5f]">
-          Consulta las existencias de los productos por sucursal.
+          {t("inventarios.subtitle")}
         </p>
       </div>
 
@@ -67,11 +69,11 @@ function Inventarios() {
         <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
           <div>
             <label className="mb-2 block text-sm font-semibold text-[#5f3c46]">
-              Seleccionar sucursal
+              {t("inventarios.selectBranch")}
             </label>
 
             <p className="text-sm text-[#a1818a]">
-              Consulta las existencias disponibles en una sucursal.
+              {t("inventarios.filterDescription")}
             </p>
           </div>
 
@@ -83,11 +85,11 @@ function Inventarios() {
             className="w-full max-w-sm rounded-xl border-2 border-[#e6bdc7] bg-white px-4 py-2.5 text-[#8c6773] shadow-sm transition focus:border-[#875d69] focus:outline-none"
           >
             <option value="">
-            Todas las sucursales
+           {t("inventarios.allBranches")}
           </option>
 
           <option value="inactivas">
-            Sucursales inactivas
+            {t("inventarios.inactiveBranches")}
           </option>
 
           {sucursales.map((sucursal) => (
@@ -106,7 +108,7 @@ function Inventarios() {
       {cargando && (
         <div className="rounded-2xl border border-[#ead8d8] bg-white/70 p-8 text-center shadow-sm">
           <p className="text-[#8c6773]">
-            Cargando inventario...
+            {t("inventarios.loading")}
           </p>
         </div>
       )}
@@ -127,14 +129,13 @@ function Inventarios() {
           <div className="mb-4 flex items-center justify-between">
             <div>
               <h2 className="text-lg font-semibold text-[#5f3c46]">
-                Existencias
+                {t("inventarios.stockTitle")}
               </h2>
 
               <p className="text-sm text-[#a1818a]">
-                {inventarios.length}{" "}
-                {inventarios.length === 1
-                  ? "producto registrado"
-                  : "productos registrados"}
+                {t("inventarios.productCount", {
+                  count: inventarios.length,
+                })}
               </p>
             </div>
           </div>
@@ -145,19 +146,19 @@ function Inventarios() {
               <thead>
                 <tr className="border-b border-[#ead8d8] bg-[#fff8f8]">
                   <th className="p-4 text-left text-sm font-semibold text-[#5f3c46]">
-                    Producto
+                    {t("inventarios.product")}
                   </th>
 
                   <th className="p-4 text-left text-sm font-semibold text-[#5f3c46]">
-                    Categoría
+                    {t("inventarios.category")}
                   </th>
 
                   <th className="p-4 text-left text-sm font-semibold text-[#5f3c46]">
-                    Sucursal
+                    {t("inventarios.branch")}
                   </th>
 
                   <th className="p-4 text-center text-sm font-semibold text-[#5f3c46]">
-                    Existencia
+                    {t("inventarios.quantity")}
                   </th>
                 </tr>
               </thead>
@@ -203,12 +204,11 @@ function Inventarios() {
             </div>
 
           <h2 className="mb-2 text-lg font-semibold text-[#5f3c46]">
-            Sin existencias registradas
+            {t("inventarios.emptyTitle")}
           </h2>
 
           <p className="mx-auto max-w-md text-sm text-[#9a7b84]">
-            No hay productos registrados en el inventario de la
-            sucursal seleccionada.
+            {t("inventarios.emptyDescription")}
           </p>
         </div>
       )}
