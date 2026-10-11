@@ -1,11 +1,13 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import { UsersRound, UserRoundX } from "lucide-react";
 
 import {
   obtenerGerentes,
   crearGerente,
   actualizarGerente,
   eliminarGerente,
+  reactivarGerente,
 } from "../api/gerentes";
 
 import {
@@ -18,6 +20,7 @@ function Gerentes() {
 
   const [buscar, setBuscar] = useState("");
   const [mostrarFormulario, setMostrarFormulario] = useState(false);
+  const [mostrarInactivos, setMostrarInactivos] = useState(false);
 
   const [gerentes, setGerentes] = useState([]);
   const [sucursales, setSucursales] = useState([]);
@@ -38,13 +41,13 @@ function Gerentes() {
   cargarDatos();
 }, []);
 
-  const cargarDatos = async () => {
+  const cargarDatos = async (incluirInactivos = false) => {
   try {
     setCargando(true);
     setError("");
 
     const [gerentesData, sucursalesData] = await Promise.all([
-      obtenerGerentes(),
+      obtenerGerentes(incluirInactivos),
       obtenerSucursales(),
     ]);
 
@@ -145,9 +148,23 @@ const confirmarEliminar = async () => {
     }
 };
 
-  const gerentesFiltrados = gerentes.filter((gerente) =>
-    gerente.nombre.toLowerCase().includes(buscar.toLowerCase())
-  );
+const manejarReactivar = async (id) => {
+  try {
+    setError("");
+
+    await reactivarGerente(id);
+    await cargarDatos(true);
+  } catch (err) {
+    console.error("Error al reactivar gerente:", err);
+    setError("No se pudo reactivar el gerente.");
+  }
+};
+
+  const gerentesFiltrados = gerentes.filter(
+  (gerente) =>
+    gerente.nombre.toLowerCase().includes(buscar.toLowerCase()) &&
+    (mostrarInactivos ? gerente.activo === false : gerente.activo === true)
+);
 
   return (
     <div className="min-h-screen bg-[#fdf6e3] p-8">
@@ -232,9 +249,38 @@ const confirmarEliminar = async () => {
             <div className="flex gap-2 w-full lg:w-auto">
               <button
                 type="button"
-                className="font-sans bg-[#875d69] text-white px-5 py-3 rounded-full"
+                onClick={() => {
+                  setMostrarInactivos(false);
+                  cargarDatos(false);
+                }}
+                className={`font-sans px-5 py-3 rounded-full transition-colors ${
+                  !mostrarInactivos
+                    ? "bg-[#875d69] text-white"
+                    : "bg-[#E8B4B8] text-[#875d69] hover:bg-[#dda0a5]"
+                }`}
               >
-                👥 {t("gerentes.lista")}
+                <span className="flex items-center gap-2">
+                  <UsersRound size={18} strokeWidth={1.8} />
+                  {t("gerentes.activos")}
+                </span>
+              </button>
+
+              <button
+                type="button"
+                onClick={() => {
+                  setMostrarInactivos(true);
+                  cargarDatos(true);
+                }}
+                className={`font-sans px-5 py-3 rounded-full transition-colors ${
+                  mostrarInactivos
+                    ? "bg-[#875d69] text-white"
+                    : "bg-[#E8B4B8] text-[#875d69] hover:bg-[#dda0a5]"
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  <UserRoundX size={18} strokeWidth={1.8} />
+                  {t("gerentes.inactivos")}
+                </span>
               </button>
             </div>
 
@@ -327,6 +373,18 @@ const confirmarEliminar = async () => {
             {/* Acciones */}
             <div className="bg-[#fffaf2] px-6 py-4 flex justify-end">
               <div className="flex gap-2">
+          {mostrarInactivos ? (
+                <button
+                  type="button"
+                  onClick={() => manejarReactivar(gerente.id)}
+                  className="font-sans flex items-center gap-2 rounded-xl bg-[#875d69] px-4 py-2 text-sm text-white transition-colors hover:bg-[#704956]"
+                  aria-label={t("gerentes.reactivar")}
+>
+                    <UsersRound size={18} strokeWidth={1.8} />
+                    {t("gerentes.reactivar")}
+                  </button>
+              ) : (
+  <>
 
                 {/* Editar */}
                 <button
@@ -394,6 +452,9 @@ const confirmarEliminar = async () => {
                     </defs>
                 </svg>
               </button>
+                </>
+    )}
+
 
             </div>
         </div>

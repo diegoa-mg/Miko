@@ -1,62 +1,14 @@
-import { useMemo, useState } from "react";
-
-// Datos de prueba.
-// Cuando el backend esté listo, estos datos se reemplazarán
-// por la información obtenida desde la API.
-const ventasIniciales = [
-  {
-    id: 1,
-    sucursal_id: 1,
-    sucursal_nombre: "Sucursal Centro",
-    sucursal_activa: true,
-    fecha: "2026-10-05T09:30:00",
-    total: 350.0,
-  },
-  {
-    id: 2,
-    sucursal_id: 1,
-    sucursal_nombre: "Sucursal Centro",
-    sucursal_activa: true,
-    fecha: "2026-10-05T11:15:00",
-    total: 520.0,
-  },
-  {
-    id: 3,
-    sucursal_id: 2,
-    sucursal_nombre: "Sucursal Norte",
-    sucursal_activa: false,
-    fecha: "2026-10-05T10:45:00",
-    total: 285.0,
-  },
-  {
-    id: 4,
-    sucursal_id: 2,
-    sucursal_nombre: "Sucursal Norte",
-    sucursal_activa: false,
-    fecha: "2026-10-05T13:20:00",
-    total: 640.0,
-  },
-  {
-    id: 5,
-    sucursal_id: 3,
-    sucursal_nombre: "Sucursal Sur",
-    sucursal_activa: true,
-    fecha: "2026-10-05T12:10:00",
-    total: 425.0,
-  },
-  {
-    id: 6,
-    sucursal_id: 3,
-    sucursal_nombre: "Sucursal Sur",
-    sucursal_activa: true,
-    fecha: "2026-10-05T15:40:00",
-    total: 315.0,
-  },
-];
+import { useEffect, useMemo, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { obtenerVentas } from "../api/ventas";
+import { obtenerSucursales } from "../api/sucursales";
 
 function Ventas() {
-  const [ventas] = useState(ventasIniciales);
+  const [ventas, setVentas] = useState([]);
   const [sucursalSeleccionada, setSucursalSeleccionada] = useState("");
+  const [paginaActual, setPaginaActual] = useState(1);
+  const ventasPorPagina = 15;
+  const { t, i18n } = useTranslation();
 
   const sucursales = useMemo(() => {
     const sucursalesUnicas = ventas.reduce((acumulado, venta) => {
@@ -77,24 +29,42 @@ function Ventas() {
     return sucursalesUnicas;
   }, [ventas]);
 
-  const ventasFiltradas = useMemo(() => {
-  // Todas las sucursales
-  if (sucursalSeleccionada === "") {
-    return ventas;
-  }
+  
+const ventasFiltradas = useMemo(() => {
+  if (sucursalSeleccionada === "") return ventas;
 
-  // Solo sucursales inactivas
   if (sucursalSeleccionada === "inactivas") {
-    return ventas.filter(
-      (venta) => venta.sucursal_activa === false
+    const idsInactivos = new Set(
+      sucursales
+        .filter((sucursal) => {
+          const estado = String(sucursal.estado ?? "").toLowerCase();
+          return estado === "inactiva" || estado === "inactivo";
+        })
+        .map((sucursal) => sucursal.id)
+    );
+
+    return ventas.filter((venta) =>
+      idsInactivos.has(venta.sucursal_id)
     );
   }
 
-  // Una sucursal específica
   return ventas.filter(
     (venta) => venta.sucursal_id === Number(sucursalSeleccionada)
   );
-}, [ventas, sucursalSeleccionada]);
+}, [ventas, sucursales, sucursalSeleccionada]);
+
+
+  const totalPaginas = Math.ceil(
+  ventasFiltradas.length / ventasPorPagina
+);
+
+const indiceInicial = (paginaActual - 1) * ventasPorPagina;
+const indiceFinal = indiceInicial + ventasPorPagina;
+
+const ventasPaginadas = ventasFiltradas.slice(
+  indiceInicial,
+  indiceFinal
+);
 
   const totalVendido = useMemo(() => {
     return ventasFiltradas.reduce(
@@ -103,19 +73,42 @@ function Ventas() {
     );
   }, [ventasFiltradas]);
 
-  const formatearPrecio = (precio) => {
-    return precio.toLocaleString("es-MX", {
+  const formatearPrecio = (precio) =>
+  Number(precio || 0).toLocaleString(
+    i18n.language?.startsWith("en") ? "en-US" : "es-MX",
+    {
       style: "currency",
       currency: "MXN",
-    });
-  };
+    }
+  );
 
   const formatearFecha = (fecha) => {
-    return new Date(fecha).toLocaleString("es-MX", {
+  if (!fecha) return "—";
+
+  const fechaValida = new Date(fecha);
+
+  if (Number.isNaN(fechaValida.getTime())) return "—";
+
+  return fechaValida.toLocaleString(
+    i18n.language?.startsWith("en") ? "en-US" : "es-MX",
+    {
       dateStyle: "medium",
       timeStyle: "short",
-    });
+    }
+  );
+};
+  const traducirMetodoPago = (metodo) => {
+  const traducciones = {
+    Efectivo: "ventas.metodosPago.efectivo",
+    Tarjeta: "ventas.metodosPago.tarjeta",
+    Transferencia: "ventas.metodosPago.transferencia",
   };
+
+  return traducciones[metodo]
+    ? t(traducciones[metodo])
+    : metodo;
+};
+  
 
   return (
     <div className="min-h-screen bg-[#fdf6e9] p-6">
@@ -132,11 +125,12 @@ function Ventas() {
 
           <div>
             <h1 className="text-4xl font-bold text-[#8b5e6b]">
-              Ventas
+             {t("ventas.titulo")}
             </h1>
 
+            
             <p className="mt-1 text-lg text-[#5f4a50]">
-              Consulta las ventas realizadas en cada sucursal.
+              {t("ventas.descripcion")}
             </p>
           </div>
 
@@ -153,31 +147,36 @@ function Ventas() {
           </span>
 
           <div>
-            <h2 className="font-bold text-[#5f3c46]">
-              Filtrar por sucursal
-            </h2>
+            
+          <h2 className="font-bold text-[#5f3c46]">
+            {t("ventas.filtroTitulo")}
+          </h2>
 
-            <p className="text-sm text-[#8c6773]">
-              Selecciona una sucursal para consultar sus ventas.
-            </p>
+          <p className="text-sm text-[#8c6773]">
+            {t("ventas.filtroDescripcion")}
+          </p>
+
           </div>
 
         </div>
 
         <select
   value={sucursalSeleccionada}
-  onChange={(e) =>
-    setSucursalSeleccionada(e.target.value)
-  }
+  onChange={(e) => {
+  setSucursalSeleccionada(e.target.value);
+  setPaginaActual(1);
+}}
   className="w-full max-w-lg rounded-full border-2 border-[#e6bdc7] bg-white px-5 py-3 text-[#6f5a61] outline-none transition focus:border-[#c96f80]"
 >
-  <option value="">
-    Todas las sucursales
-  </option>
+  
+<option value="">
+  {t("ventas.todasSucursales")}
+</option>
 
-  <option value="inactivas">
-    Sucursales inactivas
-  </option>
+<option value="inactivas">
+  {t("ventas.inactivas")}
+</option>
+
 
   {sucursales.map((sucursal) => (
     <option
@@ -207,7 +206,7 @@ function Ventas() {
 
             <div>
               <p className="text-sm text-[#8c6773]">
-                Ventas registradas
+               {t("ventas.ventasRegistradas")}
               </p>
 
               <p className="text-2xl font-bold text-[#5f3c46]">
@@ -232,7 +231,7 @@ function Ventas() {
 
             <div>
               <p className="text-sm text-[#8c6773]">
-                Total vendido
+                {t("ventas.totalVendido")}
               </p>
 
               <p className="text-2xl font-bold text-[#5f3c46]">
@@ -257,13 +256,15 @@ function Ventas() {
           </span>
 
           <div>
-            <h2 className="font-bold text-[#5f3c46]">
-              Registro de ventas
-            </h2>
+            
+          <h2 className="font-bold text-[#5f3c46]">
+            {t("ventas.registroTitulo")}
+          </h2>
 
-            <p className="text-sm text-[#8c6773]">
-              Ventas realizadas por sucursal.
-            </p>
+          <p className="text-sm text-[#8c6773]">
+            {t("ventas.registroDescripcion")}
+          </p>
+
           </div>
 
         </div>
@@ -275,75 +276,107 @@ function Ventas() {
             <table className="w-full">
 
               <thead>
-                <tr className="border-b border-[#ead8d8] bg-[#fffaf8]">
+            <tr className="border-b border-[#ead8d8] bg-[#fffaf8]">
+              <th className="p-4 text-left text-sm font-semibold text-[#5f3c46]">
+                {t("ventas.venta")}
+              </th>
 
-                  <th className="p-4 text-left text-sm font-semibold text-[#5f3c46]">
-                    Venta
-                  </th>
+              <th className="p-4 text-left text-sm font-semibold text-[#5f3c46]">
+                {t("ventas.sucursal")}
+              </th>
 
-                  <th className="p-4 text-left text-sm font-semibold text-[#5f3c46]">
-                    Sucursal
-                  </th>
+              <th className="p-4 text-left text-sm font-semibold text-[#5f3c46]">
+                {t("ventas.cajero")}
+              </th>
 
-                  <th className="p-4 text-left text-sm font-semibold text-[#5f3c46]">
-                    Fecha
-                  </th>
+              <th className="p-4 text-left text-sm font-semibold text-[#5f3c46]">
+              {t("ventas.fecha")}
+            </th>
 
-                  <th className="p-4 text-right text-sm font-semibold text-[#5f3c46]">
-                    Total
-                  </th>
+              <th className="p-4 text-left text-sm font-semibold text-[#5f3c46]">
+                 {t("ventas.metodoPago")}
+              </th>
 
-                </tr>
-              </thead>
+              <th className="p-4 text-center text-sm font-semibold text-[#5f3c46]">
+                {t("ventas.total")}
+              </th>
+            </tr>
+          </thead>
 
               <tbody>
+  {ventasPaginadas.map((venta) => (
+    <tr
+      key={venta.id}
+      className="border-b border-[#f0e3e3] last:border-b-0 transition-colors hover:bg-[#fff5f6]"
+    >
+      {/* VENTA */}
+      <td className="p-4">
+        <span className="inline-flex items-center gap-2 rounded-full bg-[#fae4df] px-3 py-1 text-sm font-semibold text-[#8b5e6b]">
+          <span className="material-icons text-base text-[#d06b7d]">
+            receipt
+          </span>
+          #{venta.id}
+        </span>
+      </td>
 
-                {ventasFiltradas.map((venta) => (
+      {/* SUCURSAL */}
+      <td className="p-4 font-medium text-[#5f3c46]">
+        {venta.sucursal_nombre}
+      </td>
 
-                  <tr
-                    key={venta.id}
-                    className="border-b border-[#f0e3e3] last:border-b-0 transition-colors hover:bg-[#fff5f6]"
-                  >
+      {/* CAJERO */}
+      <td className="p-4">
+        <div className="flex items-center gap-2 whitespace-nowrap text-[#5f3c46]">
+          <span className="material-icons text-lg text-[#bd8794]">
+            person
+          </span>
+          {venta.cajero_nombre}
+        </div>
+      </td>
 
-                    {/* ID DE VENTA */}
-                    <td className="p-4">
+      {/* FECHA */}
+      <td className="whitespace-nowrap p-4 text-[#8c6773]">
+        {formatearFecha(venta.fecha)}
+      </td>
 
-                      <span className="inline-flex items-center gap-2 rounded-full bg-[#fae4df] px-3 py-1 text-sm font-semibold text-[#8b5e6b]">
+      {/* MÉTODO DE PAGO */}
+      <td className="p-4">
+        {(() => {
+          const estilosPago = {
+            Efectivo: "bg-[#e4f3e6] text-[#42784b]",
+            Tarjeta: "bg-[#e4edf9] text-[#456b9a]",
+            Transferencia: "bg-[#f9eeb4] text-[#8b7431]",
+          };
 
-                        <span className="material-icons text-base text-[#d06b7d]">
-                          receipt
-                        </span>
+          return (
+            <span
+              className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-semibold ${
+                estilosPago[venta.metodo_pago_nombre] ||
+                "bg-[#fae4df] text-[#8b5e6b]"
+              }`}
+            >
+              <span className="material-icons text-base">
+                {venta.metodo_pago_nombre === "Efectivo"
+                  ? "payments"
+                  : venta.metodo_pago_nombre === "Tarjeta"
+                    ? "credit_card"
+                    : "account_balance"}
+              </span>
+              {traducirMetodoPago(venta.metodo_pago_nombre)}
+            </span>
+          );
+        })()}
+      </td>
 
-                        #{venta.id}
-
-                      </span>
-
-                    </td>
-
-                    {/* SUCURSAL */}
-                    <td className="p-4 font-medium text-[#5f3c46]">
-                      {venta.sucursal_nombre}
-                    </td>
-
-                    {/* FECHA */}
-                    <td className="p-4 text-[#8c6773]">
-                      {formatearFecha(venta.fecha)}
-                    </td>
-
-                    {/* TOTAL */}
-                    <td className="p-4 text-right">
-
-                      <span className="font-bold text-[#c94f68]">
-                        {formatearPrecio(venta.total)}
-                      </span>
-
-                    </td>
-
-                  </tr>
-
-                ))}
-
-              </tbody>
+      {/* TOTAL */}
+      <td className="whitespace-nowrap p-4 text-right">
+        <span className="font-bold text-[#c94f68]">
+          {formatearPrecio(venta.total)}
+        </span>
+      </td>
+    </tr>
+  ))}
+</tbody>
 
             </table>
 
@@ -362,17 +395,95 @@ function Ventas() {
 
             </div>
 
-            <p className="mt-4 font-semibold text-[#70565e]">
-              No hay ventas registradas
-            </p>
+            
+              <p className="mt-4 font-semibold text-[#70565e]">
+                {t("ventas.sinVentas")}
+              </p>
 
-            <p className="mt-1 text-sm text-[#9b7b84]">
-              No se encontraron ventas para la sucursal seleccionada.
-            </p>
+              <p className="mt-1 text-sm text-[#9b7b84]">
+                {t("ventas.sinVentasDescripcion")}
+              </p>
+
 
           </div>
 
         )}
+
+        {/* PAGINACIÓN */}
+      {ventasFiltradas.length > 0 && (
+        <div className="flex flex-col items-center gap-4 border-t border-[#ead8d8] bg-[#fffaf8] px-5 py-4">
+
+          <div className="flex flex-wrap items-center justify-center gap-2">
+            <button
+              type="button"
+              onClick={() =>
+                setPaginaActual((pagina) => Math.max(1, pagina - 1))
+              }
+              disabled={paginaActual === 1}
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#ead8d8] bg-white text-[#8b5e6b] transition hover:bg-[#fae4df] disabled:cursor-not-allowed disabled:opacity-40"
+              aria-label={t("ventas.paginacion.anterior")}
+            >
+              <span className="material-icons text-xl">
+                chevron_left
+              </span>
+            </button>
+
+            {Array.from({ length: totalPaginas }, (_, indice) => indice + 1)
+              .filter(
+                (pagina) =>
+                  pagina === 1 ||
+                  pagina === totalPaginas ||
+                  Math.abs(pagina - paginaActual) <= 1
+              )
+              .reduce((elementos, pagina, indice, paginas) => {
+                if (indice > 0 && pagina - paginas[indice - 1] > 1) {
+                  elementos.push(
+                    <span
+                      key={`puntos-${pagina}`}
+                      className="px-1 text-[#8c6773]"
+                    >
+                      …
+                    </span>
+                  );
+                }
+
+                elementos.push(
+                  <button
+                    key={pagina}
+                    type="button"
+                    onClick={() => setPaginaActual(pagina)}
+                    aria-current={paginaActual === pagina ? "page" : undefined}
+                    className={`h-9 min-w-9 rounded-xl border px-3 text-sm font-semibold transition ${
+                      paginaActual === pagina
+                        ? "border-[#d06b7d] bg-[#d06b7d] text-white"
+                        : "border-[#ead8d8] bg-white text-[#8b5e6b] hover:bg-[#fae4df]"
+                    }`}
+                  >
+                    {pagina}
+                  </button>
+                );
+
+                return elementos;
+              }, [])}
+
+            <button
+              type="button"
+              onClick={() =>
+                setPaginaActual((pagina) =>
+                  Math.min(totalPaginas, pagina + 1)
+                )
+              }
+              disabled={paginaActual === totalPaginas}
+              className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#ead8d8] bg-white text-[#8b5e6b] transition hover:bg-[#fae4df] disabled:cursor-not-allowed disabled:opacity-40"
+              aria-label={t("ventas.paginacion.siguiente")}
+            >
+              <span className="material-icons text-xl">
+                chevron_right
+              </span>
+            </button>
+          </div>
+        </div>
+      )}
 
       </section>
 
