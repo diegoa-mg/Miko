@@ -7,6 +7,7 @@ sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")
 from pydantic import ValidationError
 from fastapi import HTTPException
 from src.database import SessionLocal
+from src.security import hash_password
 from src.models import (
     Rol,
     Sucursal,
@@ -58,13 +59,15 @@ def run_tests():
         ])).delete()
         db.commit()
 
-        # Usuarios de prueba
+        # Usuarios de prueba con hash bcrypt válido
+        pw_hash = hash_password("pass123")
+
         gerente_activo = db.query(Usuario).filter(Usuario.email == "gerente_activo_test@miko.com").first()
         if not gerente_activo:
             gerente_activo = Usuario(
                 nombre="Gerente Activo",
                 email="gerente_activo_test@miko.com",
-                password_hash="pass123",
+                password_hash=pw_hash,
                 rol_id=rol_gerente.id,
                 activo=True
             )
@@ -77,7 +80,7 @@ def run_tests():
             gerente_inactivo = Usuario(
                 nombre="Gerente Inactivo",
                 email="gerente_inactivo_test@miko.com",
-                password_hash="pass123",
+                password_hash=pw_hash,
                 rol_id=rol_gerente.id,
                 activo=False
             )
@@ -90,7 +93,7 @@ def run_tests():
             cajero_test = Usuario(
                 nombre="Cajero Invalido",
                 email="cajero_invalido_test@miko.com",
-                password_hash="pass123",
+                password_hash=pw_hash,
                 rol_id=rol_cajero.id,
                 activo=True
             )
@@ -100,6 +103,7 @@ def run_tests():
 
         # --------------------------------------------------
         # PUNTO 1: estado acepta solo Literal["activa", "inactiva"]
+        # Y rechazo de null en campos obligatorios
         # --------------------------------------------------
         try:
             SucursalUpdate(estado="Inactiva")
@@ -108,20 +112,25 @@ def run_tests():
             pass
 
         try:
-            SucursalUpdate(estado="cualquier_cosa")
-            assert False, "Debió fallar con texto arbitrario"
+            SucursalUpdate(nombre=None)
+            assert False, "Debió fallar con nombre=None explícito"
+        except ValidationError:
+            pass
+
+        try:
+            SucursalUpdate(direccion="")
+            assert False, "Debió fallar con dirección vacía"
         except ValidationError:
             pass
 
         # Válidos deben funcionar
         assert SucursalUpdate(estado="activa").estado == "activa"
         assert SucursalUpdate(estado="inactiva").estado == "inactiva"
-        print("✓ PUNTO 1: Validación estricta de Literal['activa', 'inactiva'] superada.")
+        print("✓ PUNTO 1 & Validación de campos: Literal y rechazo de null/vacíos superado.")
 
         # --------------------------------------------------
         # PUNTO 2: Validar el gerente al asignarlo
         # --------------------------------------------------
-        # A) No permitir cajero como gerente
         try:
             crear_sucursal(SucursalCreate(nombre="Sucursal Test A", direccion="Dir 1", gerente_id=cajero_test.id), db)
             assert False, "Debió rechazar cajero como gerente"
@@ -129,7 +138,6 @@ def run_tests():
             assert e.status_code == 400
             assert "rol 'gerente_sede'" in e.detail
 
-        # B) No permitir gerente inactivo
         try:
             crear_sucursal(SucursalCreate(nombre="Sucursal Test A", direccion="Dir 1", gerente_id=gerente_inactivo.id), db)
             assert False, "Debió rechazar gerente inactivo"
@@ -137,10 +145,8 @@ def run_tests():
             assert e.status_code == 400
             assert "no está activo" in e.detail
 
-        # C) Crear sucursal 1 con gerente activo
         suc1 = crear_sucursal(SucursalCreate(nombre="Sucursal Test 1", direccion="Dir 1", gerente_id=gerente_activo.id), db)
 
-        # D) No permitir asignar el mismo gerente a sucursal 2
         try:
             crear_sucursal(SucursalCreate(nombre="Sucursal Test 2", direccion="Dir 2", gerente_id=gerente_activo.id), db)
             assert False, "Debió rechazar gerente duplicado en otra sucursal"
@@ -186,11 +192,9 @@ def run_tests():
         # --------------------------------------------------
         # PUNTO 7: Qué se puede hacer con una sucursal inactiva
         # --------------------------------------------------
-        # Consultar -> permitido
         suc_inactiva = obtener_sucursal(suc1.id, db)
         assert suc_inactiva.id == suc1.id
 
-        # Modificar campos normales -> bloqueado (400)
         try:
             modificar_sucursal(suc1.id, SucursalUpdate(nombre="Nuevo Nombre"), db)
             assert False, "Debió bloquear modificación de sucursal inactiva"
@@ -201,25 +205,25 @@ def run_tests():
         print("✓ PUNTO 7: Operaciones sobre sucursal inactiva correctamente restringidas.")
 
         # --------------------------------------------------
-        # PUNTO 4: Reactivar editando
+        # PUNTO 4 & 6: Reactivar y editar con PATCH / PUT
         # --------------------------------------------------
         suc_reactivada = modificar_sucursal(suc1.id, SucursalUpdate(estado="activa"), db)
         assert suc_reactivada.estado == "activa"
         print("✓ PUNTO 4: Reactivación mediante PATCH con estado='activa' superada.")
 
-        # --------------------------------------------------
-        # PUNTO 6: PATCH con campos opcionales
-        # --------------------------------------------------
         suc_parcial = modificar_sucursal(suc1.id, SucursalUpdate(telefono="1234567890"), db)
         assert suc_parcial.telefono == "1234567890"
-        print("✓ PUNTO 6: PATCH para actualización parcial superado.")
+        print("✓ PUNTO 6: PATCH / PUT para actualización parcial superado.")
 
         # Limpieza final
         db.delete(suc1)
+        db.delete(gerente_activo)
+        db.delete(gerente_inactivo)
+        db.delete(cajero_test)
         db.commit()
 
         print("\n==================================================")
-        print("¡LOS 8 PUNTOS ESTÁN 100% COMPLETOS Y VERIFICADOS!")
+        print("¡TODAS LAS VALIDACIONES Y PRUEBAS COMPLETADAS CON ÉXITO!")
         print("==================================================")
 
     finally:

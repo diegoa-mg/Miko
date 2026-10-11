@@ -141,13 +141,14 @@ def obtener_sucursal(
 
 
 @router.patch("/{sucursal_id}", response_model=SucursalOut)
+@router.put("/{sucursal_id}", response_model=SucursalOut)
 def modificar_sucursal(
     sucursal_id: int,
     sucursal_in: SucursalUpdate,
     db: Session = Depends(get_db),
 ):
     """
-    Modifica parcialmente una sucursal existente (vía PATCH).
+    Modifica parcialmente una sucursal existente (vía PATCH o PUT para compatibilidad).
     Si la sucursal está inactiva, bloquea cualquier edición salvo la reactivación (estado='activa').
     Si se desactiva (estado='inactiva'), desasigna automáticamente al gerente y a los cajeros.
     """
@@ -191,6 +192,9 @@ def modificar_sucursal(
     # Aplicar cambios enviados
     datos_actualizar = sucursal_in.model_dump(exclude_unset=True)
     for campo, valor in datos_actualizar.items():
+        # Prevenir asignar null en campos requeridos en la base de datos
+        if campo in ("nombre", "direccion", "estado") and valor is None:
+            continue
         setattr(sucursal, campo, valor)
 
     # Si el estado cambió a 'inactiva', desasignar automáticamente al gerente y cajeros
