@@ -3,31 +3,52 @@ import { useTranslation } from "react-i18next";
 import { obtenerVentas } from "../api/ventas";
 import { obtenerSucursales } from "../api/sucursales";
 
+
 function Ventas() {
-  const [ventas, setVentas] = useState([]);
-  const [sucursalSeleccionada, setSucursalSeleccionada] = useState("");
-  const [paginaActual, setPaginaActual] = useState(1);
-  const ventasPorPagina = 15;
   const { t, i18n } = useTranslation();
 
-  const sucursales = useMemo(() => {
-    const sucursalesUnicas = ventas.reduce((acumulado, venta) => {
-      if (
-        !acumulado.some(
-          (sucursal) => sucursal.id === venta.sucursal_id
-        )
-      ) {
-        acumulado.push({
-          id: venta.sucursal_id,
-          nombre: venta.sucursal_nombre,
-        });
+  const [ventas, setVentas] = useState([]);
+  const [sucursales, setSucursales] = useState([]);
+  const [sucursalSeleccionada, setSucursalSeleccionada] = useState("");
+  const [paginaActual, setPaginaActual] = useState(1);
+  const [cargando, setCargando] = useState(true);
+
+  const ventasPorPagina = 15;
+
+  
+  useEffect(() => {
+    let cancelado = false;
+
+    async function cargarDatos() {
+      try {
+        const [datosVentas, datosSucursales] = await Promise.all([
+          obtenerVentas(),
+          obtenerSucursales(),
+        ]);
+
+        if (cancelado) return;
+
+        setVentas(Array.isArray(datosVentas) ? datosVentas : []);
+        setSucursales(
+          Array.isArray(datosSucursales) ? datosSucursales : []
+        );
+      } catch (error) {
+        console.error("Error al cargar ventas:", error);
+        if (!cancelado) {
+          setVentas([]);
+          setSucursales([]);
+        }
+      } finally {
+        if (!cancelado) setCargando(false);
       }
+    }
 
-      return acumulado;
-    }, []);
+    cargarDatos();
 
-    return sucursalesUnicas;
-  }, [ventas]);
+    return () => {
+      cancelado = true;
+    };
+  }, []);
 
   
 const ventasFiltradas = useMemo(() => {
@@ -66,12 +87,15 @@ const ventasPaginadas = ventasFiltradas.slice(
   indiceFinal
 );
 
-  const totalVendido = useMemo(() => {
-    return ventasFiltradas.reduce(
-      (total, venta) => total + venta.total,
-      0
-    );
-  }, [ventasFiltradas]);
+  
+const totalVendido = useMemo(() => {
+  return ventasFiltradas.reduce(
+    (acumulado, venta) =>
+      acumulado + (Number(venta.total) || 0),
+    0
+  );
+}, [ventasFiltradas]);
+
 
   const formatearPrecio = (precio) =>
   Number(precio || 0).toLocaleString(
@@ -330,7 +354,7 @@ const ventasPaginadas = ventasFiltradas.slice(
           <span className="material-icons text-lg text-[#bd8794]">
             person
           </span>
-          {venta.cajero_nombre}
+          {venta.usuario_nombre || "—"}
         </div>
       </td>
 
