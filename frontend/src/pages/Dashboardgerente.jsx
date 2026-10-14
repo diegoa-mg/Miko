@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { CircleDollarSign, TriangleAlert } from "lucide-react";
+import { CircleDollarSign, TriangleAlert, Users } from "lucide-react";
 import { getDashboardGerente } from "../api/adminDashboard";
 
 export default function DashboardGerente() {
@@ -60,6 +60,8 @@ export default function DashboardGerente() {
     );
   }
 
+  const cajeros = data.cajeros ?? [];
+
   return (
     <div className="min-h-screen bg-[#fdf6e3] p-4 sm:p-8">
       <div className="max-w-7xl mx-auto">
@@ -76,7 +78,7 @@ export default function DashboardGerente() {
         </div>
 
         {/* Tarjetas resumen */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           <div className="bg-white rounded-xl shadow p-5 flex items-center gap-4">
             <div className="w-10 h-10 shrink-0 rounded-full bg-green-100 flex items-center justify-center text-green-600">
               <CircleDollarSign size={20} />
@@ -107,37 +109,72 @@ export default function DashboardGerente() {
               </p>
             </div>
           </div>
+
+          <div className="bg-white rounded-xl shadow p-5 flex items-center gap-4">
+            <div className="w-10 h-10 shrink-0 rounded-full bg-[#f4d0d0] flex items-center justify-center text-[#875d69]">
+              <Users size={20} />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm text-gray-500">{t("dashboard.activeCashiers")}</p>
+              <p className="text-2xl font-bold text-gray-800">{cajeros.length}</p>
+            </div>
+          </div>
         </div>
 
-        {/* Lista de alertas (solo de su sucursal) */}
-        <div className="bg-white rounded-xl shadow p-5">
-          <div className="flex items-center justify-between gap-2 flex-wrap mb-3">
-            <h2 className="font-sans text-lg font-semibold text-[#875d69]">
-              {t("dashboard.lowStockTitle")}
-            </h2>
-            <span className="text-xs text-gray-400 shrink-0">
-              {t("dashboard.threshold")}: {data.umbral_bajo_inventario}
-            </span>
+        <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
+          {/* Lista de alertas (solo de su sucursal) */}
+          <div className="bg-white rounded-xl shadow p-5">
+            <div className="flex items-center justify-between gap-2 flex-wrap mb-3">
+              <h2 className="font-sans text-lg font-semibold text-[#875d69]">
+                {t("dashboard.lowStockTitle")}
+              </h2>
+              <span className="text-xs text-gray-400 shrink-0">
+                {t("dashboard.threshold")}: {data.umbral_bajo_inventario}
+              </span>
+            </div>
+            {data.alertas_inventario.length === 0 ? (
+              <p className="text-gray-500 text-sm">{t("dashboard.noAlerts")}</p>
+            ) : (
+              <ul className="divide-y divide-gray-100">
+                {data.alertas_inventario.map((alerta) => (
+                  <li
+                    key={`${alerta.producto_id}-${alerta.sucursal_id}`}
+                    className="py-3 flex items-center justify-between gap-2 flex-wrap"
+                  >
+                    <p className="font-medium text-gray-800 break-words min-w-0">
+                      {alerta.producto_nombre}
+                    </p>
+                    <p className="text-sm text-yellow-700 font-semibold shrink-0">
+                      {t("dashboard.stock")}: {alerta.existencia}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            )}
           </div>
-          {data.alertas_inventario.length === 0 ? (
-            <p className="text-gray-500 text-sm">{t("dashboard.noAlerts")}</p>
-          ) : (
-            <ul className="divide-y divide-gray-100">
-              {data.alertas_inventario.map((alerta) => (
-                <li
-                  key={`${alerta.producto_id}-${alerta.sucursal_id}`}
-                  className="py-3 flex items-center justify-between gap-2 flex-wrap"
-                >
-                  <p className="font-medium text-gray-800 break-words min-w-0">
-                    {alerta.producto_nombre}
-                  </p>
-                  <p className="text-sm text-yellow-700 font-semibold shrink-0">
-                    {t("dashboard.stock")}: {alerta.existencia}
-                  </p>
-                </li>
-              ))}
-            </ul>
-          )}
+
+          {/* Cajeros de su sucursal */}
+          <div className="bg-white rounded-xl shadow p-5">
+            <h2 className="font-sans text-lg font-semibold text-[#875d69] mb-3">
+              {t("dashboard.cashiersTitle")}
+            </h2>
+            {cajeros.length === 0 ? (
+              <p className="text-gray-500 text-sm">{t("dashboard.noCashiers")}</p>
+            ) : (
+              <ul className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
+                {cajeros.map((cajero) => (
+                  <li key={cajero.id} className="py-3">
+                    <p className="font-medium text-gray-800 break-words">
+                      {cajero.nombre}
+                    </p>
+                    <p className="text-sm text-gray-500 break-words">
+                      {cajero.email}
+                    </p>
+                  </li>
+                ))}
+              </ul>
+            )}
+          </div>
         </div>
       </div>
     </div>

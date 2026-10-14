@@ -256,4 +256,16 @@ def sucursal_del_alcance(db: Session, usuario: Usuario) -> Optional[int]:
         status_code=status.HTTP_403_FORBIDDEN,
         detail="Tu rol no tiene acceso a esta sección",
     )
- 
+
+def listar_cajeros_activos(db: Session, sucursal_id: int) -> list[Usuario]:
+    """Cajeros activos de una sucursal (la sucursal de un cajero vive en usuarios.sucursal_id)."""
+    rol_cajero = obtener_rol(db, "cajero")
+    return (
+        db.query(Usuario)
+        .filter(
+            Usuario.rol_id == rol_cajero.id,
+            Usuario.activo == True,
+            Usuario.sucursal_id == sucursal_id,
+        )
+        .all()
+    )

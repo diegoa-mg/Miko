@@ -221,3 +221,12 @@ class VentaOut(BaseModel):
 
 class VentaUpdate(BaseModel):
     metodo_pago_id: int | None = None
+
+
+class DashboardGerenteResponse(BaseModel):
+    ventas_total_periodo: Decimal
+    periodo_inicio: date
+    periodo_fin: date
+    umbral_bajo_inventario: int
+    alertas_inventario: list[AlertaInventario]
+    cajeros: list[UsuarioOut]

@@ -1,45 +1,31 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Store, CircleDollarSign, TriangleAlert, Users } from "lucide-react";
+import {
+  Store,
+  CircleDollarSign,
+  TriangleAlert,
+  Users,
+  UserCheck,
+} from "lucide-react";
 import { getDashboardAdmin } from "../api/adminDashboard";
 import { obtenerGerentes } from "../api/gerentes";
+import { obtenerCajeros } from "../api/cajeros";
 import { obtenerSucursales } from "../api/sucursales";
 
-export default function DashboardAdmin() {
-  const { t, i18n } = useTranslation();
-
-  // Resumen del dashboard (sucursales, ventas, alertas) — crítico
-  const [data, setData] = useState(null);
+// Carga una vez un recurso del backend y expone su estado. Cada recurso del
+// dashboard usa su propio hook, así que si uno falla los demás se siguen
+// mostrando.
+function useCarga(cargar) {
+  const [datos, setDatos] = useState(null);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState(null);
-
-  // Gerentes + sucursales — se cargan aparte para que, si esto falla,
-  // las tarjetas de arriba igual se vean.
-  const [gerentes, setGerentes] = useState([]);
-  const [cargandoGerentes, setCargandoGerentes] = useState(true);
-  const [errorGerentes, setErrorGerentes] = useState(null);
-
-  // ventas_total_periodo llega como Decimal (string) desde el backend para
-  // no perder precisión en centavos. Number(...) lo convierte para el
-  // formateador; si llegara como número ya, Number() lo deja igual.
-  const formatMoney = (valor) =>
-    new Intl.NumberFormat(i18n.language === "en" ? "en-US" : "es-MX", {
-      style: "currency",
-      currency: "MXN",
-    }).format(Number(valor));
-
-  // Si el backend manda un mensaje (err.response.data.detail, como el 404
-  // de "este gerente no tiene sucursal asignada"), se muestra ese texto
-  // en vez del genérico.
-  const mensajeError = (err, textoPorDefecto) =>
-    err?.response?.data?.detail || textoPorDefecto;
 
   useEffect(() => {
     let activo = true;
     setCargando(true);
-    getDashboardAdmin()
+    cargar()
       .then((res) => {
-        if (activo) setData(res);
+        if (activo) setDatos(res);
       })
       .catch((err) => {
         if (activo) setError(err);
@@ -52,34 +38,111 @@ export default function DashboardAdmin() {
     };
   }, []);
 
-  useEffect(() => {
-    let activo = true;
-    setCargandoGerentes(true);
-    Promise.all([obtenerGerentes(), obtenerSucursales()])
-      .then(([gerentesRes, sucursalesRes]) => {
-        if (!activo) return;
-        // La sucursal de un gerente vive en sucursales.gerente_id, no en
-        // gerente.sucursal_id (ese campo no existe en UsuarioOut) ni en
-        // gerente.sucursal_nombre (tampoco existe). Se cruza manualmente,
-        // igual que en la página de Gerentes.
-        const gerentesConSucursal = gerentesRes.map((gerente) => {
-          const sucursal = sucursalesRes.find(
-            (s) => s.gerente_id === gerente.id
-          );
-          return { ...gerente, sucursal_nombre: sucursal?.nombre ?? null };
-        });
-        setGerentes(gerentesConSucursal);
-      })
-      .catch((err) => {
-        if (activo) setErrorGerentes(err);
-      })
-      .finally(() => {
-        if (activo) setCargandoGerentes(false);
-      });
-    return () => {
-      activo = false;
-    };
-  }, []);
+  return { datos, cargando, error };
+}
+
+// Lista de personas (gerentes o cajeros) con su sucursal. Se reutiliza en las
+// dos secciones porque el diseño es el mismo.
+function SeccionPersonas({
+  titulo,
+  personas,
+  cargando,
+  textoCargando,
+  error,
+  textoError,
+  textoVacio,
+  nombreSucursal,
+  className = "",
+}) {
+  return (
+    <div className={`bg-white rounded-xl shadow p-5 ${className}`}>
+      <h2 className="font-sans text-lg font-semibold text-[#875d69] mb-3">
+        {titulo}
+      </h2>
+      {cargando ? (
+        <p className="text-gray-500 text-sm">{textoCargando}</p>
+      ) : error ? (
+        <p className="text-red-500 text-sm">{textoError}</p>
+      ) : personas.length === 0 ? (
+        <p className="text-gray-500 text-sm">{textoVacio}</p>
+      ) : (
+        <ul className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
+          {personas.map((persona) => (
+            <li
+              key={persona.id}
+              className="py-3 flex items-center justify-between gap-2 flex-wrap"
+            >
+              <div className="min-w-0">
+                <p className="font-medium text-gray-800 break-words">
+                  {persona.nombre}
+                </p>
+                <p className="text-sm text-gray-500 break-words">
+                  {persona.email}
+                </p>
+              </div>
+              <p className="text-sm text-gray-500 shrink-0">
+                {nombreSucursal(persona)}
+              </p>
+            </li>
+          ))}
+        </ul>
+      )}
+    </div>
+  );
+}
+
+export default function DashboardAdmin() {
+  const { t, i18n } = useTranslation();
+
+  // Resumen (sucursales, ventas, alertas) — es lo crítico de la pantalla
+  const { datos: data, cargando, error } = useCarga(getDashboardAdmin);
+
+  // Gerentes y cajeros: GET /gerentes y GET /cajeros devuelven solo los activos
+  const {
+    datos: gerentesData,
+    cargando: cargandoGerentes,
+    error: errorGerentes,
+  } = useCarga(obtenerGerentes);
+  const {
+    datos: cajerosData,
+    cargando: cargandoCajeros,
+    error: errorCajeros,
+  } = useCarga(obtenerCajeros);
+
+  // Solo sirve para mostrar el nombre de la sucursal. null = todavía no carga
+  // o falló; en ese caso se muestra "—" en vez de afirmar "sin sucursal".
+  const { datos: sucursales } = useCarga(obtenerSucursales);
+
+  const gerentes = gerentesData ?? [];
+  const cajeros = cajerosData ?? [];
+
+  // ventas_total_periodo llega como Decimal (string) desde el backend para
+  // no perder precisión en centavos. Number(...) lo convierte para el
+  // formateador; si llegara como número ya, Number() lo deja igual.
+  const formatMoney = (valor) =>
+    new Intl.NumberFormat(i18n.language === "en" ? "en-US" : "es-MX", {
+      style: "currency",
+      currency: "MXN",
+    }).format(Number(valor));
+
+  // Si el backend manda un mensaje (err.response.data.detail) se muestra ese
+  // en vez del genérico.
+  const mensajeError = (err, textoPorDefecto) =>
+    err?.response?.data?.detail || textoPorDefecto;
+
+  // La sucursal de un gerente vive en sucursales.gerente_id, no en el usuario.
+  const sucursalDelGerente = (gerente) =>
+    sucursales === null
+      ? "—"
+      : sucursales.find((s) => s.gerente_id === gerente.id)?.nombre ||
+        t("dashboard.noBranch");
+
+  // La sucursal de un cajero vive en usuarios.sucursal_id.
+  const sucursalDelCajero = (cajero) =>
+    sucursales === null
+      ? "—"
+      : sucursales.find((s) => s.id === cajero.sucursal_id)?.nombre ||
+        t("dashboard.noBranch");
 
   if (cargando) {
     return (
@@ -117,7 +180,7 @@ export default function DashboardAdmin() {
         </div>
 
         {/* Tarjetas resumen */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 mb-6">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           <div className="bg-white rounded-xl shadow p-5 flex items-center gap-4">
             <div className="w-10 h-10 shrink-0 rounded-full bg-pink-100 flex items-center justify-center text-pink-500">
               <Store size={20} />
@@ -168,7 +231,19 @@ export default function DashboardAdmin() {
             <div className="min-w-0">
               <p className="text-sm text-gray-500">{t("dashboard.registeredManagers")}</p>
               <p className="text-2xl font-bold text-gray-800">
-                {cargandoGerentes ? "—" : gerentes.length}
+                {cargandoGerentes || errorGerentes ? "—" : gerentes.length}
+              </p>
+            </div>
+          </div>
+
+          <div className="bg-white rounded-xl shadow p-5 flex items-center gap-4">
+            <div className="w-10 h-10 shrink-0 rounded-full bg-sky-100 flex items-center justify-center text-sky-600">
+              <UserCheck size={20} />
+            </div>
+            <div className="min-w-0">
+              <p className="text-sm text-gray-500">{t("dashboard.activeCashiers")}</p>
+              <p className="text-2xl font-bold text-gray-800">
+                {cargandoCajeros || errorCajeros ? "—" : cajeros.length}
               </p>
             </div>
           </div>
@@ -211,42 +286,30 @@ export default function DashboardAdmin() {
             )}
           </div>
 
-          {/* Sección de Gerentes */}
-          <div className="bg-white rounded-xl shadow p-5">
-            <h2 className="font-sans text-lg font-semibold text-[#875d69] mb-3">
-              {t("dashboard.managersTitle")}
-            </h2>
-            {cargandoGerentes ? (
-              <p className="text-gray-500 text-sm">{t("gerentes.cargando")}</p>
-            ) : errorGerentes ? (
-              <p className="text-red-500 text-sm">
-                {mensajeError(errorGerentes, t("gerentes.errorCarga"))}
-              </p>
-            ) : gerentes.length === 0 ? (
-              <p className="text-gray-500 text-sm">{t("dashboard.noManagers")}</p>
-            ) : (
-              <ul className="divide-y divide-gray-100">
-                {gerentes.map((gerente) => (
-                  <li
-                    key={gerente.id}
-                    className="py-3 flex items-center justify-between gap-2 flex-wrap"
-                  >
-                    <div className="min-w-0">
-                      <p className="font-medium text-gray-800 break-words">
-                        {gerente.nombre}
-                      </p>
-                      <p className="text-sm text-gray-500 break-words">
-                        {gerente.email}
-                      </p>
-                    </div>
-                    <p className="text-sm text-gray-500 shrink-0">
-                      {gerente.sucursal_nombre || t("dashboard.noBranch")}
-                    </p>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
+          {/* Gerentes */}
+          <SeccionPersonas
+            titulo={t("dashboard.managersTitle")}
+            personas={gerentes}
+            cargando={cargandoGerentes}
+            textoCargando={t("dashboard.loadingManagers")}
+            error={errorGerentes}
+            textoError={mensajeError(errorGerentes, t("dashboard.errorManagers"))}
+            textoVacio={t("dashboard.noManagers")}
+            nombreSucursal={sucursalDelGerente}
+          />
+
+          {/* Cajeros: ocupa todo el ancho debajo de las otras dos */}
+          <SeccionPersonas
+            className="lg:col-span-2"
+            titulo={t("dashboard.cashiersTitle")}
+            personas={cajeros}
+            cargando={cargandoCajeros}
+            textoCargando={t("dashboard.loadingCashiers")}
+            error={errorCajeros}
+            textoError={mensajeError(errorCajeros, t("dashboard.errorCashiers"))}
+            textoVacio={t("dashboard.noCashiers")}
+            nombreSucursal={sucursalDelCajero}
+          />
         </div>
       </div>
     </div>
