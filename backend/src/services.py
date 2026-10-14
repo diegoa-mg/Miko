@@ -22,7 +22,7 @@ from sqlalchemy import func
 from sqlalchemy.orm import Session, Query
 
 from src.models import Inventario, Producto, Rol, Sucursal, Usuario, Venta, Categoria
-from src.schemas import UsuarioOut, InventarioOut
+from src.schemas import UsuarioOut, InventarioOut, ProductoOut
 
 # Función para obtener el rol del usuario
 def obtener_rol(db: Session, nombre: str):
@@ -60,6 +60,18 @@ def llenar_inventario_out(inventario: Inventario) -> InventarioOut:
         sucursal_nombre=inventario.sucursal_nombre,
         existencia=inventario.existencia
     )
+
+# Función para llenar ProductoOut
+def llenar_producto_out(producto: Producto) -> ProductoOut:
+    return ProductoOut(
+        id=producto.id,
+        nombre=producto.nombre,
+        precio=producto.precio,
+        categoria_id=producto.categoria_id,
+        categoria_nombre=producto.categoria_id,
+        existencia=producto.existencia,
+        activo=producto.activo
+    )   
 
 # Arma (sin ejecutar) la consulta base del inventario de todas las sucursales, para que cada endpoint le agregue sus filtros
 def consulta_inventario(db: Session) -> Query:
