@@ -203,7 +203,14 @@
     "registeredManagers": "Active managers",
     "noManagers": "No managers registered.",
     "noBranch": "No assigned branch",
-    "descripcionGerente": "Overview of your branch"
+    "descripcionGerente": "Overview of your branch",
+    "activeCashiers": "Active cashiers",
+    "cashiersTitle": "Cashiers",
+    "noCashiers": "No cashiers registered.",
+    "loadingManagers": "Loading managers...",
+    "errorManagers": "Could not load managers.",
+    "loadingCashiers": "Loading cashiers...",
+    "errorCashiers": "Could not load cashiers."
   },
   "settings": {
     "title": "Settings",

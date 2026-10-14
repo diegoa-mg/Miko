@@ -205,7 +205,14 @@
     "registeredManagers": "Gerentes activos",
     "noManagers": "No hay gerentes registrados.",
     "noBranch": "Sin sucursal asignada",
-    "descripcionGerente": "Overview of your branch"
+    "activeCashiers": "Cajeros activos",
+    "cashiersTitle": "Cajeros",
+    "noCashiers": "No hay cajeros registrados.",
+    "loadingManagers": "Cargando gerentes...",
+    "errorManagers": "No se pudieron cargar los gerentes.",
+    "loadingCashiers": "Cargando cajeros...",
+    "errorCashiers": "No se pudieron cargar los cajeros.",
+    "descripcionGerente": "Resumen de tu sucursal"
   },
   "settings": {
     "title": "Configuración",

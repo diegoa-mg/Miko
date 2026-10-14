@@ -12,6 +12,8 @@ from src.services import (
     calcular_alertas_inventario,
     calcular_ventas_total,
     hoy_en_negocio,
+    listar_cajeros_activos,
+    llenar_usuario_out,
     obtener_sucursal_del_gerente,
 )
 
@@ -101,10 +103,15 @@ def obtener_dashboard_gerente(
         db, umbral_bajo_inventario, sucursal_id=sucursal.id
     )
 
+    # Cajeros activos de su sucursal (se resuelve aquí, con la sucursal del
+    # gerente, para no depender del filtro del router de cajeros)
+    cajeros = listar_cajeros_activos(db, sucursal.id)
+
     return DashboardGerenteResponse(
         ventas_total_periodo=ventas_total,
         periodo_inicio=inicio,
         periodo_fin=fin,
         umbral_bajo_inventario=umbral_bajo_inventario,
         alertas_inventario=_construir_alertas(filas_bajo_stock),
+        cajeros=[llenar_usuario_out(cajero) for cajero in cajeros],
     )
