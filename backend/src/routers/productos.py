@@ -105,7 +105,7 @@ def obtener_producto(
 ):
     """Obtiene un producto específico. Solo Gerentes."""
 
-    # La sucursal sale del gerente que lanza la petición
+    # La sucursal sale del g(erente que lanza la petición
     sucursal = obtener_sucursal_del_gerente(db, usuario.id)
 
     # Se filtra la consulta de los productos por el id del producto de la petición
@@ -119,7 +119,60 @@ def obtener_producto(
     return ProductoOut.model_validate(consulta)
 
 # Endpoint actualizar producto
+@router.patch("/{producto_id}", response_model=ProductoOut, status_code=status.HTTP_200_OK)
+def editar_producto(
+    producto_in: ProductoUpdate,
+    producto_id: int,
+    usuario: Usuario = Depends(requiere_rol("gerente_sede")),
+    db: Session = Depends(get_db)
+):
+    """Editar un producto de la sucursal del gerente. Solo Gerentes."""
 
+    # La sucursal sale del gerente que lanza la petición
+    sucursal = obtener_sucursal_del_gerente(db, usuario.id)
+
+    producto = obtener_producto_de_sucursal(db, sucursal.id, producto_id)
+
+    if not producto.activo:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"El producto con ID {producto_id} no puede ser editado debido a que está inactivo."
+        )
+
+    # Si viene nombre
+    if producto_in.nombre:
+        consulta_nombre = db.query(Producto).filter(
+            Producto.nombre == producto_in.nombre,
+            Producto.sucursal_id == sucursal.id,
+            Producto.id != producto.id,
+        ).first()
+        if consulta_nombre:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"Ya existe un producto llamado '{producto_in.nombre}' en tu sucursal."
+            )
+        producto.nombre = producto_in.nombre
+
+    # Si viene precio
+    if producto_in.precio:
+        producto.precio = producto_in.precio
+
+    # Si viene categoria
+    if producto_in.categoria_id:
+        consulta_categoria = db.query(Categoria).filter(Categoria.id == producto_in.categoria_id).first()
+        if consulta_categoria is None:
+            raise HTTPException(
+                status_code=status.HTTP_404_NOT_FOUND,
+                detail="La categoría no existe"
+            )
+        producto.categoria_id = producto_in.categoria_id
+
+    db.commit()
+
+    producto_actualizado = consulta_productos(db, sucursal.id).filter(Producto.id == producto.id).first()
+
+    return ProductoOut.model_validate(producto_actualizado)
+    
 
 # Endpoint eliminar producto
 @router.delete("/{producto_id}", status_code=status.HTTP_200_OK)
