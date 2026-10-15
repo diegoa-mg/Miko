@@ -122,7 +122,7 @@ def obtener_producto(
 
 
 # Endpoint eliminar producto
-@router.delete("/{producto_id}")
+@router.delete("/{producto_id}", status_code=status.HTTP_200_OK)
 def eliminar_producto(
     producto_id: int,
     usuario: Usuario = Depends(requiere_rol("gerente_sede")),
@@ -151,3 +151,30 @@ def eliminar_producto(
     }
 
 # Endpoint reactivar producto
+@router.patch("/{producto_id}/reactivar", status_code=status.HTTP_200_OK)
+def reactivar_producto(
+    producto_id: int,
+    usuario: Usuario = Depends(requiere_rol("gerente_sede")),
+    db: Session = Depends(get_db)
+):
+    """Reactivar un producto de la sucursal del gerente. Solo Gerentes."""
+
+    # La sucursal sale del gerente que lanza la petición
+    sucursal = obtener_sucursal_del_gerente(db, usuario.id)
+    
+    # El producto sale de la sucursal del gerente y el id del producto de la petición.
+    producto = obtener_producto_de_sucursal(db, sucursal.id, producto_id)
+
+    if producto.activo:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"El producto con ID {producto_id} ya estaba activo."
+        )
+    
+    producto.activo = True
+    db.commit()
+    
+    return {
+        "message": f"Producto con ID {producto_id} activado exitosamente.",
+        "estado": "activo"
+    }
