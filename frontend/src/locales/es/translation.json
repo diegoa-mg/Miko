@@ -31,7 +31,10 @@
     "nombrePlaceholder": "Ej. Sucursal Colima",
     "direccionPlaceholder": "Ej. Av. principal #123",
     "telefonoPlaceholder": "Ej. 3121234567",
-    "gerentePlaceholder": "Opcional"
+    "gerentePlaceholder": "Opcional",
+    "activas": "Activas",
+    "inactivas": "Inactivas",
+    "reactivar": "Reactivar"
   },
   "gerentes": {
     "titulo": "Gerentes",

@@ -23,7 +23,7 @@ function Ventas() {
       try {
         const [datosVentas, datosSucursales] = await Promise.all([
           obtenerVentas(),
-          obtenerSucursales(),
+          obtenerSucursales(true),
         ]);
 
         if (cancelado) return;
@@ -121,18 +121,27 @@ const totalVendido = useMemo(() => {
     }
   );
 };
-  const traducirMetodoPago = (metodo) => {
+  
+const traducirMetodoPago = (metodo) => {
+  const claveMetodo = String(metodo || "")
+    .trim()
+    .toLowerCase();
+
   const traducciones = {
-    Efectivo: "ventas.metodosPago.efectivo",
-    Tarjeta: "ventas.metodosPago.tarjeta",
-    Transferencia: "ventas.metodosPago.transferencia",
+    efectivo: "ventas.metodosPago.efectivo",
+    tarjeta: "ventas.metodosPago.tarjeta",
+    transferencia: "ventas.metodosPago.transferencia",
   };
 
-  return traducciones[metodo]
-    ? t(traducciones[metodo])
-    : metodo;
+  const texto = traducciones[claveMetodo]
+    ? t(traducciones[claveMetodo])
+    : claveMetodo;
+
+  return texto
+    ? texto.charAt(0).toLocaleUpperCase(i18n.language) + texto.slice(1)
+    : "";
 };
-  
+
 
   return (
     <div className="min-h-screen bg-[#fdf6e9] p-6">

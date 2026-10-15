@@ -1,7 +1,13 @@
 import api from "./axios";
 
-export const obtenerSucursales = async () => {
-  const { data } = await api.get("/sucursales");
+
+export const obtenerSucursales = async (incluirInactivas = false) => {
+  const { data } = await api.get("/sucursales", {
+    params: {
+      incluir_inactivas: incluirInactivas,
+    },
+  });
+
   return data;
 };
 

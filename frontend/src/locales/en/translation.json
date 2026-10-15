@@ -29,7 +29,10 @@
     "nombrePlaceholder": "E.g. Colima Branch",
     "direccionPlaceholder": "E.g. Main Ave. #123",
     "telefonoPlaceholder": "E.g. 3121234567",
-    "gerentePlaceholder": "Optional"
+    "gerentePlaceholder": "Optional",
+    "activas": "Active",
+    "inactivas": "Inactive",
+    "reactivar": "Reactivate"
   },
   "gerentes": {
     "titulo": "Managers",
