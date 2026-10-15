@@ -7,7 +7,7 @@ from src.dependencies import requiere_rol
 from src.database import get_db
 from src.models import Producto, Sucursal, Inventario, Usuario, Categoria
 from src.schemas import ProductoOut, ProductoCreate, ProductoUpdate
-from src.services import llenar_producto_out, obtener_sucursal_del_gerente, consulta_productos
+from src.services import llenar_producto_out, obtener_sucursal_del_gerente, consulta_productos, obtener_producto_de_sucursal
 
 router = APIRouter(
     prefix="/productos",
@@ -22,7 +22,7 @@ router = APIRouter(
 def crear_producto(producto_in: ProductoCreate, usuario: Usuario = Depends(requiere_rol("gerente_sede")), db: Session = Depends(get_db)):
     """Crear un producto en la sucursal del gerente. Solo Gerentes."""
 
-    # La sucursal sale del gerente que lanza la peticion
+    # La sucursal sale del gerente que lanza la petición
     sucursal = obtener_sucursal_del_gerente(db, usuario.id)
 
     # Verificar que la categoria exista
@@ -38,7 +38,7 @@ def crear_producto(producto_in: ProductoCreate, usuario: Usuario = Depends(requi
     if existente:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
-            detail=f"Ya existe un producto llamado '{producto_in.nombre}' en tu sucursal",
+            detail=f"Ya existe un producto llamado '{producto_in.nombre}' en tu sucursal.",
         )
 
     # Crear el producto. flush() lo manda la db para obtener su id
@@ -76,7 +76,7 @@ def listar_productos(
     """Lista todos los productos de la sucursal del gerente, con búsqueda por nombre o categoría. Solo Gerentes."""
 
     
-    # La sucursal sale del gerente que lanza la peticion
+    # La sucursal sale del gerente que lanza la petición
     sucursal = obtener_sucursal_del_gerente(db, usuario.id)
 
     # Consulta los productos con la función
@@ -105,10 +105,10 @@ def obtener_producto(
 ):
     """Obtiene un producto específico. Solo Gerentes."""
 
-    # La sucursal sale del gerente que lanza la peticion
+    # La sucursal sale del gerente que lanza la petición
     sucursal = obtener_sucursal_del_gerente(db, usuario.id)
 
-    # Se filtra la consulta de los productos por el id del producto de la peticion
+    # Se filtra la consulta de los productos por el id del producto de la petición
     consulta = consulta_productos(db, sucursal.id).filter(Producto.id == producto_id).first()
     if consulta is None:
         raise HTTPException(
@@ -122,6 +122,32 @@ def obtener_producto(
 
 
 # Endpoint eliminar producto
+@router.delete("/{producto_id}")
+def eliminar_producto(
+    producto_id: int,
+    usuario: Usuario = Depends(requiere_rol("gerente_sede")),
+    db: Session = Depends(get_db)  
+):
+    """Eliminar un producto de la sucursal del gerente. Solo Gerentes."""
 
+    # La sucursal sale del gerente que lanza la petición
+    sucursal = obtener_sucursal_del_gerente(db, usuario.id)
+
+    # El producto sale de la sucursal del gerente y el id del producto de la petición.
+    producto = obtener_producto_de_sucursal(db, sucursal.id, producto_id)
+
+    if not producto.activo:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"El producto con ID {producto_id} ya estaba inactivo."
+        )
+
+    producto.activo = False
+    db.commit()
+
+    return {
+        "message": f"Producto con ID {producto_id} desactivado exitosamente.",
+        "estado": "inactivo"
+    }
 
 # Endpoint reactivar producto
