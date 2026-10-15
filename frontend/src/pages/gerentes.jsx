@@ -319,15 +319,28 @@ const manejarReactivar = async (id) => {
 
                     <div className="flex items-center gap-4">
 
-                      {/* Avatar */}
-                      <div className="w-20 h-20 rounded-full bg-[#f6d5ca] flex items-center justify-center text-[#875d69] text-xl font-semibold">
-                        {gerente.nombre
-                            ?.split(" ")
-                            .map((nombre) => nombre[0])
-                            .slice(0, 2)
-                            .join("")
-                            .toUpperCase()}
-                      </div>
+                      
+        {/* Avatar */}
+        <div className="w-20 h-20 rounded-full bg-[#f6d5ca] flex items-center justify-center text-[#875d69] text-xl font-semibold overflow-hidden shrink-0">
+          {gerente.foto_url ? (
+            <img
+              src={gerente.foto_url}
+              alt={`Foto de ${gerente.nombre}`}
+              className="w-full h-full object-cover"
+              onError={(e) => {
+                e.currentTarget.style.display = "none";
+              }}
+            />
+          ) : (
+            gerente.nombre
+              ?.split(" ")
+              .map((nombre) => nombre[0])
+              .slice(0, 2)
+              .join("")
+              .toUpperCase()
+          )}
+        </div>
+
 
                       <div>
                         <div className="flex items-center gap-3">
