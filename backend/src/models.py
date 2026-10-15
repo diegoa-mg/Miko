@@ -83,10 +83,17 @@ class Producto(Base):
     # NUMERIC(10,2) para evitar pérdida de centavos
     precio = Column(Numeric(10, 2), nullable=False)
     categoria_id = Column(Integer, ForeignKey("categorias.id"), nullable=False)
+    sucursal_id = Column(Integer, ForeignKey("sucursales.id"), nullable=False)
+    activo = Column(Boolean, nullable=False, server_default="true")
+
+    __table_args__ = (
+        UniqueConstraint("sucursal_id", "nombre", name="uq_producto_nombre_sucursal"),
+    )
 
     categoria = relationship("Categoria", back_populates="productos")
     inventarios = relationship("Inventario", back_populates="producto")
     detalles_venta = relationship("DetalleVenta", back_populates="producto")
+    sucursal = relationship("Sucursal")
 
 class Inventario(Base):
     __tablename__ = "inventario"
