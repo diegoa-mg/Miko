@@ -268,4 +268,19 @@ def sucursal_del_alcance(db: Session, usuario: Usuario) -> Optional[int]:
         status_code=status.HTTP_403_FORBIDDEN,
         detail="Tu rol no tiene acceso a esta sección",
     )
- 
+
+def consulta_productos(db: Session, sucursal_id: int) -> Query:
+    return (
+        db.query(
+            Producto.id.label("id"),
+            Producto.nombre.label("nombre"),
+            Producto.precio.label("precio"),
+            Categoria.id.label("categoria_id"),
+            Categoria.nombre.label("categoria_nombre"),
+            Inventario.existencia.label("existencia"),
+            Producto.activo.label("activo")
+        )
+        .join(Categoria, Categoria.id == Producto.categoria_id)
+        .join(Inventario, Inventario.producto_id == Producto.id)
+        .filter(Producto.sucursal_id == sucursal_id)
+    )

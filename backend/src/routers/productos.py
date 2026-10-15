@@ -7,7 +7,7 @@ from src.dependencies import requiere_rol
 from src.database import get_db
 from src.models import Producto, Sucursal, Inventario, Usuario, Categoria
 from src.schemas import ProductoOut, ProductoCreate, ProductoUpdate
-from src.services import llenar_producto_out, obtener_sucursal_del_gerente
+from src.services import llenar_producto_out, obtener_sucursal_del_gerente, consulta_productos
 
 router = APIRouter(
     prefix="/productos",
@@ -34,10 +34,7 @@ def crear_producto(producto_in: ProductoCreate, usuario: Usuario = Depends(requi
         )
 
     # Verificar que no se repita el nombre
-    existente = db.query(Producto).filter(
-        Producto.nombre == producto_in.nombre,
-        Producto.sucursal_id == sucursal.id,
-    ).first()
+    existente = db.query(Producto).filter(Producto.nombre == producto_in.nombre, Producto.sucursal_id == sucursal.id).first()
     if existente:
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
@@ -67,10 +64,37 @@ def crear_producto(producto_in: ProductoCreate, usuario: Usuario = Depends(requi
 
     return llenar_producto_out(producto)
 
-    
-
 # Endpoint listar productos
+@router.get("", response_model=list[ProductoOut], status_code=status.HTTP_200_OK)
+def listar_productos(
+    buscar: str | None = None,
+    categoria_id: int | None = None,
+    incluir_inactivos:bool = False,
+    usuario: Usuario = Depends(requiere_rol("gerente_sede")),
+    db: Session = Depends(get_db)
+):
+    """Lista todos los productos de la sucursal del gerente, con búsqueda por nombre o categoría. Solo gerentes."""
 
+    
+    # La sucursal sale del gerente que lanza la peticion
+    sucursal = obtener_sucursal_del_gerente(db, usuario.id)
+
+    # Consulta los productos con la función
+    consulta = consulta_productos(db, sucursal.id)
+
+    # Por si solo se requieren los activos
+    if not incluir_inactivos:
+        consulta = consulta.filter(Producto.activo == True)
+
+    # ilike = búsqueda parcial sin importar mayúsculas: "con" encuentra "Concha"
+    if buscar:
+        consulta = consulta.filter(Producto.nombre.ilike(f"%{buscar}%"))
+
+    if categoria_id:
+        consulta = consulta.filter(Producto.categoria_id == categoria_id)
+
+    # Cada fila trae las columnas con los nombres de ProductoOut, Pydantic la convierte directo
+    return [ProductoOut.model_validate(fila) for fila in consulta]
 
 # Endpoint actualizar producto
 
