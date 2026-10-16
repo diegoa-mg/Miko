@@ -5,9 +5,9 @@ from src.dependencies import requiere_rol
 # from src.services import
 
 from src.database import get_db
-from src.models import Producto, Sucursal, Inventario, Usuario, Categoria
+from src.models import Producto, Inventario, Usuario, Categoria
 from src.schemas import ProductoOut, ProductoCreate, ProductoUpdate
-from src.services import llenar_producto_out, obtener_sucursal_del_gerente, consulta_productos, obtener_producto_de_sucursal
+from src.services import obtener_sucursal_del_gerente, consulta_productos, obtener_producto_de_sucursal
 
 router = APIRouter(
     prefix="/productos",
@@ -60,9 +60,9 @@ def crear_producto(producto_in: ProductoCreate, usuario: Usuario = Depends(requi
     db.add(inventario)
 
     db.commit()
-    db.refresh(producto)
 
-    return llenar_producto_out(producto)
+    producto_creado = consulta_productos(db, sucursal.id).filter(Producto.id == producto.id).first()
+    return ProductoOut.model_validate(producto_creado)
 
 # Endpoint listar productos
 @router.get("", response_model=list[ProductoOut], status_code=status.HTTP_200_OK)
