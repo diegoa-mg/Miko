@@ -96,7 +96,7 @@ docker compose exec backend alembic upgrade head
 
 ### Paso 7: Crear el usuario admin de prueba 
 ```bash
-docker compose exec backend python -m scripts.crear_usuario_prueba
+docker compose exec backend python -m scripts.datos_de_prueba
 ```
 
 Esto crea un usuario Administrador General para poder iniciar sesión:
