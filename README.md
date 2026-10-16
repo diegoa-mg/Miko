@@ -86,7 +86,7 @@ SUPABASE_SERVICE_KEY=cambia-esto-por-la-clave-secreta-de-supabase
 
 ### Paso 5: Levantar los contenedores
 ```bash
-docker compose up -d --build
+docker compose up -d
 ```
 
 ### Paso 6: Aplicar migraciones de Alembic
@@ -103,7 +103,7 @@ Esto crea un usuario Administrador General para poder iniciar sesión:
 
 | Correo | Contraseña |
 |---|---|
-| `admintest@miko.com` | `admin123` |
+| `admin@miko.com` | `Miko12345` |
 
 >⚠️ Estas credenciales son **solo para desarrollo local**. No uses este script en el servidor de producción.
 
