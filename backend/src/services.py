@@ -59,19 +59,7 @@ def llenar_inventario_out(inventario: Inventario) -> InventarioOut:
         sucursal_id=inventario.sucursal_id,
         sucursal_nombre=inventario.sucursal_nombre,
         existencia=inventario.existencia
-    )
-
-# Función para llenar ProductoOut
-def llenar_producto_out(producto: Producto) -> ProductoOut:
-    return ProductoOut(
-        id=producto.id,
-        nombre=producto.nombre,
-        precio=producto.precio,
-        categoria_id=producto.categoria_id,
-        categoria_nombre=producto.categoria_id,
-        existencia=producto.existencia,
-        activo=producto.activo
-    )   
+    )  
 
 # Arma (sin ejecutar) la consulta base del inventario de todas las sucursales, para que cada endpoint le agregue sus filtros
 def consulta_inventario(db: Session) -> Query:
@@ -297,3 +285,16 @@ def obtener_producto_de_sucursal(db: Session, sucursal_id: int, producto_id: int
             detail=f"El producto con ID {producto_id} no fue encontrado.",
         )
     return producto
+
+def listar_cajeros_activos(db: Session, sucursal_id: int) -> list[Usuario]:
+    """Cajeros activos de una sucursal (la sucursal de un cajero vive en usuarios.sucursal_id)."""
+    rol_cajero = obtener_rol(db, "cajero")
+    return (
+        db.query(Usuario)
+        .filter(
+            Usuario.rol_id == rol_cajero.id,
+            Usuario.activo == True,
+            Usuario.sucursal_id == sucursal_id,
+        )
+        .all()
+    )
