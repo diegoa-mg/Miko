@@ -4,12 +4,12 @@ from sqlalchemy import func
 
 from src.dependencies import requiere_rol
 from src.database import get_db
-from src.models import Categoria
+from src.models import Categoria, Producto
 from src.schemas import CategoriaCreate, CategoriaOut
 
 router = APIRouter(
     prefix="/categorias",
-    tags=["productos"],
+    tags=["categorias"],
 )
 
 # Endpoint para listar las categorias
@@ -52,6 +52,7 @@ def editar_categoria(
 ):
     """Editar una categoría. Solo Administrador General."""
 
+    # Validar que la categoria exista
     categoria = db.query(Categoria).filter(Categoria.id == categoria_id).first()
     if categoria is None:
         raise HTTPException(
@@ -59,6 +60,7 @@ def editar_categoria(
             detail=f"La categoría con ID {categoria_id} no existe."
         )
 
+    # Se compara la misma palabra aunque tenga mayúsculas
     existente = db.query(Categoria).filter(func.lower(Categoria.nombre) == categoria_in.nombre.lower(), Categoria.id != categoria_id).first()
     if existente:
         raise HTTPException(
@@ -70,3 +72,34 @@ def editar_categoria(
     db.commit()
 
     return CategoriaOut.model_validate(categoria)
+
+# Endpoint para eliminar una categoría (sin productos)
+@router.delete("/{categoria_id}", dependencies=[Depends(requiere_rol("admin_general"))], status_code=status.HTTP_200_OK)
+def eliminar_categoria(
+    categoria_id: int,
+    db: Session = Depends(get_db)
+):
+    """Eliminar una categoría solo si no tiene productos asignados. Administrador General."""
+
+    # Valida que exista la categoría
+    categoria = db.query(Categoria).filter(Categoria.id == categoria_id).first()
+    if categoria is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"La categoría con ID {categoria_id} no existe."
+        )
+
+    # Revisa si tiene productos asignados
+    producto_asignado = db.query(Producto).filter(Producto.categoria_id == categoria_id).first()
+    if producto_asignado:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"La categoría con ID {categoria_id} tiene productos asignados, no se puede eliminar."
+        )
+
+    db.delete(categoria)
+    db.commit()
+
+    return {
+        "message": f"Categoría con ID {categoria_id} eliminada correctamente."
+    }
