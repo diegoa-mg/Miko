@@ -2,8 +2,6 @@ from fastapi import APIRouter, Depends, HTTPException, status
 from sqlalchemy.orm import Session
 
 from src.dependencies import requiere_rol
-# from src.services import
-
 from src.database import get_db
 from src.models import Producto, Inventario, Usuario, Categoria
 from src.schemas import ProductoOut, ProductoCreate, ProductoUpdate
