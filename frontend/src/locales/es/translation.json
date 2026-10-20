@@ -96,7 +96,8 @@
     "settings": "Configuración",
     "managers": "Gerentes",
     "cashiers": "Cajeros",
-    "products": "Productos"
+    "products": "Productos",
+    "logout": "Cerrar sesión"
   },
   "cajeros": {
     "titulo": "Cajeros",
@@ -131,8 +132,8 @@
     "errorEliminar": "No se pudo eliminar el cajero.",
     "nombrePlaceholder": "Ej. Carlos López",
     "correoPlaceholder": "Ej. carlos@miko.com",
-    "reactivar": "Reactivar", 
-    "mostrarInactivos": "Mostrar inactivos", 
+    "reactivar": "Reactivar",
+    "mostrarInactivos": "Mostrar inactivos",
     "errorReactivar": "No se pudo reactivar el cajero."
   },
   "inventarios": {
@@ -154,39 +155,38 @@
     "emptyDescription": "No hay productos registrados en el inventario de la sucursal seleccionada.",
     "inactiveBranches": "Sucursales inactivas"
   },
-  
-"ventas": {
-  "titulo": "Ventas",
-  "descripcion": "Consulta las ventas realizadas en cada sucursal.",
-  "filtroTitulo": "Filtrar por sucursal",
-  "filtroDescripcion": "Selecciona una sucursal para consultar sus ventas.",
-  "todasSucursales": "Todas las sucursales",
-  "inactivas": "Sucursales inactivas",
-  "ventasRegistradas": "Ventas registradas",
-  "totalVendido": "Total vendido",
-  "registroTitulo": "Registro de ventas",
-  "registroDescripcion": "Ventas realizadas por sucursal.",
-  "venta": "Venta",
-  "sucursal": "Sucursal",
-  "cajero": "Cajero",
-  "fecha": "Fecha",
-  "metodoPago": "Método de pago",
-  "total": "Total",
-  "sinVentas": "No hay ventas registradas",
-  "sinVentasDescripcion": "No se encontraron ventas para la sucursal seleccionada.",
-  "cargando": "Cargando ventas...",
-  "errorCarga": "No fue posible cargar las ventas. Intenta nuevamente.",
-  "reintentar": "Reintentar",
-  "metodosPago": {
-    "efectivo": "Efectivo",
-    "tarjeta": "Tarjeta",
-    "transferencia": "Transferencia"
+  "ventas": {
+    "titulo": "Ventas",
+    "descripcion": "Consulta las ventas realizadas en cada sucursal.",
+    "filtroTitulo": "Filtrar por sucursal",
+    "filtroDescripcion": "Selecciona una sucursal para consultar sus ventas.",
+    "todasSucursales": "Todas las sucursales",
+    "inactivas": "Sucursales inactivas",
+    "ventasRegistradas": "Ventas registradas",
+    "totalVendido": "Total vendido",
+    "registroTitulo": "Registro de ventas",
+    "registroDescripcion": "Ventas realizadas por sucursal.",
+    "venta": "Venta",
+    "sucursal": "Sucursal",
+    "cajero": "Cajero",
+    "fecha": "Fecha",
+    "metodoPago": "Método de pago",
+    "total": "Total",
+    "sinVentas": "No hay ventas registradas",
+    "sinVentasDescripcion": "No se encontraron ventas para la sucursal seleccionada.",
+    "cargando": "Cargando ventas...",
+    "errorCarga": "No fue posible cargar las ventas. Intenta nuevamente.",
+    "reintentar": "Reintentar",
+    "metodosPago": {
+      "efectivo": "Efectivo",
+      "tarjeta": "Tarjeta",
+      "transferencia": "Transferencia"
+    },
+    "paginacion": {
+      "anterior": "Página anterior",
+      "siguiente": "Página siguiente"
+    }
   },
-  "paginacion": {
-    "anterior": "Página anterior",
-    "siguiente": "Página siguiente"
-  }
-},
   "roles": {
     "admin_general": "Administrador",
     "gerente_sede": "Gerente de sede",
@@ -234,6 +234,55 @@
       "title": "Seguridad",
       "comingSoon": "Próximamente"
     }
+  },
+  "perfil": {
+    "subtitle": "Administra tu información personal y credenciales de acceso",
+    "fotoTitulo": "Foto de perfil",
+    "fotoDescripcion": "Haz clic en el icono o selecciona una imagen de tu equipo",
+    "seleccionarImagen": "Seleccionar imagen",
+    "formatos": "Formatos: PNG, JPG o WEBP (Máx. 10 MB)",
+    "datosTitulo": "Datos Personales",
+    "datosDescripcion": "Modifica tu nombre de usuario y correo electrónico",
+    "nombreCompleto": "Nombre completo",
+    "correoActual": "Correo Electrónico Actual",
+    "nuevoCorreo": "Nuevo Correo Electrónico",
+    "nuevoCorreoPlaceholder": "nuevo@correo.com",
+    "guardarCambios": "Guardar Cambios",
+    "seguridadTitulo": "Seguridad y Acceso",
+    "seguridadDescripcion": "Actualiza tu contraseña para mantener la seguridad de tu acceso",
+    "passwordActual": "Contraseña actual",
+    "passwordNueva": "Nueva contraseña",
+    "passwordNuevaPlaceholder": "Ingresa la nueva contraseña",
+    "actualizarPassword": "Actualizar Contraseña",
+    "cerrarSesion": "Cerrar sesión",
+    "nombrePlaceholder": "Ej. Admin de prueba",
+    "correoNoModificable": "Este correo no se puede modificar directamente",
+    "verPassword": "Ver contraseña",
+    "ocultarPassword": "Ocultar contraseña",
+    "cambiarFoto": "Cambiar fotografía",
+    "subiendo": "Subiendo...",
+    "cargandoArchivo": "Cargando archivo...",
+    "guardando": "Guardando...",
+    "actualizando": "Actualizando...",
+    "fotoMuyGrande": "La imagen no debe superar los 10 MB",
+    "fotoActualizada": "Foto de perfil actualizada exitosamente",
+    "correoInvalido": "El nuevo correo electrónico debe incluir un '@' válido",
+    "datosActualizados": "Datos personales actualizados correctamente",
+    "passwordCambiada": "Contraseña cambiada con éxito",
+    "errorSubirImagen": "Error al subir la imagen",
+    "errorActualizarPerfil": "Error al actualizar perfil",
+    "errorCambiarPassword": "Error al cambiar contraseña",
+    "sinRespuesta": "sin respuesta del servidor (revisa que el backend esté corriendo)",
+    "datosInvalidos": "datos inválidos",
+    "errorHttp": "{{fallback}} (error {{status}})",
+    "recortarTitulo": "Ajusta tu foto",
+    "recortarDescripcion": "Arrastra la imagen para centrarla y usa el control para acercar o alejar",
+    "cancelar": "Cancelar",
+    "procesando": "Procesando...",
+    "guardarFoto": "Guardar foto",
+    "passwordActualPlaceholder": "Ingresa tu contraseña actual",
+    "passwordActualRequerida": "Debes escribir tu contraseña actual para cambiarla",
+    "passwordActualAviso": "Ingresa tu contraseña actual para cambiarla"
   },
   "common": {
     "notFound": "Página no encontrada",

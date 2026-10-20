@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { NavLink } from "react-router-dom";
+import { NavLink, useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import iconoMiko from "../assets/icono.png";
 import logoOscuro from "../assets/logo_oscuro.png";
@@ -12,8 +12,18 @@ export default function Sidebar({
 }) {
   const [open, setOpen] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
-  const { user } = useAuth();
+  const { user, logout } = useAuth();
+  const navigate = useNavigate();
   const { t } = useTranslation();
+
+  const handleLogout = async () => {
+    setMenuOpen(false);
+    try {
+      await logout();
+    } finally {
+      navigate("/login", { replace: true });
+    }
+  };
 
   const renderLink = (item) => (
     <NavLink
@@ -144,6 +154,15 @@ export default function Sidebar({
               <span className="material-icons text-lg text-gray-500">settings</span>
               {t("sidebar.settings")}
             </NavLink>
+
+            <button
+              type="button"
+              onClick={handleLogout}
+              className="w-full flex items-center gap-2 px-4 py-3 text-sm text-left text-sm hover:bg-gray-100 transition-colors"
+            >
+              <span className="material-icons text-lg">logout</span>
+              {t("sidebar.logout")}
+            </button>
           </div>
 
           <button

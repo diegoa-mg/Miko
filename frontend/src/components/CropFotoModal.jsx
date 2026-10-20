@@ -1,5 +1,6 @@
 import { useState, useCallback } from "react";
 import Cropper from "react-easy-crop";
+import { useTranslation } from "react-i18next";
 
 const cargarImagen = (src) =>
   new Promise((resolve, reject) => {
@@ -31,6 +32,7 @@ async function recortarImagen(src, area) {
 }
 
 export default function CropFotoModal({ imageSrc, onCancel, onConfirm }) {
+  const { t } = useTranslation();
   const [crop, setCrop] = useState({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [areaPixeles, setAreaPixeles] = useState(null);
@@ -55,10 +57,10 @@ export default function CropFotoModal({ imageSrc, onCancel, onConfirm }) {
     <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
       <div className="bg-white rounded-3xl shadow-xl w-full max-w-md p-6">
         <h3 className="font-sans text-lg font-semibold text-[#875d69]">
-          Ajusta tu foto
+          {t("perfil.recortarTitulo")}
         </h3>
         <p className="font-sans text-xs text-gray-500 mb-4">
-          Arrastra la imagen para centrarla y usa el control para acercar o alejar
+          {t("perfil.recortarDescripcion")}
         </p>
 
         <div className="relative w-full h-72 rounded-2xl overflow-hidden bg-gray-900">
@@ -96,7 +98,7 @@ export default function CropFotoModal({ imageSrc, onCancel, onConfirm }) {
             disabled={procesando}
             className="flex-1 py-2.5 border border-[#ead8d8] text-[#875d69] text-xs font-semibold rounded-xl hover:border-[#cda4b4] transition-colors disabled:opacity-50"
           >
-            Cancelar
+            {t("perfil.cancelar")}
           </button>
           <button
             type="button"
@@ -104,7 +106,7 @@ export default function CropFotoModal({ imageSrc, onCancel, onConfirm }) {
             disabled={procesando}
             className="flex-1 py-2.5 bg-[#875d69] hover:bg-[#724d58] text-white text-xs font-semibold rounded-xl transition-colors disabled:opacity-50"
           >
-            {procesando ? "Procesando..." : "Guardar foto"}
+            {procesando ? t("perfil.procesando") : t("perfil.guardarFoto")}
           </button>
         </div>
       </div>
