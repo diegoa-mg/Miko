@@ -62,7 +62,7 @@ export default function Sidebar({
 
   return (
     <aside
-      className={`bg-[#5c3a42] text-white flex flex-col transition-all duration-300 ease-in-out shrink-0 ${
+      className={`bg-[#5c3a42] text-white flex flex-col transition-all duration-300 ease-in-out shrink-0 sticky top-0 h-screen self-start ${
         open ? "w-64" : "w-20"
       }`}
     >

@@ -6,6 +6,7 @@ import {
   cambiarPasswordApi,
   subirFotoPerfilApi,
 } from "../api/cuenta";
+import CropFotoModal from "../components/CropFotoModal";
 
 // Extrae el mensaje de error del backend (en 422 "detail" es un arreglo, no un texto)
 const getError = (err, fallback) => {
@@ -30,6 +31,7 @@ export default function Configuracion() {
   const [passwordActual, setPasswordActual] = useState("admin123");
   const [passwordNueva, setPasswordNueva] = useState("");
   const [previewFoto, setPreviewFoto] = useState(null);
+  const [imagenParaRecortar, setImagenParaRecortar] = useState(null);
 
   // Estados para ver u ocultar las contraseñas
   const [mostrarPasswordActual, setMostrarPasswordActual] = useState(false);
@@ -53,8 +55,8 @@ export default function Configuracion() {
     navigate("/login");
   };
 
-  // Cambio y previsualización de foto
-  const handleFotoChange = async (e) => {
+  // Al elegir la imagen: validar y abrir el recortador (todavía no se sube)
+  const handleFotoChange = (e) => {
     const file = e.target.files[0];
     e.target.value = "";
     if (!file) return;
@@ -64,13 +66,25 @@ export default function Configuracion() {
       return;
     }
 
-    const objectUrl = URL.createObjectURL(file);
+    setMensaje({ tipo: "", texto: "" });
+    setImagenParaRecortar(URL.createObjectURL(file));
+  };
+
+  const cerrarRecorte = () => {
+    if (imagenParaRecortar) URL.revokeObjectURL(imagenParaRecortar);
+    setImagenParaRecortar(null);
+  };
+
+  // Al confirmar el recorte: ahora sí se sube el archivo recortado
+  const handleConfirmarRecorte = async (fileRecortado) => {
+    cerrarRecorte();
+
+    const objectUrl = URL.createObjectURL(fileRecortado);
     setPreviewFoto(objectUrl);
 
     try {
       setSubiendoFoto(true);
-      setMensaje({ tipo: "", texto: "" });
-      const usuarioActualizado = await subirFotoPerfilApi(file);
+      const usuarioActualizado = await subirFotoPerfilApi(fileRecortado);
       updateUser(usuarioActualizado);
       setPreviewFoto(null);
       setMensaje({ tipo: "success", texto: "Foto de perfil actualizada exitosamente" });
@@ -391,6 +405,14 @@ export default function Configuracion() {
           </div>
         </div>
       </div>
+
+      {imagenParaRecortar && (
+        <CropFotoModal
+          imageSrc={imagenParaRecortar}
+          onCancel={cerrarRecorte}
+          onConfirm={handleConfirmarRecorte}
+        />
+      )}
     </div>
   );
 }
