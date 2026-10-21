@@ -95,6 +95,7 @@
     "managers": "Managers",
     "cashiers": "Cashiers",
     "products": "Products",
+    "mySales": "My sales"
     "logout": "Log out"
   },
   "cajeros": {
@@ -213,7 +214,19 @@
     "loadingManagers": "Loading managers...",
     "errorManagers": "Could not load managers.",
     "loadingCashiers": "Loading cashiers...",
-    "errorCashiers": "Could not load cashiers."
+    "errorCashiers": "Could not load cashiers.",
+    "branchInfoTitle": "Your branch",
+    "branchAddress": "Address",
+    "branchPhone": "Phone",
+    "branchStatus": "Status",
+    "branchStatusActive": "Active",
+    "branchStatusInactive": "Inactive",
+    "branchNoPhone": "No phone registered",
+    "descripcionCajero": "Overview of your sales",
+    "salesToday": "Today's sales",
+    "salesCountToday": "Number of sales today",
+    "latestSales": "Latest sales",
+    "noSales": "You haven't registered any sales yet."
   },
   "settings": {
     "title": "Settings",

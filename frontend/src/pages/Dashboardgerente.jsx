@@ -1,6 +1,14 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { CircleDollarSign, TriangleAlert, Users } from "lucide-react";
+import {
+  CircleDollarSign,
+  TriangleAlert,
+  Users,
+  Store,
+  MapPin,
+  Phone,
+  Info,
+} from "lucide-react";
 import { getDashboardGerente } from "../api/adminDashboard";
 
 export default function DashboardGerente() {
@@ -61,6 +69,8 @@ export default function DashboardGerente() {
   }
 
   const cajeros = data.cajeros ?? [];
+  const sucursal = data.sucursal;
+  const sucursalActiva = sucursal?.estado === "activa";
 
   return (
     <div className="min-h-screen bg-[#fdf6e3] p-4 sm:p-8">
@@ -77,6 +87,71 @@ export default function DashboardGerente() {
           </div>
         </div>
 
+        {/* Información de su sucursal */}
+        {sucursal && (
+          <div className="bg-white rounded-xl shadow p-5 mb-6">
+            <div className="flex items-center gap-3 mb-4">
+              <div className="w-10 h-10 shrink-0 rounded-full bg-pink-100 flex items-center justify-center text-pink-500">
+                <Store size={20} />
+              </div>
+              <div className="min-w-0">
+                <p className="text-sm text-gray-500">
+                  {t("dashboard.branchInfoTitle")}
+                </p>
+                <h2 className="font-sans text-xl font-semibold text-[#875d69] break-words">
+                  {sucursal.nombre}
+                </h2>
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+              <div className="flex items-start gap-2 min-w-0">
+                <MapPin size={18} className="mt-0.5 shrink-0 text-[#875d69]" />
+                <div className="min-w-0">
+                  <p className="text-xs text-gray-400">
+                    {t("dashboard.branchAddress")}
+                  </p>
+                  <p className="text-gray-800 break-words">
+                    {sucursal.direccion}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-2 min-w-0">
+                <Phone size={18} className="mt-0.5 shrink-0 text-[#875d69]" />
+                <div className="min-w-0">
+                  <p className="text-xs text-gray-400">
+                    {t("dashboard.branchPhone")}
+                  </p>
+                  <p className="text-gray-800 break-words">
+                    {sucursal.telefono || t("dashboard.branchNoPhone")}
+                  </p>
+                </div>
+              </div>
+
+              <div className="flex items-start gap-2 min-w-0">
+                <Info size={18} className="mt-0.5 shrink-0 text-[#875d69]" />
+                <div className="min-w-0">
+                  <p className="text-xs text-gray-400">
+                    {t("dashboard.branchStatus")}
+                  </p>
+                  <span
+                    className={`inline-block mt-0.5 text-xs font-medium px-3 py-1 rounded-full ${
+                      sucursalActiva
+                        ? "text-green-700 bg-green-100"
+                        : "text-gray-600 bg-gray-200"
+                    }`}
+                  >
+                    {sucursalActiva
+                      ? t("dashboard.branchStatusActive")
+                      : t("dashboard.branchStatusInactive")}
+                  </span>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Tarjetas resumen */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
           <div className="bg-white rounded-xl shadow p-5 flex items-center gap-4">
@@ -85,15 +160,19 @@ export default function DashboardGerente() {
             </div>
             <div className="min-w-0">
               <p className="text-sm text-gray-500 break-words">
-                {t("dashboard.periodSales")} (
-                {t("dashboard.periodRange", {
-                  start: data.periodo_inicio,
-                  end: data.periodo_fin,
-                })}
-                )
+                {t("dashboard.periodSales")}
               </p>
               <p className="text-2xl font-bold text-gray-800 break-words">
                 {formatMoney(data.ventas_total_periodo)}
+              </p>
+              {/* Un solo día: solo la fecha; si es un rango, inicio a fin */}
+              <p className="text-xs text-gray-400">
+                {data.periodo_inicio === data.periodo_fin
+                  ? data.periodo_inicio
+                  : t("dashboard.periodRange", {
+                      start: data.periodo_inicio,
+                      end: data.periodo_fin,
+                    })}
               </p>
             </div>
           </div>

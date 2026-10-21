@@ -97,6 +97,7 @@
     "managers": "Gerentes",
     "cashiers": "Cajeros",
     "products": "Productos",
+    "mySales": "Mis ventas"
     "logout": "Cerrar sesión"
   },
   "cajeros": {
@@ -215,7 +216,19 @@
     "errorManagers": "No se pudieron cargar los gerentes.",
     "loadingCashiers": "Cargando cajeros...",
     "errorCashiers": "No se pudieron cargar los cajeros.",
-    "descripcionGerente": "Resumen de tu sucursal"
+    "descripcionGerente": "Resumen de tu sucursal",
+    "branchInfoTitle": "Tu sucursal",
+    "branchAddress": "Dirección",
+    "branchPhone": "Teléfono",
+    "branchStatus": "Estado",
+    "branchStatusActive": "Activa",
+    "branchStatusInactive": "Inactiva",
+    "branchNoPhone": "Sin teléfono registrado",
+    "descripcionCajero": "Resumen de tus ventas",
+    "salesToday": "Ventas del día",
+    "salesCountToday": "Número de ventas del día",
+    "latestSales": "Últimas ventas",
+    "noSales": "Aún no has registrado ventas."
   },
   "settings": {
     "title": "Configuración",

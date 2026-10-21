@@ -15,7 +15,9 @@ import Ventas from "./pages/ventas";
 import AdminLayout from "./layouts/AdminLayout";
 import DashboardAdmin from "./pages/Dashboardadmin";
 import DashboardGerente from "./pages/Dashboardgerente";
+import DashboardCajero from "./pages/Dashboardcajero";
 import GerenteLayout from "./layouts/GerenteLayout";
+import CajeroLayout from "./layouts/CajeroLayout";
 import Configuracion from "./pages/Configuracion";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 
@@ -42,7 +44,7 @@ function Login() {
       } else if (usuario.rol === "gerente_sede") {
         navigate("/gerente");
       } else {
-        navigate("/pos");
+        navigate("/cajero");
       }
     } catch (error) {
       console.error(error);
@@ -175,7 +177,16 @@ export default function App() {
               </Route>
             </Route>
 
-            <Route element={<RoleRoute allowedRoles={["admin_general", "gerente_sede", "cajero"]} />}>
+            <Route element={<RoleRoute allowedRoles={["cajero"]} />}>
+              <Route path="/cajero" element={<CajeroLayout />}>
+                <Route index element={<DashboardCajero />} />
+                <Route path="pos" element={<PuntoDeVenta />} />
+                <Route path="ventas" element={<EnConstruccion titleKey="sidebar.mySales" />} />
+                <Route path="configuracion" element={<Configuracion />} />
+              </Route>
+            </Route>
+
+            <Route element={<RoleRoute allowedRoles={["admin_general", "gerente_sede"]} />}>
               <Route path="/pos/*" element={<PuntoDeVenta />} />
             </Route>
           </Route>

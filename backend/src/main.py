@@ -8,6 +8,7 @@ from src.routers import sucursales as sucursales_router
 from src.routers import gerentes as gerentes_router
 from src.routers import cajeros as cajeros_router
 from src.routers import dashboard as dashboard_router
+from src.routers import dashboard_cajero as dashboard_cajero_router
 from src.routers import cuenta as cuenta_router
 from src.routers import inventarios as inventarios_router
 from src.routers import ventas as ventas_router
@@ -48,6 +49,7 @@ app.include_router(sucursales_router.router)
 app.include_router(gerentes_router.router)
 app.include_router(cajeros_router.router)
 app.include_router(dashboard_router.router)
+app.include_router(dashboard_cajero_router.router)
 app.include_router(cuenta_router.router)
 app.include_router(inventarios_router.router)
 app.include_router(ventas_router.router)
