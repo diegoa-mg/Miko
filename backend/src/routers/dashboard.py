@@ -1,3 +1,13 @@
+"""
+Dashboards por rol (pantalla de inicio): Administrador General y Gerente de sede.
+Es la misma funcionalidad con distinto alcance:
+- /dashboard/admin   -> todas las sucursales (solo rol admin_general)
+- /dashboard/gerente -> solo la sucursal del usuario (solo rol gerente_sede)
+El cálculo compartido (ventas del período, alertas de inventario) vive en
+services.py. El dashboard del cajero, al ser otra pantalla distinta, va en
+su propio archivo.
+"""
+
 from datetime import date
 
 from fastapi import APIRouter, Depends, HTTPException, Query, status
@@ -7,7 +17,12 @@ from sqlalchemy.orm import Session
 from src.database import get_db
 from src.dependencies import requiere_rol
 from src.models import Sucursal
-from src.schemas import AlertaInventario, DashboardAdminResponse, DashboardGerenteResponse
+from src.schemas import (
+    AlertaInventario,
+    DashboardAdminResponse,
+    DashboardGerenteResponse,
+    SucursalInfo,
+)
 from src.services import (
     calcular_alertas_inventario,
     calcular_ventas_total,
@@ -108,6 +123,12 @@ def obtener_dashboard_gerente(
     cajeros = listar_cajeros_activos(db, sucursal.id)
 
     return DashboardGerenteResponse(
+        sucursal=SucursalInfo(
+            nombre=sucursal.nombre,
+            direccion=sucursal.direccion,
+            telefono=sucursal.telefono,
+            estado=sucursal.estado,
+        ),
         ventas_total_periodo=ventas_total,
         periodo_inicio=inicio,
         periodo_fin=fin,

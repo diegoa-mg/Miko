@@ -13,6 +13,9 @@ from src.schemas.dashboard import (
     AlertaInventario,
     DashboardAdminResponse,
     DashboardGerenteResponse,
+    DashboardCajeroResponse,
+    SucursalInfo,
+    VentaResumen,
 )
 from src.schemas.inventarios import InventarioOut, InventarioUpdate
 from src.schemas.categorias import CategoriaOut, CategoriaCreate

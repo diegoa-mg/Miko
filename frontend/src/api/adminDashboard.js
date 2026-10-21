@@ -19,3 +19,8 @@ export async function getDashboardGerente(fechaInicio, fechaFin, umbral) {
   const { data } = await api.get("/dashboard/gerente", { params });
   return data;
 }
+
+export async function getDashboardCajero() {
+  const { data } = await api.get("/dashboard/cajero");
+  return data;
+}
