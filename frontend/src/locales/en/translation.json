@@ -96,6 +96,7 @@
     "cashiers": "Cashiers",
     "products": "Products",
     "mySales": "My sales"
+    "logout": "Log out"
   },
   "cajeros": {
     "titulo": "Cashiers",
@@ -130,8 +131,8 @@
     "errorEliminar": "Could not delete cashier.",
     "nombrePlaceholder": "E.g. Carlos López",
     "correoPlaceholder": "E.g. carlos@miko.com",
-    "reactivar": "Reactivate", 
-    "mostrarInactivos": "Show inactive", 
+    "reactivar": "Reactivate",
+    "mostrarInactivos": "Show inactive",
     "errorReactivar": "Could not reactivate the cashier."
   },
   "inventarios": {
@@ -153,39 +154,38 @@
     "emptyDescription": "There are no products registered in the inventory for the selected branch.",
     "inactiveBranches": "Inactive branches"
   },
-  
-"ventas": {
-  "titulo": "Sales",
-  "descripcion": "View sales made at each branch.",
-  "filtroTitulo": "Filter by branch",
-  "filtroDescripcion": "Select a branch to view its sales.",
-  "todasSucursales": "All branches",
-  "inactivas": "Inactive branches",
-  "ventasRegistradas": "Registered sales",
-  "totalVendido": "Total sales",
-  "registroTitulo": "Sales records",
-  "registroDescripcion": "Sales made by branch.",
-  "venta": "Sale",
-  "sucursal": "Branch",
-  "cajero": "Cashier",
-  "fecha": "Date",
-  "metodoPago": "Payment method",
-  "total": "Total",
-  "sinVentas": "No sales recorded",
-  "sinVentasDescripcion": "No sales were found for the selected branch.",
-  "cargando": "Loading sales...",
-  "errorCarga": "Unable to load sales. Please try again.",
-  "reintentar": "Retry",
-  "metodosPago": {
-    "efectivo": "Cash",
-    "tarjeta": "Card",
-    "transferencia": "Bank transfer"
+  "ventas": {
+    "titulo": "Sales",
+    "descripcion": "View sales made at each branch.",
+    "filtroTitulo": "Filter by branch",
+    "filtroDescripcion": "Select a branch to view its sales.",
+    "todasSucursales": "All branches",
+    "inactivas": "Inactive branches",
+    "ventasRegistradas": "Registered sales",
+    "totalVendido": "Total sales",
+    "registroTitulo": "Sales records",
+    "registroDescripcion": "Sales made by branch.",
+    "venta": "Sale",
+    "sucursal": "Branch",
+    "cajero": "Cashier",
+    "fecha": "Date",
+    "metodoPago": "Payment method",
+    "total": "Total",
+    "sinVentas": "No sales recorded",
+    "sinVentasDescripcion": "No sales were found for the selected branch.",
+    "cargando": "Loading sales...",
+    "errorCarga": "Unable to load sales. Please try again.",
+    "reintentar": "Retry",
+    "metodosPago": {
+      "efectivo": "Cash",
+      "tarjeta": "Card",
+      "transferencia": "Bank transfer"
+    },
+    "paginacion": {
+      "anterior": "Previous page",
+      "siguiente": "Next page"
+    }
   },
-  "paginacion": {
-    "anterior": "Previous page",
-    "siguiente": "Next page"
-  }
-},
   "roles": {
     "admin_general": "Administrator",
     "gerente_sede": "Branch Manager",
@@ -245,6 +245,55 @@
       "title": "Security",
       "comingSoon": "Coming soon"
     }
+  },
+  "perfil": {
+    "subtitle": "Manage your personal information and access credentials",
+    "fotoTitulo": "Profile picture",
+    "fotoDescripcion": "Click the icon or select an image from your device",
+    "seleccionarImagen": "Select image",
+    "formatos": "Formats: PNG, JPG or WEBP (Max. 10 MB)",
+    "datosTitulo": "Personal Information",
+    "datosDescripcion": "Edit your username and email address",
+    "nombreCompleto": "Full name",
+    "correoActual": "Current Email Address",
+    "nuevoCorreo": "New Email Address",
+    "nuevoCorreoPlaceholder": "new@email.com",
+    "guardarCambios": "Save Changes",
+    "seguridadTitulo": "Security & Access",
+    "seguridadDescripcion": "Update your password to keep your account secure",
+    "passwordActual": "Current password",
+    "passwordNueva": "New password",
+    "passwordNuevaPlaceholder": "Enter the new password",
+    "actualizarPassword": "Update Password",
+    "cerrarSesion": "Log out",
+    "nombrePlaceholder": "E.g. Test admin",
+    "correoNoModificable": "This email cannot be changed directly",
+    "verPassword": "Show password",
+    "ocultarPassword": "Hide password",
+    "cambiarFoto": "Change photo",
+    "subiendo": "Uploading...",
+    "cargandoArchivo": "Loading file...",
+    "guardando": "Saving...",
+    "actualizando": "Updating...",
+    "fotoMuyGrande": "The image must not exceed 10 MB",
+    "fotoActualizada": "Profile picture updated successfully",
+    "correoInvalido": "The new email address must include a valid '@'",
+    "datosActualizados": "Personal information updated successfully",
+    "passwordCambiada": "Password changed successfully",
+    "errorSubirImagen": "Error uploading the image",
+    "errorActualizarPerfil": "Error updating profile",
+    "errorCambiarPassword": "Error changing password",
+    "sinRespuesta": "no response from the server (check that the backend is running)",
+    "datosInvalidos": "invalid data",
+    "errorHttp": "{{fallback}} (error {{status}})",
+    "recortarTitulo": "Adjust your photo",
+    "recortarDescripcion": "Drag the image to center it and use the slider to zoom in or out",
+    "cancelar": "Cancel",
+    "procesando": "Processing...",
+    "guardarFoto": "Save photo",
+    "passwordActualPlaceholder": "Enter your current password",
+    "passwordActualRequerida": "You must enter your current password to change it",
+    "passwordActualAviso": "Enter your current password to change it"
   },
   "common": {
     "notFound": "Page not found",

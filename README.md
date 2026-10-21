@@ -22,16 +22,37 @@ Aplicación web que permite a una empresa con varias sucursales administrar de f
 
 ## 🚀 Funcionalidades implementadas
 
+**Infraestructura**<br>
 ✅ Entorno de desarrollo completo con Docker (backend, frontend y base de datos aislados y comunicados entre sí)<br>
-✅ Frontend base con Vite + React, con cambio de idioma español/inglés funcional<br>
-✅ Backend base con FastAPI respondiendo peticiones<br>
-✅ Diseño del modelo relacional completo (diagrama entidad-relación y diccionario de datos)
+✅ Modelo relacional completo con SQLAlchemy 2.0 y migraciones de Alembic (incluye datos iniciales de roles y métodos de pago)<br>
+✅ Interfaz en español e inglés con cambio de idioma
+
+**Autenticación y cuenta**<br>
+✅ Inicio de sesión con JWT y control de acceso por rol (Administrador General, Gerente y Cajero)<br>
+✅ Edición de perfil, cambio de contraseña y foto de perfil
+
+**Administrador General**<br>
+✅ CRUD de sucursales y asignación de gerente<br>
+✅ Gestión de gerentes: crear, editar, desactivar y reactivar<br>
+✅ Gestión de categorías<br>
+✅ Consulta del inventario y de las ventas de todas las sucursales<br>
+✅ Dashboard con resumen general del sistema
+
+**Gerente de sede**<br>
+✅ Gestión de cajeros de su sucursal: crear, editar, desactivar y reactivar<br>
+✅ Control de inventario de su sucursal y actualización de existencias<br>
+✅ Dashboard con ventas del día y alertas de bajo inventario<br>
+✅ API de productos: crear, consultar, editar, desactivar y reactivar
+
+**Ventas**<br>
+✅ API de ventas: registro con método de pago, consulta y detalle
 
 🔜 Pendiente:
-- Migraciones de base de datos con Alembic
-- Autenticación de usuarios (JWT) y control de acceso por rol
-- CRUD de sucursales, productos e inventario
-- Módulo de ventas (POS)
+- Pantalla del Punto de Venta (POS) para el cajero: buscar productos, armar la venta, cobrar y confirmar
+- Generación de ticket o comprobante de la venta (HU-29)
+- Pantalla de productos del gerente (el backend ya está listo, falta la interfaz)
+- Pantalla de historial de ventas del gerente (el backend ya está listo, falta la interfaz)
+- Capturas de la plataforma para este README
 
 ## 📸 Capturas de la plataforma
 
@@ -122,31 +143,60 @@ Verifica que los 3 contenedores estén `Up` con `docker compose ps`, y abre:
 ```
 Miko/
 ├── docker-compose.yml
-├── .env.example            # plantilla de variables de entorno (raíz)
+├── .env.example                # plantilla de variables de entorno (raíz)
 ├── .gitignore
 ├── README.md
 ├── backend/
 │   ├── Dockerfile
 │   ├── requirements.txt
+│   ├── alembic.ini
+│   ├── alembic/
+│   │   ├── env.py              # conecta Alembic con los modelos y la BD
+│   │   └── versions/           # migraciones (esquema + datos iniciales)
+│   ├── scripts/                # datos de prueba y scripts de test manual
 │   └── src/
-│       └── main.py         # punto de entrada de FastAPI
+│       ├── main.py             # punto de entrada de FastAPI
+│       ├── database.py         # engine, sesión y Base de SQLAlchemy
+│       ├── security.py         # hash de contraseñas y manejo de JWT
+│       ├── auth.py
+│       ├── dependencies.py     # dependencias de FastAPI (usuario actual, roles)
+│       ├── models/             # tablas (SQLAlchemy 2.0)
+│       │   ├── usuarios.py     # Rol, Usuario
+│       │   ├── sucursales.py
+│       │   ├── categorias.py
+│       │   ├── productos.py
+│       │   ├── inventarios.py
+│       │   └── ventas.py       # MetodoPago, Venta, DetalleVenta
+│       ├── schemas/            # esquemas Pydantic (entrada/salida de la API)
+│       ├── routers/            # endpoints: auth, cuenta, sucursales, gerentes,
+│       │                       # cajeros, categorias, productos, inventarios,
+│       │                       # ventas y dashboard
+│       └── services/           # lógica de negocio (usuarios, sucursales,
+│                               # productos, inventarios, ventas, fotos, fechas)
 └── frontend/
     ├── Dockerfile
     ├── package.json
     ├── pnpm-lock.yaml
-    ├── pnpm-workspace.yaml  # aprueba el script nativo de esbuild
+    ├── pnpm-workspace.yaml     # aprueba el script nativo de esbuild
+    ├── .npmrc
     ├── vite.config.js
     ├── tailwind.config.js
     ├── postcss.config.js
     ├── index.html
-    ├── .env.example         # plantilla de variables de entorno (frontend)
+    ├── .env.example            # plantilla de variables de entorno (frontend)
     └── src/
         ├── main.jsx
         ├── App.jsx
         ├── i18n.js
         ├── index.css
-        ├── api/
-        │   └── axios.js
+        ├── api/                # llamadas al backend (axios.js es la instancia base)
+        ├── assets/             # logos e ícono
+        ├── components/         # Sidebar, LanguageSwitcher
+        ├── context/            # AuthContext (sesión del usuario)
+        ├── layouts/            # AdminLayout, GerenteLayout
+        ├── pages/              # pantallas: dashboards, sucursales, gerentes,
+        │                       # cajeros, inventarios, ventas, configuración
+        ├── routes/             # ProtectedRoute y RoleRoute (acceso por rol)
         └── locales/
             ├── es/translation.json
             └── en/translation.json

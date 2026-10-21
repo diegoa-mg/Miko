@@ -1,35 +1,41 @@
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { useAuth } from "../context/AuthContext";
 import {
   actualizarPerfilApi,
   cambiarPasswordApi,
   subirFotoPerfilApi,
 } from "../api/cuenta";
+import CropFotoModal from "../components/CropFotoModal";
 
 // Extrae el mensaje de error del backend (en 422 "detail" es un arreglo, no un texto)
-const getError = (err, fallback) => {
+const getError = (err, fallback, t) => {
   if (!err.response) {
-    return `${fallback}: sin respuesta del servidor (revisa que el backend esté corriendo)`;
+    return `${fallback}: ${t("perfil.sinRespuesta")}`;
   }
   const d = err.response.data?.detail;
   if (typeof d === "string") return d;
-  if (Array.isArray(d)) return `${fallback}: ${d[0]?.msg || "datos inválidos"}`;
-  return `${fallback} (error ${err.response.status})`;
+  if (Array.isArray(d)) return `${fallback}: ${d[0]?.msg || t("perfil.datosInvalidos")}`;
+  return t("perfil.errorHttp", { fallback, status: err.response.status });
 };
 
 export default function Configuracion() {
   const { user, updateUser, logout } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
   const fileInputRef = useRef(null);
 
   // Estados editables de los campos
   const [nombre, setNombre] = useState("");
   const [emailActual, setEmailActual] = useState("");
   const [emailNuevo, setEmailNuevo] = useState("");
-  const [passwordActual, setPasswordActual] = useState("admin123");
+  const [passwordActual, setPasswordActual] = useState("");
   const [passwordNueva, setPasswordNueva] = useState("");
+  // Evita que el navegador autocomplete la contraseña guardada en este campo
+  const [bloqueoAutofill, setBloqueoAutofill] = useState(true);
   const [previewFoto, setPreviewFoto] = useState(null);
+  const [imagenParaRecortar, setImagenParaRecortar] = useState(null);
 
   // Estados para ver u ocultar las contraseñas
   const [mostrarPasswordActual, setMostrarPasswordActual] = useState(false);
@@ -53,29 +59,41 @@ export default function Configuracion() {
     navigate("/login");
   };
 
-  // Cambio y previsualización de foto
-  const handleFotoChange = async (e) => {
+  // Al elegir la imagen: validar y abrir el recortador (todavía no se sube)
+  const handleFotoChange = (e) => {
     const file = e.target.files[0];
     e.target.value = "";
     if (!file) return;
 
     if (file.size > 10 * 1024 * 1024) {
-      setMensaje({ tipo: "error", texto: "La imagen no debe superar los 10 MB" });
+      setMensaje({ tipo: "error", texto: t("perfil.fotoMuyGrande") });
       return;
     }
 
-    const objectUrl = URL.createObjectURL(file);
+    setMensaje({ tipo: "", texto: "" });
+    setImagenParaRecortar(URL.createObjectURL(file));
+  };
+
+  const cerrarRecorte = () => {
+    if (imagenParaRecortar) URL.revokeObjectURL(imagenParaRecortar);
+    setImagenParaRecortar(null);
+  };
+
+  // Al confirmar el recorte: ahora sí se sube el archivo recortado
+  const handleConfirmarRecorte = async (fileRecortado) => {
+    cerrarRecorte();
+
+    const objectUrl = URL.createObjectURL(fileRecortado);
     setPreviewFoto(objectUrl);
 
     try {
       setSubiendoFoto(true);
-      setMensaje({ tipo: "", texto: "" });
-      const usuarioActualizado = await subirFotoPerfilApi(file);
+      const usuarioActualizado = await subirFotoPerfilApi(fileRecortado);
       updateUser(usuarioActualizado);
       setPreviewFoto(null);
-      setMensaje({ tipo: "success", texto: "Foto de perfil actualizada exitosamente" });
+      setMensaje({ tipo: "success", texto: t("perfil.fotoActualizada") });
     } catch (err) {
-      setMensaje({ tipo: "error", texto: getError(err, "Error al subir la imagen") });
+      setMensaje({ tipo: "error", texto: getError(err, t("perfil.errorSubirImagen"), t) });
       setPreviewFoto(null);
     } finally {
       URL.revokeObjectURL(objectUrl);
@@ -93,7 +111,7 @@ export default function Configuracion() {
     if (nuevoCorreoLimpio && !nuevoCorreoLimpio.includes("@")) {
       setMensaje({
         tipo: "error",
-        texto: "El nuevo correo electrónico debe incluir un '@' válido",
+        texto: t("perfil.correoInvalido"),
       });
       return;
     }
@@ -109,9 +127,9 @@ export default function Configuracion() {
       updateUser(usuarioActualizado);
       setEmailActual(usuarioActualizado.email || payload.email);
       setEmailNuevo("");
-      setMensaje({ tipo: "success", texto: "Datos personales actualizados correctamente" });
+      setMensaje({ tipo: "success", texto: t("perfil.datosActualizados") });
     } catch (err) {
-      setMensaje({ tipo: "error", texto: getError(err, "Error al actualizar perfil") });
+      setMensaje({ tipo: "error", texto: getError(err, t("perfil.errorActualizarPerfil"), t) });
     } finally {
       setGuardandoPerfil(false);
     }
@@ -120,14 +138,21 @@ export default function Configuracion() {
   // Cambiar contraseña
   const handleUpdatePassword = async (e) => {
     e.preventDefault();
+    setMensaje({ tipo: "", texto: "" });
+
+    if (!passwordActual.trim()) {
+      setMensaje({ tipo: "error", texto: t("perfil.passwordActualRequerida") });
+      return;
+    }
+
     try {
       setGuardandoPass(true);
-      setMensaje({ tipo: "", texto: "" });
       await cambiarPasswordApi(passwordActual, passwordNueva);
-      setMensaje({ tipo: "success", texto: "Contraseña cambiada con éxito" });
+      setMensaje({ tipo: "success", texto: t("perfil.passwordCambiada") });
+      setPasswordActual("");
       setPasswordNueva("");
     } catch (err) {
-      setMensaje({ tipo: "error", texto: getError(err, "Error al cambiar contraseña") });
+      setMensaje({ tipo: "error", texto: getError(err, t("perfil.errorCambiarPassword"), t) });
     } finally {
       setGuardandoPass(false);
     }
@@ -146,10 +171,10 @@ export default function Configuracion() {
         {/* Encabezado */}
         <div className="mb-8">
           <h1 className="font-sans text-3xl font-bold text-[#875d69]">
-            Configuración
+            {t("settings.title")}
           </h1>
           <p className="font-sans text-gray-600 mt-1">
-            Administra tu información personal y credenciales de acceso
+            {t("perfil.subtitle")}
           </p>
         </div>
 
@@ -173,17 +198,17 @@ export default function Configuracion() {
             {/* Columna Izquierda: Foto de Perfil */}
             <div className="lg:col-span-4 rounded-2xl p-6 min-h-[700px] flex flex-col items-center justify-center text-center">
               <h3 className="font-sans text-base font-semibold text-[#875d69] mb-1">
-                Foto de perfil
+                {t("perfil.fotoTitulo")}
               </h3>
               <p className="font-sans text-xs text-gray-500 mb-6">
-                Haz clic en el icono o selecciona una imagen de tu equipo
+                {t("perfil.fotoDescripcion")}
               </p>
 
               <div className="relative mb-5 group">
                 <div className="w-36 h-36 md:w-44 md:h-44 rounded-full p-1 bg-white shadow-md ring-4 ring-[#ead8d8] overflow-hidden">
                   <img
                     src={fotoSrc}
-                    alt="Foto de perfil"
+                    alt={t("perfil.fotoTitulo")}
                     className="w-full h-full rounded-full object-cover transition-transform duration-300 group-hover:scale-105"
                   />
                 </div>
@@ -192,7 +217,7 @@ export default function Configuracion() {
                   type="button"
                   disabled={subiendoFoto}
                   onClick={() => fileInputRef.current?.click()}
-                  title="Cambiar fotografía"
+                  title={t("perfil.cambiarFoto")}
                   className="absolute bottom-2 right-2 w-11 h-11 rounded-full bg-[#875d69] hover:bg-[#6f4b55] text-white shadow-lg flex items-center justify-center transition-all hover:scale-110 active:scale-95 disabled:opacity-50"
                 >
                   <span className="material-icons text-xl">photo_camera</span>
@@ -200,7 +225,7 @@ export default function Configuracion() {
 
                 {subiendoFoto && (
                   <div className="absolute inset-0 bg-black/50 rounded-full flex items-center justify-center text-white text-xs font-semibold">
-                    Subiendo...
+                    {t("perfil.subiendo")}
                   </div>
                 )}
               </div>
@@ -219,11 +244,11 @@ export default function Configuracion() {
                 onClick={() => fileInputRef.current?.click()}
                 className="w-full py-2.5 px-4 bg-white border border-[#ead8d8] hover:border-[#cda4b4] text-[#875d69] text-xs font-semibold rounded-xl shadow-xs transition-colors disabled:opacity-50"
               >
-                {subiendoFoto ? "Cargando archivo..." : "Seleccionar imagen"}
+                {subiendoFoto ? t("perfil.cargandoArchivo") : t("perfil.seleccionarImagen")}
               </button>
 
               <span className="text-[11px] text-gray-400 mt-3">
-                Formatos: PNG, JPG o WEBP (Máx. 10 MB)
+                {t("perfil.formatos")}
               </span>
             </div>
 
@@ -234,24 +259,24 @@ export default function Configuracion() {
               <form onSubmit={handleUpdatePerfil} className="space-y-4">
                 <div>
                   <h3 className="font-sans text-lg font-semibold text-[#875d69]">
-                    Datos Personales
+                    {t("perfil.datosTitulo")}
                   </h3>
                   <p className="font-sans text-xs text-gray-500">
-                    Modifica tu nombre de usuario y correo electrónico
+                    {t("perfil.datosDescripcion")}
                   </p>
                 </div>
 
                 {/* Fila Nombre Completo */}
                 <div>
                   <label className="font-sans block text-xs font-medium text-[#875d69] mb-1.5">
-                    Nombre completo *
+                    {t("perfil.nombreCompleto")} *
                   </label>
                   <input
                     type="text"
                     value={nombre}
                     onChange={(e) => setNombre(e.target.value)}
                     required
-                    placeholder="Ej. Admin de prueba"
+                    placeholder={t("perfil.nombrePlaceholder")}
                     className="font-sans w-full border-2 border-[#ead8d8] rounded-xl px-4 py-2.5 text-sm bg-white text-gray-800 focus:outline-none focus:border-[#cda4b4] transition"
                   />
                 </div>
@@ -260,27 +285,27 @@ export default function Configuracion() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
                     <label className="font-sans block text-xs font-medium text-[#875d69] mb-1.5">
-                      Correo Electrónico Actual *
+                      {t("perfil.correoActual")} *
                     </label>
                     <input
                       type="email"
                       value={emailActual}
                       readOnly
                       tabIndex={-1}
-                      title="Este correo no se puede modificar directamente"
+                      title={t("perfil.correoNoModificable")}
                       className="font-sans w-full border-2 border-[#ead8d8] rounded-xl px-4 py-2.5 text-sm bg-white text-gray-800 focus:outline-none cursor-default select-none caret-transparent"
                     />
                   </div>
 
                   <div>
                     <label className="font-sans block text-xs font-medium text-[#875d69] mb-1.5">
-                      Nuevo Correo Electrónico
+                      {t("perfil.nuevoCorreo")}
                     </label>
                     <input
                       type="email"
                       value={emailNuevo}
                       onChange={(e) => setEmailNuevo(e.target.value)}
-                      placeholder="nuevo@correo.com"
+                      placeholder={t("perfil.nuevoCorreoPlaceholder")}
                       className="font-sans w-full border-2 border-[#ead8d8] rounded-xl px-4 py-2.5 text-sm bg-white text-gray-800 focus:outline-none focus:border-[#cda4b4] transition"
                     />
                   </div>
@@ -291,7 +316,7 @@ export default function Configuracion() {
                   disabled={guardandoPerfil}
                   className="font-sans px-5 py-2.5 bg-[#875d69] hover:bg-[#724d58] text-white rounded-xl text-xs font-semibold shadow-xs transition-colors disabled:opacity-50"
                 >
-                  {guardandoPerfil ? "Guardando..." : "Guardar Cambios"}
+                  {guardandoPerfil ? t("perfil.guardando") : t("perfil.guardarCambios")}
                 </button>
               </form>
 
@@ -301,33 +326,40 @@ export default function Configuracion() {
               <form onSubmit={handleUpdatePassword} className="space-y-4">
                 <div>
                   <h3 className="font-sans text-lg font-semibold text-[#875d69]">
-                    Seguridad y Acceso
+                    {t("perfil.seguridadTitulo")}
                   </h3>
                   <p className="font-sans text-xs text-gray-500">
-                    Actualiza tu contraseña para mantener la seguridad de tu acceso
+                    {t("perfil.seguridadDescripcion")}
                   </p>
                 </div>
 
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
                   {/* Contraseña Actual (Bloqueada, estilo consistente sin puntos deformes) */}
                   <div>
                     <label className="font-sans block text-xs font-medium text-[#875d69] mb-1.5">
-                      Contraseña actual *
+                      {t("perfil.passwordActual")} *
                     </label>
+                    <p className="font-sans text-[11px] text-gray-500 mb-1.5 truncate">
+                      {t("perfil.passwordActualAviso")}
+                    </p>
                     <div className="relative">
                       <input
                         type={mostrarPasswordActual ? "text" : "password"}
                         value={passwordActual}
-                        readOnly
-                        onKeyDown={(e) => e.preventDefault()}
-                        tabIndex={-1}
-                        className="font-sans w-full border-2 border-[#ead8d8] rounded-xl pl-4 pr-11 py-2.5 text-sm bg-white text-gray-800 focus:outline-none cursor-default select-none caret-transparent tracking-widest"
+                        onChange={(e) => setPasswordActual(e.target.value)}
+                        required
+                        name="password_actual_cambio"
+                        autoComplete="new-password"
+                        readOnly={bloqueoAutofill}
+                        onFocus={() => setBloqueoAutofill(false)}
+                        placeholder={t("perfil.passwordActualPlaceholder")}
+                        className="font-sans w-full border-2 border-[#ead8d8] rounded-xl pl-4 pr-11 py-2.5 text-sm bg-white text-gray-800 focus:outline-none focus:border-[#cda4b4] transition"
                       />
                       <button
                         type="button"
                         onClick={() => setMostrarPasswordActual((prev) => !prev)}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#875d69] transition-colors focus:outline-none"
-                        title={mostrarPasswordActual ? "Ocultar contraseña" : "Ver contraseña"}
+                        title={mostrarPasswordActual ? t("perfil.ocultarPassword") : t("perfil.verPassword")}
                       >
                         <span className="material-icons text-xl">
                           {mostrarPasswordActual ? "visibility_off" : "visibility"}
@@ -339,7 +371,7 @@ export default function Configuracion() {
                   {/* Nueva Contraseña */}
                   <div>
                     <label className="font-sans block text-xs font-medium text-[#875d69] mb-1.5">
-                      Nueva contraseña *
+                      {t("perfil.passwordNueva")} *
                     </label>
                     <div className="relative">
                       <input
@@ -347,14 +379,16 @@ export default function Configuracion() {
                         value={passwordNueva}
                         onChange={(e) => setPasswordNueva(e.target.value)}
                         required
-                        placeholder="Ingresa la nueva contraseña"
+                        name="password_nueva_cambio"
+                        autoComplete="new-password"
+                        placeholder={t("perfil.passwordNuevaPlaceholder")}
                         className="font-sans w-full border-2 border-[#ead8d8] rounded-xl pl-4 pr-11 py-2.5 text-sm bg-white text-gray-800 focus:outline-none focus:border-[#cda4b4] transition"
                       />
                       <button
                         type="button"
                         onClick={() => setMostrarPasswordNueva((prev) => !prev)}
                         className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#875d69] transition-colors focus:outline-none"
-                        title={mostrarPasswordNueva ? "Ocultar contraseña" : "Ver contraseña"}
+                        title={mostrarPasswordNueva ? t("perfil.ocultarPassword") : t("perfil.verPassword")}
                       >
                         <span className="material-icons text-xl">
                           {mostrarPasswordNueva ? "visibility_off" : "visibility"}
@@ -366,10 +400,10 @@ export default function Configuracion() {
 
                 <button
                   type="submit"
-                  disabled={guardandoPass}
+                  disabled={guardandoPass || !passwordActual.trim() || !passwordNueva}
                   className="font-sans px-5 py-2.5 bg-[#875d69] hover:bg-[#724d58] text-white rounded-xl text-xs font-semibold shadow-xs transition-colors disabled:opacity-50"
                 >
-                  {guardandoPass ? "Actualizando..." : "Actualizar Contraseña"}
+                  {guardandoPass ? t("perfil.actualizando") : t("perfil.actualizarPassword")}
                 </button>
               </form>
 
@@ -383,7 +417,7 @@ export default function Configuracion() {
                   className="font-sans w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-red-200 text-red-600 text-sm font-semibold hover:bg-red-50 transition-colors"
                 >
                   <span className="material-icons text-base">logout</span>
-                  Cerrar sesión
+                  {t("perfil.cerrarSesion")}
                 </button>
               </div>
 
@@ -391,6 +425,14 @@ export default function Configuracion() {
           </div>
         </div>
       </div>
+
+      {imagenParaRecortar && (
+        <CropFotoModal
+          imageSrc={imagenParaRecortar}
+          onCancel={cerrarRecorte}
+          onConfirm={handleConfirmarRecorte}
+        />
+      )}
     </div>
   );
 }
