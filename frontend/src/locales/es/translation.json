@@ -97,7 +97,7 @@
     "managers": "Gerentes",
     "cashiers": "Cajeros",
     "products": "Productos",
-    "mySales": "Mis ventas"
+    "mySales": "Mis ventas",
     "logout": "Cerrar sesión"
   },
   "cajeros": {
