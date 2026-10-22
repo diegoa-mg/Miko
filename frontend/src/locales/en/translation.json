@@ -94,7 +94,9 @@
     "settings": "Settings",
     "managers": "Managers",
     "cashiers": "Cashiers",
-    "products": "Products"
+    "products": "Products",
+    "mySales": "My sales",
+    "logout": "Log out"
   },
   "cajeros": {
     "titulo": "Cashiers",
@@ -189,11 +191,6 @@
     "tarjeta": "Card",
     "transferencia": "Bank transfer"
   },
-  "paginacion": {
-    "anterior": "Previous page",
-    "siguiente": "Next page"
-  }
-},
   "roles": {
     "admin_general": "Administrator",
     "gerente_sede": "Branch Manager",
@@ -222,7 +219,19 @@
     "loadingManagers": "Loading managers...",
     "errorManagers": "Could not load managers.",
     "loadingCashiers": "Loading cashiers...",
-    "errorCashiers": "Could not load cashiers."
+    "errorCashiers": "Could not load cashiers.",
+    "branchInfoTitle": "Your branch",
+    "branchAddress": "Address",
+    "branchPhone": "Phone",
+    "branchStatus": "Status",
+    "branchStatusActive": "Active",
+    "branchStatusInactive": "Inactive",
+    "branchNoPhone": "No phone registered",
+    "descripcionCajero": "Overview of your sales",
+    "salesToday": "Today's sales",
+    "salesCountToday": "Number of sales today",
+    "latestSales": "Latest sales",
+    "noSales": "You haven't registered any sales yet."
   },
   "settings": {
     "title": "Settings",
@@ -241,6 +250,55 @@
       "title": "Security",
       "comingSoon": "Coming soon"
     }
+  },
+  "perfil": {
+    "subtitle": "Manage your personal information and access credentials",
+    "fotoTitulo": "Profile picture",
+    "fotoDescripcion": "Click the icon or select an image from your device",
+    "seleccionarImagen": "Select image",
+    "formatos": "Formats: PNG, JPG or WEBP (Max. 10 MB)",
+    "datosTitulo": "Personal Information",
+    "datosDescripcion": "Edit your username and email address",
+    "nombreCompleto": "Full name",
+    "correoActual": "Current Email Address",
+    "nuevoCorreo": "New Email Address",
+    "nuevoCorreoPlaceholder": "new@email.com",
+    "guardarCambios": "Save Changes",
+    "seguridadTitulo": "Security & Access",
+    "seguridadDescripcion": "Update your password to keep your account secure",
+    "passwordActual": "Current password",
+    "passwordNueva": "New password",
+    "passwordNuevaPlaceholder": "Enter the new password",
+    "actualizarPassword": "Update Password",
+    "cerrarSesion": "Log out",
+    "nombrePlaceholder": "E.g. Test admin",
+    "correoNoModificable": "This email cannot be changed directly",
+    "verPassword": "Show password",
+    "ocultarPassword": "Hide password",
+    "cambiarFoto": "Change photo",
+    "subiendo": "Uploading...",
+    "cargandoArchivo": "Loading file...",
+    "guardando": "Saving...",
+    "actualizando": "Updating...",
+    "fotoMuyGrande": "The image must not exceed 10 MB",
+    "fotoActualizada": "Profile picture updated successfully",
+    "correoInvalido": "The new email address must include a valid '@'",
+    "datosActualizados": "Personal information updated successfully",
+    "passwordCambiada": "Password changed successfully",
+    "errorSubirImagen": "Error uploading the image",
+    "errorActualizarPerfil": "Error updating profile",
+    "errorCambiarPassword": "Error changing password",
+    "sinRespuesta": "no response from the server (check that the backend is running)",
+    "datosInvalidos": "invalid data",
+    "errorHttp": "{{fallback}} (error {{status}})",
+    "recortarTitulo": "Adjust your photo",
+    "recortarDescripcion": "Drag the image to center it and use the slider to zoom in or out",
+    "cancelar": "Cancel",
+    "procesando": "Processing...",
+    "guardarFoto": "Save photo",
+    "passwordActualPlaceholder": "Enter your current password",
+    "passwordActualRequerida": "You must enter your current password to change it",
+    "passwordActualAviso": "Enter your current password to change it"
   },
   "common": {
     "notFound": "Page not found",

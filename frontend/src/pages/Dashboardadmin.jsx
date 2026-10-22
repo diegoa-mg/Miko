@@ -5,11 +5,9 @@ import {
   CircleDollarSign,
   TriangleAlert,
   Users,
-  UserCheck,
 } from "lucide-react";
 import { getDashboardAdmin } from "../api/adminDashboard";
 import { obtenerGerentes } from "../api/gerentes";
-import { obtenerCajeros } from "../api/cajeros";
 import { obtenerSucursales } from "../api/sucursales";
 
 // Carga una vez un recurso del backend y expone su estado. Cada recurso del
@@ -41,8 +39,7 @@ function useCarga(cargar) {
   return { datos, cargando, error };
 }
 
-// Lista de personas (gerentes o cajeros) con su sucursal. Se reutiliza en las
-// dos secciones porque el diseño es el mismo.
+// Lista de personas (gerentes) con su sucursal.
 function SeccionPersonas({
   titulo,
   personas,
@@ -97,24 +94,18 @@ export default function DashboardAdmin() {
   // Resumen (sucursales, ventas, alertas) — es lo crítico de la pantalla
   const { datos: data, cargando, error } = useCarga(getDashboardAdmin);
 
-  // Gerentes y cajeros: GET /gerentes y GET /cajeros devuelven solo los activos
+  // Gerentes: GET /gerentes devuelve solo los activos
   const {
     datos: gerentesData,
     cargando: cargandoGerentes,
     error: errorGerentes,
   } = useCarga(obtenerGerentes);
-  const {
-    datos: cajerosData,
-    cargando: cargandoCajeros,
-    error: errorCajeros,
-  } = useCarga(obtenerCajeros);
 
   // Solo sirve para mostrar el nombre de la sucursal. null = todavía no carga
   // o falló; en ese caso se muestra "—" en vez de afirmar "sin sucursal".
   const { datos: sucursales } = useCarga(obtenerSucursales);
 
   const gerentes = gerentesData ?? [];
-  const cajeros = cajerosData ?? [];
 
   // ventas_total_periodo llega como Decimal (string) desde el backend para
   // no perder precisión en centavos. Number(...) lo convierte para el
@@ -135,13 +126,6 @@ export default function DashboardAdmin() {
     sucursales === null
       ? "—"
       : sucursales.find((s) => s.gerente_id === gerente.id)?.nombre ||
-        t("dashboard.noBranch");
-
-  // La sucursal de un cajero vive en usuarios.sucursal_id.
-  const sucursalDelCajero = (cajero) =>
-    sucursales === null
-      ? "—"
-      : sucursales.find((s) => s.id === cajero.sucursal_id)?.nombre ||
         t("dashboard.noBranch");
 
   if (cargando) {
@@ -199,15 +183,19 @@ export default function DashboardAdmin() {
             </div>
             <div className="min-w-0">
               <p className="text-sm text-gray-500 break-words">
-                {t("dashboard.periodSales")} (
-                {t("dashboard.periodRange", {
-                  start: data.periodo_inicio,
-                  end: data.periodo_fin,
-                })}
-                )
+                {t("dashboard.periodSales")}
               </p>
               <p className="text-2xl font-bold text-gray-800 break-words">
                 {formatMoney(data.ventas_total_periodo)}
+              </p>
+              {/* Un solo día: solo la fecha; si es un rango, inicio a fin */}
+              <p className="text-xs text-gray-400">
+                {data.periodo_inicio === data.periodo_fin
+                  ? data.periodo_inicio
+                  : t("dashboard.periodRange", {
+                      start: data.periodo_inicio,
+                      end: data.periodo_fin,
+                    })}
               </p>
             </div>
           </div>
@@ -232,18 +220,6 @@ export default function DashboardAdmin() {
               <p className="text-sm text-gray-500">{t("dashboard.registeredManagers")}</p>
               <p className="text-2xl font-bold text-gray-800">
                 {cargandoGerentes || errorGerentes ? "—" : gerentes.length}
-              </p>
-            </div>
-          </div>
-
-          <div className="bg-white rounded-xl shadow p-5 flex items-center gap-4">
-            <div className="w-10 h-10 shrink-0 rounded-full bg-sky-100 flex items-center justify-center text-sky-600">
-              <UserCheck size={20} />
-            </div>
-            <div className="min-w-0">
-              <p className="text-sm text-gray-500">{t("dashboard.activeCashiers")}</p>
-              <p className="text-2xl font-bold text-gray-800">
-                {cargandoCajeros || errorCajeros ? "—" : cajeros.length}
               </p>
             </div>
           </div>
@@ -296,19 +272,6 @@ export default function DashboardAdmin() {
             textoError={mensajeError(errorGerentes, t("dashboard.errorManagers"))}
             textoVacio={t("dashboard.noManagers")}
             nombreSucursal={sucursalDelGerente}
-          />
-
-          {/* Cajeros: ocupa todo el ancho debajo de las otras dos */}
-          <SeccionPersonas
-            className="lg:col-span-2"
-            titulo={t("dashboard.cashiersTitle")}
-            personas={cajeros}
-            cargando={cargandoCajeros}
-            textoCargando={t("dashboard.loadingCashiers")}
-            error={errorCajeros}
-            textoError={mensajeError(errorCajeros, t("dashboard.errorCashiers"))}
-            textoVacio={t("dashboard.noCashiers")}
-            nombreSucursal={sucursalDelCajero}
           />
         </div>
       </div>
