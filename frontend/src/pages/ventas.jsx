@@ -22,9 +22,32 @@ function Ventas() {
     async function cargarDatos() {
       try {
         const [datosVentas, datosSucursales] = await Promise.all([
+
           obtenerVentas(),
           obtenerSucursales(true),
         ]);
+
+        console.log("VENTAS ADMIN:", datosVentas);
+        console.log(
+  "TOTAL SUMADO ADMIN:",
+  datosVentas.reduce(
+    (suma, venta) => suma + (Number(venta.total) || 0),
+    0
+  )
+);
+
+console.log(
+  "IDS ADMIN:",
+  datosVentas.map((venta) => venta.id).sort((a, b) => a - b)
+);
+        console.log("RESUMEN ADMIN:", {
+  cantidad: datosVentas.length,
+  ids: datosVentas.map((venta) => venta.id).sort((a, b) => a - b),
+  totalCalculado: datosVentas.reduce(
+    (suma, venta) => suma + (Number(venta.total) || 0),
+    0
+  ),
+});
 
         if (cancelado) return;
 
@@ -95,6 +118,17 @@ const totalVendido = useMemo(() => {
     0
   );
 }, [ventasFiltradas]);
+
+console.log("Ventas recibidas:", ventas.length);
+console.log("Ventas filtradas:", ventasFiltradas.length);
+console.log("Total vendido:", totalVendido);
+console.log(
+  "Detalle de ventas:",
+  ventas.map((venta) => ({
+    id: venta.id,
+    total: venta.total,
+  }))
+);
 
 
   const formatearPrecio = (precio) =>
