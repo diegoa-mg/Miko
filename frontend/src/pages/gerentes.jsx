@@ -232,13 +232,15 @@ const manejarReactivar = async (id) => {
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={abrirNuevoGerente}
-            className="font-sans bg-rose-800 hover:bg-rose-900 text-white px-5 py-3 rounded-lg transition-colors"
-          >
-            + {t("gerentes.nuevo")}
-          </button>
+          {!mostrarInactivos && (
+            <button
+              type="button"
+              onClick={abrirNuevoGerente}
+              className="font-sans bg-rose-800 hover:bg-rose-900 text-white px-5 py-3 rounded-lg transition-colors"
+            >
+              + {t("gerentes.nuevo")}
+            </button>
+          )}
         </div>
 
         {/* Barra superior */}
