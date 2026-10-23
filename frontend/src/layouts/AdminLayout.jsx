@@ -7,6 +7,7 @@ const adminNavItems = [
   { icon: "trending_up", key: "sidebar.sales", to: "/admin/ventas" },
   { icon: "supervisor_account", key: "sidebar.managers", to: "/admin/gerentes" },
   { icon: "store", key: "sidebar.branches", to: "/admin/sucursales" },
+  { icon: "category", key: "sidebar.categories", to: "/admin/categorias" },
 ];
 
 export default function AdminLayout() {
