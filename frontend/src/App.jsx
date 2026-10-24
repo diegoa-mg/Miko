@@ -21,6 +21,7 @@ import CajeroLayout from "./layouts/CajeroLayout";
 import Configuracion from "./pages/Configuracion";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 import VentasGerente from "./pages/VentasGerente";
+import Productos from "./pages/Productos";
 
 function Login() {
   const { login } = useAuth();
@@ -172,7 +173,7 @@ export default function App() {
                 <Route path="inventario" element={<InventarioGerente />} />
                 <Route path="ventas" element={<VentasGerente />} />
                 <Route path="cajeros" element={<Cajeros />} />
-                <Route path="productos" element={<EnConstruccion titleKey="sidebar.products" />} />
+                <Route path="productos" element={<Productos />} />
                 <Route path="configuracion" element={<Configuracion />} />
               </Route>
             </Route>
