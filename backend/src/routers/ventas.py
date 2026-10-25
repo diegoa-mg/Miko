@@ -20,6 +20,8 @@ from src.models import (
 from src.schemas import (
     DetalleVentaOut,
     MetodoPagoOut,
+    TicketOut,
+    TicketProducto,
     VentaCreate,
     VentaOut,
     VentaUpdate,
@@ -148,12 +150,33 @@ def registrar_venta(
     detalles_db = []
 
     for item in venta_in.detalles:
-        # Verificar producto
+        # Validar cantidad positiva
+        if item.cantidad <= 0:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="La cantidad de cada producto debe ser mayor a cero",
+            )
+
+        # Verificar existencia del producto
         producto = db.query(Producto).filter(Producto.id == item.producto_id).first()
         if not producto:
             raise HTTPException(
                 status_code=status.HTTP_404_NOT_FOUND,
                 detail=f"El producto con ID {item.producto_id} no existe",
+            )
+
+        # Validar que el producto esté activo
+        if not producto.activo:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"El producto '{producto.nombre}' no está activo",
+            )
+
+        # Validar que el producto pertenezca a la sucursal de la venta
+        if producto.sucursal_id != sucursal_id:
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail=f"El producto '{producto.nombre}' no pertenece a la sucursal de la venta",
             )
 
         # Consultar registro de inventario con bloqueo si aplica
@@ -178,12 +201,8 @@ def registrar_venta(
                 ),
             )
 
-        # Determinar precio unitario
-        precio_unitario = (
-            item.precio_unitario
-            if item.precio_unitario is not None
-            else Decimal(str(producto.precio))
-        )
+        # Usar SIEMPRE el precio del producto guardado en la base de datos
+        precio_unitario = Decimal(str(producto.precio))
         subtotal = Decimal(str(item.cantidad)) * precio_unitario
         total_general += subtotal
 
@@ -264,6 +283,107 @@ def listar_ventas(
     )
 
     return [_construir_venta_out(v) for v in ventas]
+
+
+@router.get("/mis-ventas", response_model=list[VentaOut])
+def listar_mis_ventas(
+    fecha_inicio: date | None = None,
+    fecha_fin: date | None = None,
+    limit: int = 100,
+    offset: int = 0,
+    db: Session = Depends(get_db),
+    usuario_actual: Usuario = Depends(requiere_rol("cajero")),
+):
+    """
+    Permite al cajero autenticado consultar únicamente sus propias ventas.
+    Filtra por rango de fechas según la zona horaria del negocio.
+    """
+    if fecha_inicio is not None and fecha_fin is not None and fecha_inicio > fecha_fin:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="La fecha de inicio no puede ser posterior a la fecha de fin",
+        )
+
+    query = db.query(Venta).filter(Venta.usuario_id == usuario_actual.id)
+
+    if fecha_inicio is not None or fecha_fin is not None:
+        inicio = fecha_inicio or date(2000, 1, 1)
+        fin = fecha_fin or date(2099, 12, 31)
+        inicio_utc, _ = rango_del_dia_en_utc(inicio)
+        _, fin_utc = rango_del_dia_en_utc(fin)
+        query = query.filter(Venta.fecha >= inicio_utc, Venta.fecha <= fin_utc)
+
+    ventas = (
+        query.order_by(Venta.fecha.desc())
+        .offset(offset)
+        .limit(limit)
+        .all()
+    )
+
+    return [_construir_venta_out(v) for v in ventas]
+
+
+@router.get("/{venta_id}/ticket", response_model=TicketOut)
+def obtener_ticket_venta(
+    venta_id: int,
+    db: Session = Depends(get_db),
+    usuario_actual: Usuario = Depends(
+        requiere_rol("admin_general", "gerente_sede", "cajero")
+    ),
+):
+    """
+    Devuelve los datos del comprobante/ticket de una venta específica.
+    Cajeros solo pueden consultar tickets de su propia sucursal.
+    """
+    venta = db.query(Venta).filter(Venta.id == venta_id).first()
+    if not venta:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Venta con ID {venta_id} no encontrada",
+        )
+
+    # Validar pertenencia por rol
+    rol_nombre = usuario_actual.rol.nombre
+    if rol_nombre == "cajero" and venta.sucursal_id != usuario_actual.sucursal_id:
+        raise HTTPException(
+            status_code=status.HTTP_403_FORBIDDEN,
+            detail="No tienes permiso para ver tickets de otra sucursal",
+        )
+    elif rol_nombre == "gerente_sede":
+        sucursal = obtener_sucursal_del_gerente(db, usuario_actual.id)
+        if venta.sucursal_id != sucursal.id:
+            raise HTTPException(
+                status_code=status.HTTP_403_FORBIDDEN,
+                detail="No tienes permiso para ver tickets de otra sucursal",
+            )
+
+    # Construir respuesta del ticket
+    productos = [
+        TicketProducto(
+            nombre=d.producto.nombre if d.producto else f"Producto #{d.producto_id}",
+            cantidad=d.cantidad,
+            precio_unitario=Decimal(str(d.precio_unitario)),
+            subtotal=Decimal(str(d.cantidad * d.precio_unitario)),
+        )
+        for d in venta.detalles
+    ]
+
+    metodo_nombre = (
+        venta.metodo_pago.nombre.value
+        if hasattr(venta.metodo_pago.nombre, "value")
+        else str(venta.metodo_pago.nombre)
+    )
+
+    return TicketOut(
+        venta_id=venta.id,
+        sucursal=venta.sucursal.nombre if venta.sucursal else "Sin sucursal",
+        direccion_sucursal=venta.sucursal.direccion if venta.sucursal else None,
+        cajero=venta.usuario.nombre if venta.usuario else "Desconocido",
+        fecha=venta.fecha,
+        productos=productos,
+        metodo_pago=metodo_nombre,
+        total=Decimal(str(venta.total)),
+    )
 
 
 @router.get("/{venta_id}", response_model=VentaOut)

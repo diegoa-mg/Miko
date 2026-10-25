@@ -17,7 +17,7 @@ class DetalleVentaCreate(BaseModel):
     precio_unitario: Decimal | None = Field(
         default=None,
         gt=0,
-        description="Precio unitario opcional. Si no se especifica, se toma el precio actual del producto.",
+        description="Precio unitario opcional. Ignorado por el servidor (siempre se usa el precio registrado en la BD).",
     )
 
 
@@ -60,3 +60,27 @@ class VentaOut(BaseModel):
 
 class VentaUpdate(BaseModel):
     metodo_pago_id: int | None = None
+
+
+class TicketProducto(BaseModel):
+    """Línea de producto dentro del ticket."""
+    nombre: str
+    cantidad: int
+    precio_unitario: Decimal
+    subtotal: Decimal
+
+    model_config = ConfigDict(from_attributes=True)
+
+
+class TicketOut(BaseModel):
+    """Datos completos del comprobante / ticket de venta."""
+    venta_id: int
+    sucursal: str
+    direccion_sucursal: str | None = None
+    cajero: str
+    fecha: datetime
+    productos: list[TicketProducto]
+    metodo_pago: str
+    total: Decimal
+
+    model_config = ConfigDict(from_attributes=True)

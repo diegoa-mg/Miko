@@ -27,4 +27,6 @@ from src.schemas.ventas import (
     DetalleVentaOut,
     VentaOut,
     VentaUpdate,
+    TicketProducto,
+    TicketOut,
 )
