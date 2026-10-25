@@ -79,7 +79,8 @@ def run_tests():
             producto = Producto(
                 nombre="Audífonos Bluetooth Test",
                 precio=Decimal("50.00"),
-                categoria_id=categoria.id
+                categoria_id=categoria.id,
+                sucursal_id=sucursal.id,
             )
             db.add(producto)
             db.commit()
