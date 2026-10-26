@@ -240,3 +240,23 @@ def reactivar_cajero(
         "message": "Cajero activado exitosamente en la base de datos.",
         "cajero_id": cajero_id,
     }
+
+
+@router.post("/{cajero_id}/reenviar-aviso", status_code=status.HTTP_200_OK)
+def reenviar_aviso_cajero(
+    cajero_id: int,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+    usuario_actual=Depends(admin_o_gerente),
+):
+    alcance = sucursal_del_alcance(db, usuario_actual)
+    cajero = _buscar_cajero(db, cajero_id, alcance)
+    if cajero.aviso_aceptado_en is not None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El cajero ya aceptó el aviso de privacidad",
+        )
+    background_tasks.add_task(
+        enviar_aviso_privacidad, cajero.id, cajero.nombre, cajero.email, "cajero"
+    )
+    return {"message": "Se reenviará el aviso de privacidad al correo del cajero."}

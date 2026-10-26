@@ -69,7 +69,12 @@
     "aceptar": "Aceptar",
     "seleccionaSucursal": "Selecciona una sucursal",
     "nombrePlaceholder": "Ej. Ana Torres",
-    "correoPlaceholder": "Ej. ana.torres@miko.com"
+    "correoPlaceholder": "Ej. ana.torres@miko.com",
+    "avisoPendiente": "Aviso pendiente",
+    "reenviarAviso": "Reenviar aviso",
+    "avisoReenviado": "Se reenviará el aviso de privacidad al correo del gerente.",
+    "errorReenviarAviso": "No se pudo reenviar el aviso de privacidad.",
+    "enviando": "Enviando..."
   },
   "login": {
     "title": "Iniciar sesión",
@@ -79,7 +84,8 @@
     "remember": "Recordarme",
     "forgotPassword": "¿Olvidaste tu contraseña?",
     "submit": "Iniciar sesión",
-    "error": "Correo electrónico o contraseña incorrectos"
+    "error": "Correo electrónico o contraseña incorrectos",
+    "avisoPendiente": "Debes aceptar el aviso de privacidad. Revisa tu correo."
   },
   "sidebar": {
     "subtitle": "PUNTO DE VENTA",
@@ -194,7 +200,12 @@
     "mostrarInactivos": "Mostrar inactivos",
     "errorReactivar": "No se pudo reactivar el cajero.",
     "activos": "Activos",
-    "inactivos": "Inactivos"
+    "inactivos": "Inactivos",
+    "avisoPendiente": "Aviso pendiente",
+    "reenviarAviso": "Reenviar aviso",
+    "avisoReenviado": "Se reenviará el aviso de privacidad al correo del cajero.",
+    "errorReenviarAviso": "No se pudo reenviar el aviso de privacidad.",
+    "enviando": "Enviando..."
   },
   "inventarios": {
     "title": "Inventario",
@@ -406,5 +417,29 @@
     "filtroMetodoPago": "Filtrar por método de pago",
     "descripcionFiltroMetodoPago": "Selecciona un método para consultar sus ventas.",
     "todosMetodosPago": "Todos los métodos de pago"
+  },
+  "avisoPrivacidad": {
+    "titulo": "Aviso de Privacidad",
+    "subtitulo": "Miko Panaderías - Sistema POS",
+    "descargarPdf": "Descargar PDF oficial",
+    "exitoTitulo": "¡Gracias por aceptar!",
+    "exitoMensaje": "Aviso de privacidad aceptado. Ya puedes iniciar sesión.",
+    "irALogin": "Ir a iniciar sesión",
+    "errorTitulo": "Enlace no disponible",
+    "volverAlLogin": "Volver al inicio de sesión",
+    "enlaceInvalido": "El enlace no es válido.",
+    "errorGenerico": "Ocurrió un error al procesar tu solicitud.",
+    "resumenTitulo": "Resumen del tratamiento de datos personales",
+    "introduccion": "Bienvenido a Miko Panaderías. Para nosotros la protección de tu información personal es fundamental. Antes de hacer uso del sistema punto de venta, te informamos sobre el tratamiento de tus datos:",
+    "datosTratadosTitulo": "• Datos que tratamos: ",
+    "datosTratados": "Nombre completo, correo electrónico, contraseña (almacenada cifrada con hash seguro), rol en el sistema, sucursal asignada, fotografía de perfil opcional y registro de operaciones/ventas.",
+    "finalidadesTitulo": "• Finalidades: ",
+    "finalidades": "Creación y administración de tu cuenta, autenticación y seguridad, control de accesos según roles y sucursales, control de operaciones de venta e inventario, y auditoría interna.",
+    "derechosTitulo": "• Derechos ARCO: ",
+    "derechos": "Puedes ejercer tus derechos de Acceso, Rectificación, Cancelación y Oposición escribiendo a admin@miko.com.",
+    "notaVigencia": "Al hacer clic en 'Acepto el aviso de privacidad', confirmas que has leído y aceptas los términos estipulados en nuestro aviso de privacidad.",
+    "verDocumentoCompleto": "Ver aviso completo en PDF",
+    "botonAceptar": "Acepto el aviso de privacidad",
+    "procesando": "Procesando..."
   }
 }

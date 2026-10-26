@@ -6,6 +6,8 @@ import {
   UsersRound,
   UserRoundX,
   RotateCcw,
+  Mail,
+  Send,
 } from "lucide-react";
 
 import {
@@ -14,6 +16,7 @@ import {
   actualizarCajero,
   eliminarCajero,
   reactivarCajero,
+  reenviarAvisoCajero,
 } from "../api/cajeros";
 
 import { obtenerSucursales } from "../api/sucursales";
@@ -53,6 +56,8 @@ function Cajeros() {
 
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
+  const [mensaje, setMensaje] = useState("");
+  const [reenviandoId, setReenviandoId] = useState(null);
 
   const [editandoCajero, setEditandoCajero] = useState(null);
 
@@ -185,6 +190,27 @@ function Cajeros() {
         err.response?.data?.detail ||
           t("cajeros.errorReactivar", "No se pudo reactivar el cajero.")
       );
+    }
+  };
+
+  const manejarReenviarAviso = async (id) => {
+    try {
+      setReenviandoId(id);
+      setError("");
+      setMensaje("");
+      const res = await reenviarAvisoCajero(id);
+      setMensaje(
+        res?.message ||
+          t("cajeros.avisoReenviado", "Se reenviará el aviso de privacidad al correo del cajero.")
+      );
+    } catch (err) {
+      console.error("Error al reenviar aviso a cajero:", err);
+      setError(
+        err.response?.data?.detail ||
+          t("cajeros.errorReenviarAviso", "No se pudo reenviar el aviso de privacidad.")
+      );
+    } finally {
+      setReenviandoId(null);
     }
   };
 
@@ -343,10 +369,30 @@ function Cajeros() {
           </div>
         </div>
 
-        {/* Mensaje de error general si existe */}
+        {/* Mensaje de feedback si existe */}
+        {mensaje && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl mb-6 flex justify-between items-center">
+            <span>{mensaje}</span>
+            <button
+              type="button"
+              onClick={() => setMensaje("")}
+              className="text-green-700 hover:text-green-900 font-bold ml-2"
+            >
+              ×
+            </button>
+          </div>
+        )}
+
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-6">
-            {error}
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-6 flex justify-between items-center">
+            <span>{error}</span>
+            <button
+              type="button"
+              onClick={() => setError("")}
+              className="text-red-700 hover:text-red-900 font-bold ml-2"
+            >
+              ×
+            </button>
           </div>
         )}
 
@@ -403,6 +449,13 @@ function Cajeros() {
                                 : t("cajeros.inactivo", "Inactivo")
                             }
                           />
+
+                          {cajero.aviso_pendiente && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-amber-100 text-amber-800 border border-amber-300">
+                              <Mail size={12} />
+                              {t("cajeros.avisoPendiente", "Aviso pendiente")}
+                            </span>
+                          )}
                         </div>
 
                         <p className="font-sans text-sm text-gray-600 mt-1">
@@ -429,6 +482,23 @@ function Cajeros() {
                   <div className="flex gap-2">
                     {cajero.activo ? (
                       <>
+                    {/* Reenviar aviso */}
+                    {cajero.aviso_pendiente && (
+                      <button
+                        type="button"
+                        onClick={() => manejarReenviarAviso(cajero.id)}
+                        disabled={reenviandoId === cajero.id}
+                        className="font-sans flex items-center gap-1.5 rounded-xl border border-[#cda4b4] bg-[#fff0f2] hover:bg-[#fde4e8] px-3 py-2 text-xs font-medium text-[#875d69] transition-colors disabled:opacity-50"
+                        title={t("cajeros.reenviarAviso", "Reenviar aviso")}
+                        aria-label={t("cajeros.reenviarAviso", "Reenviar aviso")}
+                      >
+                        <Send size={14} />
+                        {reenviandoId === cajero.id
+                          ? t("cajeros.enviando", "Enviando...")
+                          : t("cajeros.reenviarAviso", "Reenviar aviso")}
+                      </button>
+                    )}
+
                     {/* Editar */}
                     <button
                       type="button"

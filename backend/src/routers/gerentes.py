@@ -200,3 +200,27 @@ def reactivar_gerente(gerente_id: int, db: Session = Depends(get_db)):
         "message": "Gerente activado exitosamente en la base de datos.",
         "gerente_id": gerente_id
     }
+
+
+@router.post("/{gerente_id}/reenviar-aviso", status_code=status.HTTP_200_OK)
+def reenviar_aviso_gerente(
+    gerente_id: int, background_tasks: BackgroundTasks, db: Session = Depends(get_db)
+):
+    rol_gerente = obtener_rol(db, "gerente_sede")
+    gerente = db.query(Usuario).filter(
+        Usuario.id == gerente_id, Usuario.rol_id == rol_gerente.id, Usuario.activo == True
+    ).first()
+    if gerente is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Gerente con ID {gerente_id} no encontrado",
+        )
+    if gerente.aviso_aceptado_en is not None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El gerente ya aceptó el aviso de privacidad",
+        )
+    background_tasks.add_task(
+        enviar_aviso_privacidad, gerente.id, gerente.nombre, gerente.email, "gerente_sede"
+    )
+    return {"message": "Se reenviará el aviso de privacidad al correo del gerente."}

@@ -15,6 +15,7 @@ from src.routers import ventas as ventas_router
 from src.routers import productos as productos_router
 from src.routers import categorias as categorias_router
 from src.routers import productos_cajero as productos_cajero_router
+from src.routers import aviso_privacidad as aviso_privacidad_router
 
 app = FastAPI(title="POS Multi-sede API")
 
@@ -57,6 +58,7 @@ app.include_router(ventas_router.router)
 app.include_router(productos_router.router)
 app.include_router(categorias_router.router)
 app.include_router(productos_cajero_router.router)
+app.include_router(aviso_privacidad_router.router)
 
 # Health check básico
 @app.get("/")
