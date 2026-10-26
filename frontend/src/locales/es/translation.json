@@ -165,6 +165,7 @@
     "guardarCambios": "Guardar cambios",
     "guardando": "Guardando...",
     "cancelar": "Cancelar",
+    "aceptar": "Aceptar",
     "eliminarTitulo": "Eliminar categoría",
     "confirmarEliminar": "¿Estás seguro de que deseas eliminar la categoría \"{{nombre}}\"?",
     "eliminando": "Eliminando...",

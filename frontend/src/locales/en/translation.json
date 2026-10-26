@@ -176,7 +176,8 @@
     "errorNoExiste": "The category no longer exists.",
     "errorTieneProductos": "This category has assigned products and cannot be deleted.",
     "errorGuardar": "Could not save the category.",
-    "errorEliminar": "Could not delete the category."
+    "errorEliminar": "Could not delete the category.",
+    "aceptar": "Accept"
   },
   "inventarios": {
     "title": "Inventory",
