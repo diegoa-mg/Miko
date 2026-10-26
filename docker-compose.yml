@@ -38,6 +38,7 @@ services:
       SMTP_USER: ${SMTP_USER:-}
       SMTP_PASSWORD: ${SMTP_PASSWORD:-0}
       SMTP_FROM: ${SMTP_FROM:-no-reply@miko.com}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
     ports:
       - "8000:8000"
     volumes:

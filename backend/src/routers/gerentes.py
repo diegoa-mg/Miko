@@ -1,12 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
 
 from src.dependencies import requiere_rol
-from src.services import obtener_rol, llenar_usuario_out
+from src.services import obtener_rol, llenar_usuario_out, enviar_aviso_privacidad
 from src.database import get_db
 from src.security import hash_password
 from src.models import Usuario, Sucursal
-from src.schemas import GerenteCreate, GerenteUpdate, UsuarioOut, SucursalUpdate
+from src.schemas import GerenteCreate, GerenteUpdate, UsuarioOut
 
 router = APIRouter(
     prefix="/gerentes",
@@ -16,7 +16,7 @@ router = APIRouter(
 
 # Endpoint Crear Gerente
 @router.post("", response_model=UsuarioOut, status_code=status.HTTP_201_CREATED)
-def crear_gerente(gerente_in: GerenteCreate, db: Session = Depends(get_db),):
+def crear_gerente(gerente_in: GerenteCreate, background_tasks: BackgroundTasks, db: Session = Depends(get_db),):
     """Crea un usuario con rol gerente_sede. Solo Administrador General."""
 
     # Validar si ya existe un usuario con el mismo correo, ya que no se permiten correos duplicados
@@ -40,6 +40,12 @@ def crear_gerente(gerente_in: GerenteCreate, db: Session = Depends(get_db),):
     db.add(usuario)
     db.commit()
     db.refresh(usuario)
+
+    # Se envía después de responder: no hace esperar al administrador y un
+    # fallo del SMTP no cancela la creación
+    background_tasks.add_task(
+        enviar_aviso_privacidad, usuario.id, usuario.nombre, usuario.email, "gerente_sede"
+    )
 
     # Regresar el usuario con el esquema UsuarioOut mediante la funcion llenar_usuario_out
     return llenar_usuario_out(usuario)
