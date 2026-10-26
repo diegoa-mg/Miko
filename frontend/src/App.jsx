@@ -12,6 +12,7 @@ import Cajeros from "./pages/cajeros";
 import Inventarios from "./pages/inventarios";
 import InventarioGerente from "./pages/InventarioGerente";
 import Ventas from "./pages/ventas";
+import Categorias from "./pages/categorias";
 import AdminLayout from "./layouts/AdminLayout";
 import DashboardAdmin from "./pages/Dashboardadmin";
 import DashboardGerente from "./pages/Dashboardgerente";
@@ -167,6 +168,7 @@ export default function App() {
                 <Route path="configuracion" element={<Configuracion />} />
                 <Route path="inventarios" element={<Inventarios />} />
                 <Route path="ventas" element={<Ventas />} />
+                <Route path="categorias" element={<Categorias />} />
               </Route>
             </Route>
 

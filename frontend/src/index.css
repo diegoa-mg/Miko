@@ -252,3 +252,19 @@ html {
     transform: translateY(0) scale(1);
   }
 }
+
+/* Error dentro del modal de confirmación */
+.miko-confirm-modal .miko-confirm-error {
+  margin: -10px 0 20px;
+  color: #dc2626;
+  font-size: 14px;
+  font-weight: 500;
+}
+
+/* Botones del modal deshabilitados */
+.miko-confirm-cancel:disabled,
+.miko-confirm-accept:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  transform: none;
+}
