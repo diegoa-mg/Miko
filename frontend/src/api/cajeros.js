@@ -34,3 +34,8 @@ export const reactivarCajero = async (id) => {
   const { data } = await api.patch(`/cajeros/${id}/reactivar`);
   return data;
 };
+
+export const reenviarAvisoCajero = async (id) => {
+  const { data } = await api.post(`/cajeros/${id}/reenviar-aviso`);
+  return data;
+};

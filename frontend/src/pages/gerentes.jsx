@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { UsersRound, UserRoundX } from "lucide-react";
+import { UsersRound, UserRoundX, Mail, Send } from "lucide-react";
 
 import {
   obtenerGerentes,
@@ -8,6 +8,7 @@ import {
   actualizarGerente,
   eliminarGerente,
   reactivarGerente,
+  reenviarAvisoGerente,
 } from "../api/gerentes";
 
 import {
@@ -28,6 +29,8 @@ function Gerentes() {
 
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
+  const [mensaje, setMensaje] = useState("");
+  const [reenviandoId, setReenviandoId] = useState(null);
 
   const [editandoGerente, setEditandoGerente] = useState(null);
 
@@ -157,6 +160,27 @@ const manejarReactivar = async (id) => {
   } catch (err) {
     console.error("Error al reactivar gerente:", err);
     setError("No se pudo reactivar el gerente.");
+  }
+};
+
+const manejarReenviarAviso = async (id) => {
+  try {
+    setReenviandoId(id);
+    setError("");
+    setMensaje("");
+    const res = await reenviarAvisoGerente(id);
+    setMensaje(
+      res?.message ||
+        t("gerentes.avisoReenviado", "Se reenviará el aviso de privacidad al correo del gerente.")
+    );
+  } catch (err) {
+    console.error("Error al reenviar aviso a gerente:", err);
+    setError(
+      err.response?.data?.detail ||
+        t("gerentes.errorReenviarAviso", "No se pudo reenviar el aviso de privacidad.")
+    );
+  } finally {
+    setReenviandoId(null);
   }
 };
 
@@ -300,6 +324,33 @@ const manejarReactivar = async (id) => {
           </div>
         </div>
 
+        {/* Mensajes de feedback */}
+        {mensaje && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl mb-6 flex justify-between items-center">
+            <span>{mensaje}</span>
+            <button
+              type="button"
+              onClick={() => setMensaje("")}
+              className="text-green-700 hover:text-green-900 font-bold ml-2"
+            >
+              ×
+            </button>
+          </div>
+        )}
+
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-6 flex justify-between items-center">
+            <span>{error}</span>
+            <button
+              type="button"
+              onClick={() => setError("")}
+              className="text-red-700 hover:text-red-900 font-bold ml-2"
+            >
+              ×
+            </button>
+          </div>
+        )}
+
         {/* Lista de gerentes */}
         {gerentesFiltrados.length === 0 ? (
           <div className="bg-white rounded-2xl shadow-sm p-10 text-center">
@@ -358,6 +409,13 @@ const manejarReactivar = async (id) => {
                             }`}
                             title={gerente.activo ? "Activo" : "Inactivo"}
                           ></span>
+
+                          {gerente.aviso_pendiente && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-amber-100 text-amber-800 border border-amber-300">
+                              <Mail size={12} />
+                              {t("gerentes.avisoPendiente", "Aviso pendiente")}
+                            </span>
+                          )}
                         </div>
 
                         <p className="font-sans text-sm text-gray-600 mt-2">
@@ -400,6 +458,22 @@ const manejarReactivar = async (id) => {
                   </button>
               ) : (
   <>
+                {/* Reenviar aviso */}
+                {gerente.aviso_pendiente && gerente.activo && (
+                  <button
+                    type="button"
+                    onClick={() => manejarReenviarAviso(gerente.id)}
+                    disabled={reenviandoId === gerente.id}
+                    className="font-sans flex items-center gap-1.5 rounded-xl border border-[#cda4b4] bg-[#fff0f2] hover:bg-[#fde4e8] px-3 py-2 text-xs font-medium text-[#875d69] transition-colors disabled:opacity-50"
+                    title={t("gerentes.reenviarAviso", "Reenviar aviso")}
+                    aria-label={t("gerentes.reenviarAviso", "Reenviar aviso")}
+                  >
+                    <Send size={14} />
+                    {reenviandoId === gerente.id
+                      ? t("gerentes.enviando", "Enviando...")
+                      : t("gerentes.reenviarAviso", "Reenviar aviso")}
+                  </button>
+                )}
 
                 {/* Editar */}
                 <button

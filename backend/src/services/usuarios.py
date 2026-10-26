@@ -18,6 +18,13 @@ def obtener_rol(db: Session, nombre: str):
 
     return rol
 
+# El aviso de privacidad solo aplica a estos roles (el administrador queda fuera)
+ROLES_CON_AVISO = {"gerente_sede", "cajero"}
+
+def aviso_pendiente(usuario: Usuario) -> bool:
+    """True si el usuario debe aceptar el aviso y todavía no lo ha hecho."""
+    return usuario.rol.nombre in ROLES_CON_AVISO and usuario.aviso_aceptado_en is None
+
 # Función para llenar UsuarioOut
 def llenar_usuario_out(usuario: Usuario) -> UsuarioOut:
     return UsuarioOut(
@@ -28,6 +35,7 @@ def llenar_usuario_out(usuario: Usuario) -> UsuarioOut:
         sucursal_id=usuario.sucursal_id,
         activo=usuario.activo,
         foto_url=usuario.foto_url,
+        aviso_pendiente=aviso_pendiente(usuario),
     )
 
 def listar_cajeros_activos(db: Session, sucursal_id: int) -> list[Usuario]:

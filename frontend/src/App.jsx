@@ -22,6 +22,7 @@ import Configuracion from "./pages/Configuracion";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 import VentasGerente from "./pages/VentasGerente";
 import Productos from "./pages/Productos";
+import AvisoPrivacidad from "./pages/AvisoPrivacidad";
 
 function Login() {
   const { login } = useAuth();
@@ -49,7 +50,8 @@ function Login() {
       }
     } catch (error) {
       console.error(error);
-      setError(t("login.error"));
+      const codigo = error.response?.data?.detail?.codigo;
+      setError(codigo === "aviso_pendiente" ? t("login.avisoPendiente") : t("login.error"));
     }
   };
 
@@ -153,6 +155,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/aviso-privacidad" element={<AvisoPrivacidad />} />
 
           <Route element={<ProtectedRoute />}>
             <Route element={<RoleRoute allowedRoles={["admin_general"]} />}>

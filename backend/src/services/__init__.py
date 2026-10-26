@@ -1,4 +1,10 @@
-from src.services.usuarios import obtener_rol, llenar_usuario_out, listar_cajeros_activos
+from src.services.usuarios import (
+    obtener_rol,
+    llenar_usuario_out,
+    listar_cajeros_activos,
+    ROLES_CON_AVISO,
+    aviso_pendiente,
+)
 from src.services.sucursales import obtener_sucursal_del_gerente, sucursal_del_alcance
 from src.services.inventarios import (
     llenar_inventario_out,

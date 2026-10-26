@@ -69,7 +69,12 @@
     "aceptar": "Accept",
     "seleccionaSucursal": "Select a branch",
     "nombrePlaceholder": "E.g. Ana Torres",
-    "correoPlaceholder": "E.g. ana.torres@miko.com"
+    "correoPlaceholder": "E.g. ana.torres@miko.com",
+    "avisoPendiente": "Pending policy",
+    "reenviarAviso": "Resend policy",
+    "avisoReenviado": "The privacy policy will be resent to the manager's email.",
+    "errorReenviarAviso": "Could not resend the privacy policy.",
+    "enviando": "Sending..."
   },
   "login": {
     "title": "Login",
@@ -79,7 +84,8 @@
     "remember": "Remember me",
     "forgotPassword": "Forgot your password?",
     "submit": "Sign in",
-    "error": "Incorrect email or password"
+    "error": "Incorrect email or password",
+    "avisoPendiente": "You must accept the privacy policy before logging in. Please check your email."
   },
   "sidebar": {
     "subtitle": "POINT OF SALE",
@@ -193,7 +199,12 @@
     "mostrarInactivos": "Show inactive",
     "errorReactivar": "Could not reactivate the cashier.",
     "activos": "Active",
-    "inactivos": "Inactive"
+    "inactivos": "Inactive",
+    "avisoPendiente": "Pending policy",
+    "reenviarAviso": "Resend policy",
+    "avisoReenviado": "The privacy policy will be resent to the cashier's email.",
+    "errorReenviarAviso": "Could not resend the privacy policy.",
+    "enviando": "Sending..."
   },
   "inventarios": {
     "title": "Inventory",
@@ -405,5 +416,29 @@
     "filtroMetodoPago": "Filter by payment method",
     "descripcionFiltroMetodoPago": "Select a payment method to view its sales.",
     "todosMetodosPago": "All payment methods"
+  },
+  "avisoPrivacidad": {
+    "titulo": "Privacy Policy",
+    "subtitulo": "Miko Bakeries - POS System",
+    "descargarPdf": "Download official PDF",
+    "exitoTitulo": "Thank you for accepting!",
+    "exitoMensaje": "Privacy policy accepted. You can now log in.",
+    "irALogin": "Go to log in",
+    "errorTitulo": "Link not available",
+    "volverAlLogin": "Back to login",
+    "enlaceInvalido": "The link is not valid.",
+    "errorGenerico": "An error occurred while processing your request.",
+    "resumenTitulo": "Personal data processing summary",
+    "introduccion": "Welcome to Miko Bakeries. Protecting your personal information is essential to us. Before using the point of sale system, we inform you about the processing of your data:",
+    "datosTratadosTitulo": "• Data we process: ",
+    "datosTratados": "Full name, email address, password (stored encrypted with secure hash), system role, assigned branch, optional profile photo, and sales/operation records.",
+    "finalidadesTitulo": "• Purposes: ",
+    "finalidades": "Account creation and management, authentication and security, role and branch based access control, sales and inventory management, and internal auditing.",
+    "derechosTitulo": "• ARCO Rights: ",
+    "derechos": "You can exercise your rights of Access, Rectification, Cancellation, and Opposition by contacting admin@miko.com.",
+    "notaVigencia": "By clicking 'Accept privacy policy', you confirm that you have read and agree to the terms in our privacy policy.",
+    "verDocumentoCompleto": "View full policy in PDF",
+    "botonAceptar": "Accept privacy policy",
+    "procesando": "Processing..."
   }
 }

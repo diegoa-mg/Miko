@@ -145,8 +145,13 @@ def obtener_rol(db, nombre):
     return rol
 
 
-def obtener_o_crear_usuario(db, nombre, email, rol, activo=True, sucursal_id=None):
+def obtener_o_crear_usuario(
+    db, nombre, email, rol, activo=True, sucursal_id=None, aviso_aceptado=True
+):
     usuario = db.query(Usuario).filter(Usuario.email == email).first()
+    fecha_aviso = (
+        datetime.now(timezone.utc).replace(tzinfo=None) if aviso_aceptado else None
+    )
     if usuario is None:
         usuario = Usuario(
             nombre=nombre,
@@ -155,6 +160,7 @@ def obtener_o_crear_usuario(db, nombre, email, rol, activo=True, sucursal_id=Non
             rol_id=rol.id,
             activo=activo,
             sucursal_id=sucursal_id,
+            aviso_aceptado_en=fecha_aviso,
         )
         db.add(usuario)
         db.flush()  # asigna el id sin cerrar la transacción
@@ -210,8 +216,10 @@ def crear_usuarios_y_sucursales(db):
     cajeros = {}
     for nombre, email, nombre_sucursal, activo in CAJEROS:
         sucursal_id = sucursales[nombre_sucursal].id if nombre_sucursal else None
+        # Dejamos un cajero con aviso pendiente a propósito para demostrar el flujo
+        aviso_aceptado = (email != "cajero2.centro@miko.com")
         cajeros[email] = obtener_o_crear_usuario(
-            db, nombre, email, rol_cajero, activo, sucursal_id
+            db, nombre, email, rol_cajero, activo, sucursal_id, aviso_aceptado=aviso_aceptado
         )
 
     db.commit()

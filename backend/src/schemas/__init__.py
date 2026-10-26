@@ -30,3 +30,4 @@ from src.schemas.ventas import (
     TicketProducto,
     TicketOut,
 )
+from src.schemas.aviso_privacidad import AceptarAvisoRequest
