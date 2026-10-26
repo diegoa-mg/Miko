@@ -8,6 +8,7 @@ JWT_SECRET_KEY = os.getenv("JWT_SECRET_KEY", "cambiar-en-produccion-nunca-usar-e
 JWT_ALGORITHM = "HS256" 
 JWT_EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES", "480")) # 480 es el default, se usa en caso de que la variable JWT_EXPIRE_MINUTES no está definida
 
+AVISO_EXPIRE_DIAS = 7
 
 # Función para guardar la contraseña con hash
 def hash_password(password: str) -> str:
@@ -50,3 +51,30 @@ def crear_access_token(usuario_id: int) -> str:
 # Función para decodificar el access token
 def decodificar_access_token(token: str) -> dict:
     return jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
+
+# Función para crear el token del enlace del aviso de privacidad
+def crear_token_aviso(usuario_id: int) -> str:
+    """
+    Token de un solo propósito: solo sirve para aceptar el aviso de privacidad.
+    A propósito NO lleva "sub": get_current_user lo exige, así que este token
+    nunca se acepta como token de sesión (si no, el enlace del correo
+    permitiría entrar sin contraseña).
+    """
+    ahora = datetime.now(timezone.utc)
+    payload = {
+        "uid": usuario_id,
+        "tipo": "aviso_privacidad",
+        "iat": ahora,
+        "exp": ahora + timedelta(days=AVISO_EXPIRE_DIAS),
+    }
+    return jwt.encode(payload, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
+
+
+# Función para decodificar el token del aviso. Devuelve el id del usuario
+def decodificar_token_aviso(token: str) -> int:
+    payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
+    # Un token de sesión también tiene firma válida: se distingue por "tipo".
+    # Sin esta comprobación, cualquier token de sesión podría aceptar avisos.
+    if payload.get("tipo") != "aviso_privacidad":
+        raise jwt.InvalidTokenError("El token no es de aviso de privacidad")
+    return int(payload["uid"])

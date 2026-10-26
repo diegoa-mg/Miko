@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
 
 from src.dependencies import requiere_rol
-from src.services import obtener_rol, llenar_usuario_out, sucursal_del_alcance
+from src.services import obtener_rol, llenar_usuario_out, sucursal_del_alcance, enviar_aviso_privacidad
 from src.database import get_db
 from src.security import hash_password
 from src.models import Usuario, Sucursal
@@ -51,6 +51,7 @@ def _buscar_cajero(
 @router.post("", response_model=UsuarioOut, status_code=status.HTTP_201_CREATED)
 def crear_cajero(
     cajero_in: CajeroCreate,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     usuario_actual=Depends(admin_o_gerente),
 ):
@@ -94,6 +95,10 @@ def crear_cajero(
     db.add(usuario)
     db.commit()
     db.refresh(usuario)
+
+    background_tasks.add_task(
+        enviar_aviso_privacidad, usuario.id, usuario.nombre, usuario.email, "cajero"
+    )
 
     return llenar_usuario_out(usuario)
 

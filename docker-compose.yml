@@ -11,11 +11,19 @@ services:
     volumes:
       - pgdata:/var/lib/postgresql/data
 
+  mailpit:
+    image: axllent/mailpit
+    container_name: pos_mailpit
+    ports:
+      - "8025:8025"
+      - "1025:1025"
+
   backend:
     build: ./backend
     container_name: pos_backend
     depends_on:
       - db
+      - mailpit
     environment:
       DATABASE_URL: postgresql+psycopg://${DB_USER}:${DB_PASSWORD}@db:5432/${DB_NAME}
       SUPABASE_URL: ${SUPABASE_URL}
@@ -25,6 +33,12 @@ services:
       JWT_EXPIRE_MINUTES: ${JWT_EXPIRE_MINUTES}
       CORS_ORIGINS: ${CORS_ORIGINS}
       BUSINESS_TIMEZONE: ${BUSINESS_TIMEZONE:-America/Mexico_City}
+      SMTP_HOST: ${SMTP_HOST:-mailpit}
+      SMTP_PORT: ${SMTP_PORT:-1025}
+      SMTP_USER: ${SMTP_USER:-}
+      SMTP_PASSWORD: ${SMTP_PASSWORD:-0}
+      SMTP_FROM: ${SMTP_FROM:-no-reply@miko.com}
+      FRONTEND_URL: ${FRONTEND_URL:-http://localhost:5173}
     ports:
       - "8000:8000"
     volumes:

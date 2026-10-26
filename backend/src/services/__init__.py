@@ -14,3 +14,4 @@ from src.services.ventas import (
 )
 from src.services.fechas import ZONA_NEGOCIO, hoy_en_negocio, rango_del_dia_en_utc
 from src.services.fotos import procesar_imagen, subir_foto, borrar_foto
+from src.services.correo import enviar_correo, construir_correo_aviso, enviar_aviso_privacidad
