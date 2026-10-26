@@ -23,3 +23,10 @@ export const eliminarCategoriaApi = async (id) => {
   const { data } = await api.delete(`/categorias/${id}`);
   return data;
 };
+
+import api from "./axios";
+
+export const obtenerCategorias = async () => {
+  const { data } = await api.get("/categorias");
+  return data;
+};

@@ -6,7 +6,7 @@ from src.database import get_db
 from src.models import Usuario
 from src.schemas import LoginRequest, TokenResponse, UsuarioOut
 from src.security import crear_access_token, verify_password
-from src.services import llenar_usuario_out
+from src.services import llenar_usuario_out, aviso_pendiente
 
 """
 APIRouter es un mini FastAPI, agrupa rutas relaciones para no meterlas en main.py. 
@@ -34,6 +34,15 @@ def login(credenciales: LoginRequest, db: Session = Depends(get_db)): # db: Sess
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Correo o contraseña incorrectos",
+        )
+
+    if aviso_pendiente(usuario):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail={
+                "codigo": "aviso_pendiente",
+                "mensaje": "Debes aceptar el aviso de privacidad. Revisa tu correo.",
+            },
         )
 
     # Se conecta con security.py. crear_access_token lleva únicamente el id ya que el JWT solo lleva el id dentro de sub. Filosofía de token mínimo.

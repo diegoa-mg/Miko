@@ -21,7 +21,9 @@ import GerenteLayout from "./layouts/GerenteLayout";
 import CajeroLayout from "./layouts/CajeroLayout";
 import Configuracion from "./pages/Configuracion";
 import LanguageSwitcher from "./components/LanguageSwitcher";
-
+import VentasGerente from "./pages/VentasGerente";
+import Productos from "./pages/Productos";
+import AvisoPrivacidad from "./pages/AvisoPrivacidad";
 
 function Login() {
   const { login } = useAuth();
@@ -49,7 +51,8 @@ function Login() {
       }
     } catch (error) {
       console.error(error);
-      setError(t("login.error"));
+      const codigo = error.response?.data?.detail?.codigo;
+      setError(codigo === "aviso_pendiente" ? t("login.avisoPendiente") : t("login.error"));
     }
   };
 
@@ -153,6 +156,7 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/aviso-privacidad" element={<AvisoPrivacidad />} />
 
           <Route element={<ProtectedRoute />}>
             <Route element={<RoleRoute allowedRoles={["admin_general"]} />}>
@@ -172,9 +176,9 @@ export default function App() {
               <Route path="/gerente" element={<GerenteLayout />}>
                 <Route index element={<DashboardGerente />} />
                 <Route path="inventario" element={<InventarioGerente />} />
-                <Route path="ventas" element={<EnConstruccion titleKey="sidebar.sales" />} />
+                <Route path="ventas" element={<VentasGerente />} />
                 <Route path="cajeros" element={<Cajeros />} />
-                <Route path="productos" element={<EnConstruccion titleKey="sidebar.products" />} />
+                <Route path="productos" element={<Productos />} />
                 <Route path="configuracion" element={<Configuracion />} />
               </Route>
             </Route>

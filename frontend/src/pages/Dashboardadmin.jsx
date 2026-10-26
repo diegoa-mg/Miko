@@ -63,13 +63,13 @@ function SeccionPersonas({
       ) : personas.length === 0 ? (
         <p className="text-gray-500 text-sm">{textoVacio}</p>
       ) : (
-        <ul className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
+        <ul className="divide-y divide-gray-100">
           {personas.map((persona) => (
             <li
               key={persona.id}
-              className="py-3 flex items-center justify-between gap-2 flex-wrap"
+              className="py-3 flex items-center justify-between gap-4"
             >
-              <div className="min-w-0">
+              <div className="min-w-0 flex-1">
                 <p className="font-medium text-gray-800 break-words">
                   {persona.nombre}
                 </p>
@@ -77,7 +77,7 @@ function SeccionPersonas({
                   {persona.email}
                 </p>
               </div>
-              <p className="text-sm text-gray-500 shrink-0">
+              <p className="text-sm text-gray-500 text-right max-w-[40%] break-words">
                 {nombreSucursal(persona)}
               </p>
             </li>

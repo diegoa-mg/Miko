@@ -1,5 +1,14 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import {
+  ContactRound,
+  Contact,
+  UsersRound,
+  UserRoundX,
+  RotateCcw,
+  Mail,
+  Send,
+} from "lucide-react";
 
 import {
   obtenerCajeros,
@@ -7,10 +16,28 @@ import {
   actualizarCajero,
   eliminarCajero,
   reactivarCajero,
+  reenviarAvisoCajero,
 } from "../api/cajeros";
 
 import { obtenerSucursales } from "../api/sucursales";
 import { useAuth } from "../context/AuthContext";
+
+function IconoCajero({ size = 24, className = "" }) {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width={size}
+      height={size}
+      viewBox="0 0 24 24"
+      fill="currentColor"
+      className={className}
+      aria-hidden="true"
+    >
+      <path d="M9 2h6v3h3a2 2 0 0 1 2 2v14H4V7a2 2 0 0 1 2-2h3V2Zm2 2v1h2V4h-2ZM6 7v12h12V7H6Zm2 2h8v3H8V9Zm0 5h3v2H8v-2Zm5 0h3v2h-3v-2Z" />
+      <circle cx="12" cy="15" r="1" />
+    </svg>
+  );
+}
 
 function Cajeros() {
   const { t } = useTranslation();
@@ -29,6 +56,8 @@ function Cajeros() {
 
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
+  const [mensaje, setMensaje] = useState("");
+  const [reenviandoId, setReenviandoId] = useState(null);
 
   const [editandoCajero, setEditandoCajero] = useState(null);
 
@@ -164,16 +193,48 @@ function Cajeros() {
     }
   };
 
+  const manejarReenviarAviso = async (id) => {
+    try {
+      setReenviandoId(id);
+      setError("");
+      setMensaje("");
+      const res = await reenviarAvisoCajero(id);
+      setMensaje(
+        res?.message ||
+          t("cajeros.avisoReenviado", "Se reenviará el aviso de privacidad al correo del cajero.")
+      );
+    } catch (err) {
+      console.error("Error al reenviar aviso a cajero:", err);
+      setError(
+        err.response?.data?.detail ||
+          t("cajeros.errorReenviarAviso", "No se pudo reenviar el aviso de privacidad.")
+      );
+    } finally {
+      setReenviandoId(null);
+    }
+  };
+
   const obtenerNombreSucursal = (sucursalId) => {
     if (!sucursalId) return t("cajeros.sinSucursal", "Sin sucursal asignada");
     const sucursal = sucursales.find((s) => s.id === sucursalId);
     return sucursal ? sucursal.nombre : t("cajeros.sinSucursal", "Sin sucursal asignada");
   };
 
-  const cajerosFiltrados = cajeros.filter((cajero) =>
-    cajero.nombre.toLowerCase().includes(buscar.toLowerCase()) ||
-    cajero.email.toLowerCase().includes(buscar.toLowerCase())
-  );
+  const cajerosFiltrados = cajeros.filter((cajero) => {
+  const coincideEstado = mostrarInactivos
+    ? !cajero.activo
+    : cajero.activo;
+
+  const coincideBusqueda =
+    (cajero.nombre || "")
+      .toLowerCase()
+      .includes(buscar.toLowerCase()) ||
+    (cajero.email || "")
+      .toLowerCase()
+      .includes(buscar.toLowerCase());
+
+  return coincideEstado && coincideBusqueda;
+});
 
   return (
     <div className="min-h-screen bg-[#fdf6e3] p-8">
@@ -227,29 +288,33 @@ function Cajeros() {
       )}
 
       <div className="max-w-7xl mx-auto">
+
         {/* Encabezado */}
         <div className="flex items-center justify-between mb-8">
           <div>
             <h1 className="font-sans text-3xl font-bold text-[#875d69]">
               {t("cajeros.titulo", "Cajeros")}
             </h1>
+
             <p className="font-sans text-gray-600 mt-1">
-              {t("cajeros.descripcion", "Administra los cajeros del sistema")}
+              {t("cajeros.descripcion", "Administra los cajeros de Miko")}
             </p>
           </div>
 
-          <button
-            type="button"
-            onClick={abrirNuevoCajero}
-            className="font-sans bg-rose-800 hover:bg-rose-900 text-white px-5 py-3 rounded-lg transition-colors"
-          >
-            + {t("cajeros.nuevo", "Nuevo cajero")}
-          </button>
+          {!mostrarInactivos && (
+            <button
+              type="button"
+              onClick={abrirNuevoCajero}
+              className="font-sans bg-rose-800 hover:bg-rose-900 text-white px-5 py-3 rounded-lg transition-colors"
+            >
+              + {t("cajeros.nuevo", "Nuevo cajero")}
+            </button>
+          )}
         </div>
 
-        {/* Mensaje de error general si existe */}
+        {/* Mensaje de error */}
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-6">
+          <div className="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-xl mb-6">
             {error}
           </div>
         )}
@@ -257,23 +322,41 @@ function Cajeros() {
         {/* Barra superior */}
         <div className="bg-white rounded-2xl shadow-sm p-4 mb-6">
           <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-            <div className="flex gap-2 w-full lg:w-auto">
+            <div className="flex flex-wrap gap-3 w-full lg:w-auto">
+              {/* Pestaña Activos */}
               <button
                 type="button"
-                className="font-sans bg-[#875d69] text-white px-5 py-3 rounded-full"
+                onClick={() => setMostrarInactivos(false)}
+                className={`font-sans px-5 py-3 rounded-full transition-colors ${
+                  !mostrarInactivos
+                    ? "bg-[#875d69] text-white"
+                    : "bg-[#E8B4B8] text-[#875d69] hover:bg-[#dda0a5]"
+                }`}
               >
-                👥 {t("cajeros.lista", "Lista de cajeros")}
+                <span className="flex items-center gap-2">
+                  <IconoCajero size={22} />
+                  {t("cajeros.activos", "Activos")}
+                </span>
               </button>
-              <label className="font-sans flex items-center gap-2 text-sm text-[#875d69] cursor-pointer px-3">
-                <input
-                  type="checkbox"
-                  checked={mostrarInactivos}
-                  onChange={(e) => setMostrarInactivos(e.target.checked)}
-                />
-                {t("cajeros.mostrarInactivos", "Mostrar inactivos")}
-              </label>
+
+              {/* Pestaña Inactivos */}
+              <button
+                type="button"
+                onClick={() => setMostrarInactivos(true)}
+                className={`font-sans px-5 py-3 rounded-full transition-colors ${
+                  mostrarInactivos
+                    ? "bg-[#875d69] text-white"
+                    : "bg-[#E8B4B8] text-[#875d69] hover:bg-[#dda0a5]"
+                }`}
+              >
+                <span className="flex items-center gap-2">
+                  <IconoCajero size={18} />
+                  {t("cajeros.inactivos", "Inactivos")}
+                </span>
+              </button>
             </div>
 
+            {/* Búsqueda */}
             <div className="w-full lg:w-80">
               <input
                 type="text"
@@ -285,6 +368,33 @@ function Cajeros() {
             </div>
           </div>
         </div>
+
+        {/* Mensaje de feedback si existe */}
+        {mensaje && (
+          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl mb-6 flex justify-between items-center">
+            <span>{mensaje}</span>
+            <button
+              type="button"
+              onClick={() => setMensaje("")}
+              className="text-green-700 hover:text-green-900 font-bold ml-2"
+            >
+              ×
+            </button>
+          </div>
+        )}
+
+        {error && (
+          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-6 flex justify-between items-center">
+            <span>{error}</span>
+            <button
+              type="button"
+              onClick={() => setError("")}
+              className="text-red-700 hover:text-red-900 font-bold ml-2"
+            >
+              ×
+            </button>
+          </div>
+        )}
 
         {/* Lista de cajeros */}
         {cargando ? (
@@ -304,9 +414,7 @@ function Cajeros() {
             {cajerosFiltrados.map((cajero) => (
               <div
                 key={cajero.id}
-                className={`bg-white rounded-3xl shadow-sm border border-[#f0dfdc] overflow-hidden hover:shadow-md transition-shadow ${
-                  cajero.activo ? "" : "opacity-75"
-                }`}
+                className="bg-white rounded-3xl shadow-sm border border-[#f0dfdc] overflow-hidden hover:shadow-md transition-shadow"
               >
                 <div className="p-6">
                   <div className="flex items-start justify-between">
@@ -327,18 +435,35 @@ function Cajeros() {
                             {cajero.nombre}
                           </h2>
                           <span
-                            className={`font-sans text-xs font-medium px-3 py-1 rounded-full ${
-                              cajero.activo
-                                ? "text-green-700 bg-green-100"
-                                : "text-gray-600 bg-gray-200"
+                            className={`w-8 h-2 rounded-full ${
+                              cajero.activo ? "bg-green-300" : "bg-red-300"
                             }`}
-                          >
-                            {cajero.activo ? t("cajeros.activo", "Activo") : t("cajeros.inactivo", "Inactivo")}
-                          </span>
+                            title={
+                              cajero.activo
+                                ? t("cajeros.activo", "Activo")
+                                : t("cajeros.inactivo", "Inactivo")
+                            }
+                            aria-label={
+                              cajero.activo
+                                ? t("cajeros.activo", "Activo")
+                                : t("cajeros.inactivo", "Inactivo")
+                            }
+                          />
+
+                          {cajero.aviso_pendiente && (
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-amber-100 text-amber-800 border border-amber-300">
+                              <Mail size={12} />
+                              {t("cajeros.avisoPendiente", "Aviso pendiente")}
+                            </span>
+                          )}
                         </div>
 
                         <p className="font-sans text-sm text-gray-600 mt-1">
                           ✉ {cajero.email}
+                        </p>
+
+                        <p className="font-sans text-sm text-gray-600 mt-1">
+                          # {cajero.id}
                         </p>
                         {!esGerente && (
                           <p className="font-sans text-xs text-[#875d69] mt-1 font-medium">
@@ -357,6 +482,23 @@ function Cajeros() {
                   <div className="flex gap-2">
                     {cajero.activo ? (
                       <>
+                    {/* Reenviar aviso */}
+                    {cajero.aviso_pendiente && (
+                      <button
+                        type="button"
+                        onClick={() => manejarReenviarAviso(cajero.id)}
+                        disabled={reenviandoId === cajero.id}
+                        className="font-sans flex items-center gap-1.5 rounded-xl border border-[#cda4b4] bg-[#fff0f2] hover:bg-[#fde4e8] px-3 py-2 text-xs font-medium text-[#875d69] transition-colors disabled:opacity-50"
+                        title={t("cajeros.reenviarAviso", "Reenviar aviso")}
+                        aria-label={t("cajeros.reenviarAviso", "Reenviar aviso")}
+                      >
+                        <Send size={14} />
+                        {reenviandoId === cajero.id
+                          ? t("cajeros.enviando", "Enviando...")
+                          : t("cajeros.reenviarAviso", "Reenviar aviso")}
+                      </button>
+                    )}
+
                     {/* Editar */}
                     <button
                       type="button"
@@ -420,14 +562,15 @@ function Cajeros() {
                     </button>
                       </>
                     ) : (
-                      <button
-                        type="button"
-                        onClick={() => manejarReactivar(cajero.id)}
-                        className="font-sans bg-rose-800 hover:bg-rose-900 text-white px-5 py-2 rounded-full text-sm transition-colors"
-                      >
-                        {t("cajeros.reactivar", "Reactivar")}
-                      </button>
-                    )}
+                    <button
+                      type="button"
+                      onClick={() => manejarReactivar(cajero.id)}
+                      className="font-sans flex items-center gap-2 rounded-xl bg-[#875d69] px-4 py-2 text-sm text-white transition-colors hover:bg-[#704956]"
+                    >
+                      <IconoCajero size={20} />
+                      {t("cajeros.reactivar", "Reactivar")}
+                    </button>
+                  )}
                   </div>
                 </div>
               </div>

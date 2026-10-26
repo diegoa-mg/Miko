@@ -7,16 +7,19 @@ function Inventarios() {
   const [inventarios, setInventarios] = useState([]);
   const [sucursales, setSucursales] = useState([]);
   const [sucursalSeleccionada, setSucursalSeleccionada] = useState("");
+  const [paginaActual, setPaginaActual] = useState(1);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
   const { t } = useTranslation();
+
+  const productosPorPagina = 15;
 
   // Cargar las sucursales para el filtro
   useEffect(() => {
     const cargarSucursales = async () => {
       try {
         const data = await obtenerSucursales();
-        setSucursales(data);
+        setSucursales(Array.isArray(data) ? data : []);
       } catch (error) {
         console.error(error);
       }
@@ -35,28 +38,49 @@ function Inventarios() {
       setCargando(true);
       setError("");
 
-      const data = await obtenerInventarios(
-        sucursalSeleccionada || null
-      );
+      const sucursalId =
+        sucursalSeleccionada && sucursalSeleccionada !== "inactivas"
+          ? sucursalSeleccionada
+          : null;
 
-      setInventarios(data);
+      const data = await obtenerInventarios(sucursalId);
+
+      setInventarios(Array.isArray(data) ? data : []);
     } catch (error) {
-  console.error(error);
-  setError(
-    error.response?.data?.detail ||
-      t("inventarios.loadError")
-  );
-} finally {
-  setCargando(false);
-}
+      console.error(error);
+      setError(
+        error.response?.data?.detail ||
+          t("inventarios.loadError")
+      );
+    } finally {
+      setCargando(false);
+    }
   };
+
+  const totalPaginas = Math.ceil(
+    inventarios.length / productosPorPagina
+  );
+
+  useEffect(() => {
+    if (totalPaginas > 0 && paginaActual > totalPaginas) {
+      setPaginaActual(1);
+    }
+  }, [totalPaginas, paginaActual]);
+
+  const indiceInicial = (paginaActual - 1) * productosPorPagina;
+  const indiceFinal = indiceInicial + productosPorPagina;
+
+  const inventariosPaginados = inventarios.slice(
+    indiceInicial,
+    indiceFinal
+  );
 
   return (
     <div className="p-6">
       {/* Encabezado */}
       <div className="mb-8">
         <h1 className="text-3xl font-bold text-[#875d69]">
-         {t("inventarios.title")}
+          {t("inventarios.title")}
         </h1>
 
         <p className="mt-2 text-[#203a5f]">
@@ -79,27 +103,28 @@ function Inventarios() {
 
           <select
             value={sucursalSeleccionada}
-            onChange={(e) =>
-              setSucursalSeleccionada(e.target.value)
-            }
+            onChange={(e) => {
+              setSucursalSeleccionada(e.target.value);
+              setPaginaActual(1);
+            }}
             className="w-full max-w-sm rounded-xl border-2 border-[#e6bdc7] bg-white px-4 py-2.5 text-[#8c6773] shadow-sm transition focus:border-[#875d69] focus:outline-none"
           >
             <option value="">
-           {t("inventarios.allBranches")}
-          </option>
-
-          <option value="inactivas">
-            {t("inventarios.inactiveBranches")}
-          </option>
-
-          {sucursales.map((sucursal) => (
-            <option
-              key={sucursal.id}
-              value={sucursal.id}
-            >
-              {sucursal.nombre}
+              {t("inventarios.allBranches")}
             </option>
-          ))}
+
+            <option value="inactivas">
+              {t("inventarios.inactiveBranches")}
+            </option>
+
+            {sucursales.map((sucursal) => (
+              <option
+                key={sucursal.id}
+                value={sucursal.id}
+              >
+                {sucursal.nombre}
+              </option>
+            ))}
           </select>
         </div>
       </div>
@@ -140,59 +165,136 @@ function Inventarios() {
             </div>
           </div>
 
-          {/* Tabla */}
-          <div className="overflow-x-auto rounded-2xl border border-[#ead8d8] bg-white/80 shadow-sm">
-            <table className="w-full min-w-[700px]">
-              <thead>
-                <tr className="border-b border-[#ead8d8] bg-[#fff8f8]">
-                  <th className="p-4 text-left text-sm font-semibold text-[#5f3c46]">
-                    {t("inventarios.product")}
-                  </th>
+          {/* Tabla con paginación */}
+          <section className="overflow-hidden rounded-2xl border border-[#ead8d8] bg-white/80 shadow-sm">
+            <div className="overflow-x-auto">
+              <table className="w-full min-w-[700px]">
+                <thead>
+                  <tr className="border-b border-[#ead8d8] bg-[#fff8f8]">
+                    <th className="p-4 text-left text-sm font-semibold text-[#5f3c46]">
+                      {t("inventarios.product")}
+                    </th>
 
-                  <th className="p-4 text-left text-sm font-semibold text-[#5f3c46]">
-                    {t("inventarios.category")}
-                  </th>
+                    <th className="p-4 text-left text-sm font-semibold text-[#5f3c46]">
+                      {t("inventarios.category")}
+                    </th>
 
-                  <th className="p-4 text-left text-sm font-semibold text-[#5f3c46]">
-                    {t("inventarios.branch")}
-                  </th>
+                    <th className="p-4 text-left text-sm font-semibold text-[#5f3c46]">
+                      {t("inventarios.branch")}
+                    </th>
 
-                  <th className="p-4 text-center text-sm font-semibold text-[#5f3c46]">
-                    {t("inventarios.quantity")}
-                  </th>
-                </tr>
-              </thead>
-
-              <tbody>
-                {inventarios.map((inventario) => (
-                  <tr
-                    key={`${inventario.sucursal_id}-${inventario.producto_id}`}
-                    className="border-b border-[#f0e3e3] last:border-b-0 transition-colors hover:bg-[#fff8f8]"
-                  >
-                    <td className="p-4">
-                      <div className="font-semibold text-[#4f3b40]">
-                        {inventario.producto_nombre}
-                      </div>
-                    </td>
-
-                    <td className="p-4 text-[#8c6773]">
-                      {inventario.categoria_nombre}
-                    </td>
-
-                    <td className="p-4 text-[#8c6773]">
-                      {inventario.sucursal_nombre}
-                    </td>
-
-                    <td className="p-4 text-center">
-                      <span className="inline-flex min-w-12 justify-center rounded-full bg-[#f9eeb4] px-3 py-1.5 font-semibold text-[#70565e]">
-                        {inventario.existencia}
-                      </span>
-                    </td>
+                    <th className="p-4 text-center text-sm font-semibold text-[#5f3c46]">
+                      {t("inventarios.quantity")}
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          </div>
+                </thead>
+
+                <tbody>
+                  {inventariosPaginados.map((inventario) => (
+                    <tr
+                      key={`${inventario.sucursal_id}-${inventario.producto_id}`}
+                      className="border-b border-[#f0e3e3] last:border-b-0 transition-colors hover:bg-[#fff8f8]"
+                    >
+                      <td className="p-4">
+                        <div className="font-semibold text-[#4f3b40]">
+                          {inventario.producto_nombre}
+                        </div>
+                      </td>
+
+                      <td className="p-4 text-[#8c6773]">
+                        {inventario.categoria_nombre}
+                      </td>
+
+                      <td className="p-4 text-[#8c6773]">
+                        {inventario.sucursal_nombre}
+                      </td>
+
+                      <td className="p-4 text-center">
+                        <span className="inline-flex min-w-12 justify-center rounded-full bg-[#f9eeb4] px-3 py-1.5 font-semibold text-[#70565e]">
+                          {inventario.existencia}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+
+            {/* Paginación */}
+            {inventarios.length > 0 && (
+              <div className="flex flex-col items-center gap-4 border-t border-[#ead8d8] bg-[#fffaf8] px-5 py-4">
+                <div className="flex flex-wrap items-center justify-center gap-2">
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setPaginaActual((pagina) => Math.max(1, pagina - 1))
+                    }
+                    disabled={paginaActual === 1}
+                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#ead8d8] bg-white text-[#8b5e6b] transition hover:bg-[#fae4df] disabled:cursor-not-allowed disabled:opacity-40"
+                    aria-label={t("inventarios.paginacion.anterior")}
+                  >
+                    <span className="material-icons text-xl">
+                      chevron_left
+                    </span>
+                  </button>
+
+                  {Array.from({ length: totalPaginas }, (_, indice) => indice + 1)
+                    .filter(
+                      (pagina) =>
+                        pagina === 1 ||
+                        pagina === totalPaginas ||
+                        Math.abs(pagina - paginaActual) <= 1
+                    )
+                    .reduce((elementos, pagina, indice, paginas) => {
+                      if (indice > 0 && pagina - paginas[indice - 1] > 1) {
+                        elementos.push(
+                          <span
+                            key={`puntos-${pagina}`}
+                            className="px-1 text-[#8c6773]"
+                          >
+                            …
+                          </span>
+                        );
+                      }
+
+                      elementos.push(
+                        <button
+                          key={pagina}
+                          type="button"
+                          onClick={() => setPaginaActual(pagina)}
+                          aria-current={paginaActual === pagina ? "page" : undefined}
+                          className={`h-9 min-w-9 rounded-xl border px-3 text-sm font-semibold transition ${
+                            paginaActual === pagina
+                              ? "border-[#d06b7d] bg-[#d06b7d] text-white"
+                              : "border-[#ead8d8] bg-white text-[#8b5e6b] hover:bg-[#fae4df]"
+                          }`}
+                        >
+                          {pagina}
+                        </button>
+                      );
+
+                      return elementos;
+                    }, [])}
+
+                  <button
+                    type="button"
+                    onClick={() =>
+                      setPaginaActual((pagina) =>
+                        Math.min(totalPaginas, pagina + 1)
+                      )
+                    }
+                    disabled={paginaActual === totalPaginas || totalPaginas === 0}
+                    className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#ead8d8] bg-white text-[#8b5e6b] transition hover:bg-[#fae4df] disabled:cursor-not-allowed disabled:opacity-40"
+                    aria-label={t("inventarios.paginacion.siguiente")}
+                  >
+                    <span className="material-icons text-xl">
+                      chevron_right
+                    </span>
+                  </button>
+                </div>
+              </div>
+            )}
+          </section>
         </div>
       )}
 
@@ -201,7 +303,7 @@ function Inventarios() {
         <div className="rounded-2xl border border-[#ead8d8] bg-white/70 px-6 py-12 text-center shadow-sm">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#fff1f3]">
             <span className="text-2xl text-[#875d69]">📦</span>
-            </div>
+          </div>
 
           <h2 className="mb-2 text-lg font-semibold text-[#5f3c46]">
             {t("inventarios.emptyTitle")}

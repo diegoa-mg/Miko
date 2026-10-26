@@ -30,3 +30,8 @@ export const reactivarGerente = async (id) => {
   const { data } = await api.patch(`/gerentes/${id}/reactivar`);
   return data;
 };
+
+export const reenviarAvisoGerente = async (id) => {
+  const { data } = await api.post(`/gerentes/${id}/reenviar-aviso`);
+  return data;
+};

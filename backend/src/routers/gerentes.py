@@ -1,12 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
 
 from src.dependencies import requiere_rol
-from src.services import obtener_rol, llenar_usuario_out
+from src.services import obtener_rol, llenar_usuario_out, enviar_aviso_privacidad
 from src.database import get_db
 from src.security import hash_password
 from src.models import Usuario, Sucursal
-from src.schemas import GerenteCreate, GerenteUpdate, UsuarioOut, SucursalUpdate
+from src.schemas import GerenteCreate, GerenteUpdate, UsuarioOut
 
 router = APIRouter(
     prefix="/gerentes",
@@ -16,7 +16,7 @@ router = APIRouter(
 
 # Endpoint Crear Gerente
 @router.post("", response_model=UsuarioOut, status_code=status.HTTP_201_CREATED)
-def crear_gerente(gerente_in: GerenteCreate, db: Session = Depends(get_db),):
+def crear_gerente(gerente_in: GerenteCreate, background_tasks: BackgroundTasks, db: Session = Depends(get_db),):
     """Crea un usuario con rol gerente_sede. Solo Administrador General."""
 
     # Validar si ya existe un usuario con el mismo correo, ya que no se permiten correos duplicados
@@ -40,6 +40,12 @@ def crear_gerente(gerente_in: GerenteCreate, db: Session = Depends(get_db),):
     db.add(usuario)
     db.commit()
     db.refresh(usuario)
+
+    # Se envía después de responder: no hace esperar al administrador y un
+    # fallo del SMTP no cancela la creación
+    background_tasks.add_task(
+        enviar_aviso_privacidad, usuario.id, usuario.nombre, usuario.email, "gerente_sede"
+    )
 
     # Regresar el usuario con el esquema UsuarioOut mediante la funcion llenar_usuario_out
     return llenar_usuario_out(usuario)
@@ -194,3 +200,27 @@ def reactivar_gerente(gerente_id: int, db: Session = Depends(get_db)):
         "message": "Gerente activado exitosamente en la base de datos.",
         "gerente_id": gerente_id
     }
+
+
+@router.post("/{gerente_id}/reenviar-aviso", status_code=status.HTTP_200_OK)
+def reenviar_aviso_gerente(
+    gerente_id: int, background_tasks: BackgroundTasks, db: Session = Depends(get_db)
+):
+    rol_gerente = obtener_rol(db, "gerente_sede")
+    gerente = db.query(Usuario).filter(
+        Usuario.id == gerente_id, Usuario.rol_id == rol_gerente.id, Usuario.activo == True
+    ).first()
+    if gerente is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail=f"Gerente con ID {gerente_id} no encontrado",
+        )
+    if gerente.aviso_aceptado_en is not None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El gerente ya aceptó el aviso de privacidad",
+        )
+    background_tasks.add_task(
+        enviar_aviso_privacidad, gerente.id, gerente.nombre, gerente.email, "gerente_sede"
+    )
+    return {"message": "Se reenviará el aviso de privacidad al correo del gerente."}

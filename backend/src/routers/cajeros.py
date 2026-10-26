@@ -1,8 +1,8 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
 
 from src.dependencies import requiere_rol
-from src.services import obtener_rol, llenar_usuario_out, sucursal_del_alcance
+from src.services import obtener_rol, llenar_usuario_out, sucursal_del_alcance, enviar_aviso_privacidad
 from src.database import get_db
 from src.security import hash_password
 from src.models import Usuario, Sucursal
@@ -51,6 +51,7 @@ def _buscar_cajero(
 @router.post("", response_model=UsuarioOut, status_code=status.HTTP_201_CREATED)
 def crear_cajero(
     cajero_in: CajeroCreate,
+    background_tasks: BackgroundTasks,
     db: Session = Depends(get_db),
     usuario_actual=Depends(admin_o_gerente),
 ):
@@ -94,6 +95,10 @@ def crear_cajero(
     db.add(usuario)
     db.commit()
     db.refresh(usuario)
+
+    background_tasks.add_task(
+        enviar_aviso_privacidad, usuario.id, usuario.nombre, usuario.email, "cajero"
+    )
 
     return llenar_usuario_out(usuario)
 
@@ -235,3 +240,23 @@ def reactivar_cajero(
         "message": "Cajero activado exitosamente en la base de datos.",
         "cajero_id": cajero_id,
     }
+
+
+@router.post("/{cajero_id}/reenviar-aviso", status_code=status.HTTP_200_OK)
+def reenviar_aviso_cajero(
+    cajero_id: int,
+    background_tasks: BackgroundTasks,
+    db: Session = Depends(get_db),
+    usuario_actual=Depends(admin_o_gerente),
+):
+    alcance = sucursal_del_alcance(db, usuario_actual)
+    cajero = _buscar_cajero(db, cajero_id, alcance)
+    if cajero.aviso_aceptado_en is not None:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El cajero ya aceptó el aviso de privacidad",
+        )
+    background_tasks.add_task(
+        enviar_aviso_privacidad, cajero.id, cajero.nombre, cajero.email, "cajero"
+    )
+    return {"message": "Se reenviará el aviso de privacidad al correo del cajero."}

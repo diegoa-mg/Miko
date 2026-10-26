@@ -27,4 +27,7 @@ from src.schemas.ventas import (
     DetalleVentaOut,
     VentaOut,
     VentaUpdate,
+    TicketProducto,
+    TicketOut,
 )
+from src.schemas.aviso_privacidad import AceptarAvisoRequest
