@@ -41,6 +41,7 @@ function useCarga(cargar) {
 
 // Lista de personas (gerentes) con su sucursal.
 function SeccionPersonas({
+  t,
   titulo,
   personas,
   cargando,
@@ -72,6 +73,9 @@ function SeccionPersonas({
               <div className="min-w-0 flex-1">
                 <p className="font-medium text-gray-800 break-words">
                   {persona.nombre}
+                </p>
+                <p className="text-xs text-gray-400">
+                  {t("dashboard.id")}: {persona.id}
                 </p>
                 <p className="text-sm text-gray-500 break-words">
                   {persona.email}
@@ -264,6 +268,7 @@ export default function DashboardAdmin() {
 
           {/* Gerentes */}
           <SeccionPersonas
+            t={t}
             titulo={t("dashboard.managersTitle")}
             personas={gerentes}
             cargando={cargandoGerentes}

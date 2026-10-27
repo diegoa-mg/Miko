@@ -73,6 +73,8 @@ def calcular_alertas_inventario(
         .join(Producto, Producto.id == Inventario.producto_id)
         .join(Sucursal, Sucursal.id == Inventario.sucursal_id)
         .filter(Inventario.existencia <= umbral, Sucursal.estado == "activa")
+        # De menor a mayor existencia; sucursal y producto desempatan para que el orden sea estable
+        .order_by(Inventario.existencia.asc(), Sucursal.nombre.asc(), Producto.nombre.asc())
     )
     if sucursal_id is not None:
         query = query.filter(Sucursal.id == sucursal_id)

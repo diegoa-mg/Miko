@@ -328,6 +328,7 @@
     "registeredManagers": "Gerentes activos",
     "noManagers": "No hay gerentes registrados.",
     "noBranch": "Sin sucursal asignada",
+    "id": "ID",
     "activeCashiers": "Cajeros activos",
     "cashiersTitle": "Cajeros",
     "noCashiers": "No hay cajeros registrados.",
