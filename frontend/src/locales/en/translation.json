@@ -328,6 +328,7 @@
     "registeredManagers": "Active managers",
     "noManagers": "No managers registered.",
     "noBranch": "No assigned branch",
+    "id": "ID",
     "descripcionGerente": "Overview of your branch",
     "activeCashiers": "Active cashiers",
     "cashiersTitle": "Cashiers",
