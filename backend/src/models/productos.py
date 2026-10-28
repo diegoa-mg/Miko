@@ -23,9 +23,13 @@ class Producto(Base):
     categoria_id: Mapped[int] = mapped_column(ForeignKey("categorias.id"))
     sucursal_id: Mapped[int] = mapped_column(ForeignKey("sucursales.id"))
     activo: Mapped[bool] = mapped_column(server_default="true")
+    # Código de barras: opcional (los productos existentes no lo tienen) y
+    # único dentro de cada sucursal. En PostgreSQL varios NULL no chocan entre sí.
+    codigo: Mapped[str | None] = mapped_column(String(50), nullable=True)
 
     __table_args__ = (
         UniqueConstraint("sucursal_id", "nombre", name="uq_producto_nombre_sucursal"),
+        UniqueConstraint("sucursal_id", "codigo", name="uq_producto_codigo_sucursal"),
     )
 
     categoria: Mapped["Categoria"] = relationship(back_populates="productos")

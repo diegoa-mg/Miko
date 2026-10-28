@@ -12,7 +12,12 @@ from src.services.inventarios import (
     crear_lista_inventario,
     calcular_alertas_inventario,
 )
-from src.services.productos import consulta_productos, obtener_producto_de_sucursal
+from src.services.productos import (
+    consulta_productos,
+    obtener_producto_de_sucursal,
+    verificar_codigo_disponible,
+    codigo_duplicado,
+)
 from src.services.ventas import (
     calcular_ventas_total,
     contar_ventas,

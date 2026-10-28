@@ -2,6 +2,13 @@ from decimal import Decimal
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+# Quita espacios; un código vacío se guarda como None (sin código)
+def _normalizar_codigo(v: str | None) -> str | None:
+    if v is None:
+        return None
+    v = v.strip()
+    return v or None
+
 # Esquemas para productos
 class ProductoOut(BaseModel):
     id: int
@@ -11,6 +18,7 @@ class ProductoOut(BaseModel):
     categoria_nombre: str
     existencia: int
     activo: bool
+    codigo: str | None = None
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -19,6 +27,13 @@ class ProductoCreate(BaseModel):
     precio: Decimal = Field(gt=0, max_digits=10, decimal_places=2)
     categoria_id: int
     existencia_inicial: int = Field(ge=0)
+    # Código de barras: opcional, único dentro de la sucursal
+    codigo: str | None = Field(default=None, max_length=50)
+
+    @field_validator("codigo")
+    @classmethod
+    def normalizar_codigo_crear(cls, v: str | None):
+        return _normalizar_codigo(v)
 
     @field_validator("nombre")
     @classmethod
@@ -31,6 +46,12 @@ class ProductoUpdate(BaseModel):
     nombre: str | None = Field(default=None, min_length=1)
     precio: Decimal | None = Field(default= None, gt=0, max_digits=10, decimal_places=2)
     categoria_id: int | None = None
+    codigo: str | None = Field(default=None, max_length=50)
+
+    @field_validator("codigo")
+    @classmethod
+    def normalizar_codigo_editar(cls, v: str | None):
+        return _normalizar_codigo(v)
 
     # Los tres campos son opcionales (puedes mandar solo uno),
     # pero si los mandas, no pueden ser null.
