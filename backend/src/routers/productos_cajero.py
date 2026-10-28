@@ -5,6 +5,7 @@ router y bloquearía al cajero.
 """
 
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import or_
 from sqlalchemy.orm import Session
 
 from src.database import get_db
@@ -24,12 +25,14 @@ router = APIRouter(
 def listar_productos_cajero(
     buscar: str | None = None,
     categoria_id: int | None = None,
+    codigo: str | None = None,
     usuario: Usuario = Depends(requiere_rol("cajero")),
     db: Session = Depends(get_db),
 ):
     """
     Productos ACTIVOS de la sucursal del cajero, con búsqueda parcial por
-    nombre y filtro por categoría. Incluye los de existencia 0 (el frontend
+    nombre o código de barras, filtro por categoría y búsqueda exacta por
+    código (para el lector de códigos). Incluye los de existencia 0 (el frontend
     decide cómo mostrarlos). Solo Cajeros.
     """
 
@@ -46,9 +49,17 @@ def listar_productos_cajero(
         Producto.activo == True  # noqa: E712
     )
 
-    # ilike = búsqueda parcial sin importar mayúsculas: "con" encuentra "Concha"
+    # ilike = búsqueda parcial sin importar mayúsculas: "con" encuentra "Concha".
+    # También busca coincidencias parciales en el código de barras.
     if buscar:
-        consulta = consulta.filter(Producto.nombre.ilike(f"%{buscar.strip()}%"))
+        texto = f"%{buscar.strip()}%"
+        consulta = consulta.filter(
+            or_(Producto.nombre.ilike(texto), Producto.codigo.ilike(texto))
+        )
+
+    # Coincidencia exacta: lo que manda el lector de códigos de barras
+    if codigo and codigo.strip():
+        consulta = consulta.filter(Producto.codigo == codigo.strip())
 
     if categoria_id:
         consulta = consulta.filter(Producto.categoria_id == categoria_id)

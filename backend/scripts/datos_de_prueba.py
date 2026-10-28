@@ -115,6 +115,26 @@ PRODUCTOS = {
     ],
 }
 
+# Código de barras por producto (el mismo código se puede repetir entre
+# sucursales; solo debe ser único dentro de cada una). "Jugo de naranja" y
+# "Café americano" quedan sin código a propósito, para probar que es opcional.
+CODIGOS = {
+    "Concha": "7501000000011",
+    "Cuerno": "7501000000028",
+    "Oreja": "7501000000035",
+    "Dona glaseada": "7501000000042",
+    "Rol de canela": "7501000000059",
+    "Bolillo": "7501000000066",
+    "Telera": "7501000000073",
+    "Baguette": "7501000000080",
+    "Pastel de chocolate": "7501000000097",
+    "Pay de queso": "7501000000103",
+    "Rebanada de tres leches": "7501000000110",
+    "Galleta de avena": "7501000000127",
+    "Polvorón": "7501000000134",
+    "Chocolate caliente": "7501000000141",
+}
+
 # Cada sucursal fija sus precios: mismo producto, precio distinto
 PRECIO_POR_SUCURSAL = {
     "Miko Centro": Decimal("1.00"),
@@ -269,9 +289,13 @@ def crear_catalogo(db, sucursales):
                         categoria_id=categorias[nombre_categoria].id,
                         sucursal_id=sucursal.id,
                         activo=(nombre_sucursal, nombre_producto) not in PRODUCTOS_INACTIVOS,
+                        codigo=CODIGOS.get(nombre_producto),
                     )
                     db.add(producto)
                     db.flush()
+                elif producto.codigo is None and nombre_producto in CODIGOS:
+                    # Producto de una carga anterior (sin código): se le asigna
+                    producto.codigo = CODIGOS[nombre_producto]
                 productos_por_sucursal[nombre_sucursal].append(producto)
 
     db.commit()

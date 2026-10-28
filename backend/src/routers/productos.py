@@ -1,11 +1,19 @@
 from fastapi import APIRouter, Depends, HTTPException, status
+from sqlalchemy import or_
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from src.dependencies import requiere_rol
 from src.database import get_db
 from src.models import Producto, Inventario, Usuario, Categoria
 from src.schemas import ProductoOut, ProductoCreate, ProductoUpdate
-from src.services import obtener_sucursal_del_gerente, consulta_productos, obtener_producto_de_sucursal
+from src.services import (
+    obtener_sucursal_del_gerente,
+    consulta_productos,
+    obtener_producto_de_sucursal,
+    verificar_codigo_disponible,
+    codigo_duplicado,
+)
 
 router = APIRouter(
     prefix="/productos",
@@ -39,12 +47,17 @@ def crear_producto(producto_in: ProductoCreate, usuario: Usuario = Depends(requi
             detail=f"Ya existe un producto llamado '{producto_in.nombre}' en tu sucursal.",
         )
 
+    # Verificar que el código de barras (si viene) no se repita en la sucursal
+    if producto_in.codigo:
+        verificar_codigo_disponible(db, sucursal.id, producto_in.codigo)
+
     # Crear el producto. flush() lo manda la db para obtener su id
     producto = Producto(
         nombre=producto_in.nombre,
         precio=producto_in.precio,
         categoria_id=producto_in.categoria_id,
-        sucursal_id=sucursal.id
+        sucursal_id=sucursal.id,
+        codigo=producto_in.codigo,
     )
     db.add(producto)
     db.flush()
@@ -57,7 +70,12 @@ def crear_producto(producto_in: ProductoCreate, usuario: Usuario = Depends(requi
     )
     db.add(inventario)
 
-    db.commit()
+    # Respaldo por si dos peticiones registran el mismo código al mismo tiempo
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise codigo_duplicado(producto_in.codigo or "")
 
     producto_creado = consulta_productos(db, sucursal.id).filter(Producto.id == producto.id).first()
     return ProductoOut.model_validate(producto_creado)
@@ -84,9 +102,15 @@ def listar_productos(
     if not incluir_inactivos:
         consulta = consulta.filter(Producto.activo == True)
 
-    # ilike = búsqueda parcial sin importar mayúsculas: "con" encuentra "Concha"
+    # ilike = búsqueda parcial sin importar mayúsculas: "con" encuentra "Concha".
+    # También busca coincidencias en el código de barras.
     if buscar:
-        consulta = consulta.filter(Producto.nombre.ilike(f"%{buscar}%"))
+        consulta = consulta.filter(
+            or_(
+                Producto.nombre.ilike(f"%{buscar}%"),
+                Producto.codigo.ilike(f"%{buscar}%"),
+            )
+        )
 
     if categoria_id:
         consulta = consulta.filter(Producto.categoria_id == categoria_id)
@@ -151,6 +175,11 @@ def editar_producto(
             )
         producto.nombre = producto_in.nombre
 
+    # Si viene código de barras
+    if producto_in.codigo:
+        verificar_codigo_disponible(db, sucursal.id, producto_in.codigo, excluir_producto_id=producto.id)
+        producto.codigo = producto_in.codigo
+
     # Si viene precio
     if producto_in.precio:
         producto.precio = producto_in.precio
@@ -165,7 +194,11 @@ def editar_producto(
             )
         producto.categoria_id = producto_in.categoria_id
 
-    db.commit()
+    try:
+        db.commit()
+    except IntegrityError:
+        db.rollback()
+        raise codigo_duplicado(producto_in.codigo or "")
 
     producto_actualizado = consulta_productos(db, sucursal.id).filter(Producto.id == producto.id).first()
 
