@@ -27,7 +27,6 @@
     "eliminar": "Delete",
     "eliminarTitulo": "Delete branch",
     "confirmarEliminar": "Are you sure you want to delete this branch?",
-    "errorEliminar": "Could not delete the branch.",
     "aceptar": "Accept",
     "nombrePlaceholder": "E.g. Colima Branch",
     "direccionPlaceholder": "E.g. Main Ave. #123",
