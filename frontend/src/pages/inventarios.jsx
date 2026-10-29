@@ -7,6 +7,7 @@ function Inventarios() {
   const [inventarios, setInventarios] = useState([]);
   const [sucursales, setSucursales] = useState([]);
   const [sucursalSeleccionada, setSucursalSeleccionada] = useState("");
+  const [busqueda, setBusqueda] = useState("");
   const [paginaActual, setPaginaActual] = useState(1);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
@@ -57,9 +58,15 @@ function Inventarios() {
     }
   };
 
-  const totalPaginas = Math.ceil(
-    inventarios.length / productosPorPagina
-  );
+  const inventariosFiltrados = inventarios.filter((inventario) =>
+  inventario.producto_nombre
+    ?.toLocaleLowerCase()
+    .includes(busqueda.trim().toLocaleLowerCase())
+);
+
+const totalPaginas = Math.ceil(
+  inventariosFiltrados.length / productosPorPagina
+);
 
   useEffect(() => {
     if (totalPaginas > 0 && paginaActual > totalPaginas) {
@@ -70,10 +77,10 @@ function Inventarios() {
   const indiceInicial = (paginaActual - 1) * productosPorPagina;
   const indiceFinal = indiceInicial + productosPorPagina;
 
-  const inventariosPaginados = inventarios.slice(
-    indiceInicial,
-    indiceFinal
-  );
+  const inventariosPaginados = inventariosFiltrados.slice(
+  indiceInicial,
+  indiceFinal
+);
 
   return (
     <div className="p-6">
@@ -88,46 +95,74 @@ function Inventarios() {
         </p>
       </div>
 
-      {/* Filtro */}
-      <div className="mb-8 rounded-2xl bg-white p-5 shadow-sm">
-        <div className="flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-[#5f3c46]">
-              {t("inventarios.selectBranch")}
-            </label>
+      {/* Filtro */}    
+<div className="mb-8 w-full overflow-visible rounded-2xl bg-white p-5 shadow-sm">
+<div className="grid w-full grid-cols-1 items-end gap-5 lg:grid-cols-[minmax(280px,0.8fr)_minmax(450px,1.4fr)]">
 
-            <p className="text-sm text-[#a1818a]">
-              {t("inventarios.filterDescription")}
-            </p>
-          </div>
+    {/* Filtro por sucursal */}
+<div className="min-w-0 w-full lg:col-span-1">
+  <label
+    htmlFor="filtro-sucursal"
+    className="mb-2 block text-sm font-semibold text-[#5f3c46]"
+  >
+    {t("inventarios.selectBranch")}
+  </label>
 
-          <select
-            value={sucursalSeleccionada}
-            onChange={(e) => {
-              setSucursalSeleccionada(e.target.value);
-              setPaginaActual(1);
-            }}
-            className="w-full max-w-sm rounded-xl border-2 border-[#e6bdc7] bg-white px-4 py-2.5 text-[#8c6773] shadow-sm transition focus:border-[#875d69] focus:outline-none"
-          >
-            <option value="">
-              {t("inventarios.allBranches")}
-            </option>
+  <select
+    id="filtro-sucursal"
+    value={sucursalSeleccionada}
+    onChange={(e) => {
+      setSucursalSeleccionada(e.target.value);
+      setPaginaActual(1);
+    }}
+className="w-full h-10 rounded-xl border-2 border-[#e6bdc7] bg-white px-4 text-base text-[#8c6773] shadow-sm focus:border-[#875d69] focus:outline-none">
+    <option value="">
+      {t("inventarios.allBranches")}
+    </option>
 
-            <option value="inactivas">
-              {t("inventarios.inactiveBranches")}
-            </option>
+    <option value="inactivas">
+      {t("inventarios.inactiveBranches")}
+    </option>
 
-            {sucursales.map((sucursal) => (
-              <option
-                key={sucursal.id}
-                value={sucursal.id}
-              >
-                {sucursal.nombre}
-              </option>
-            ))}
-          </select>
-        </div>
+    {sucursales.map((sucursal) => (
+      <option key={sucursal.id} value={sucursal.id}>
+        {sucursal.nombre}
+      </option>
+    ))}
+  </select>
+</div>
+
+    {/* Buscador por nombre */}
+    <div className="min-w-0">
+  <label
+    htmlFor="buscar-producto-inventario"
+    className="mb-2 block text-sm font-semibold text-[#5f3c46]"
+  >
+    {t("inventarios.searchLabel")}
+  </label>
+
+      <div className="relative">
+        <span className="material-icons absolute left-4 top-1/2 -translate-y-1/2 text-2xl text-[#a1818a]">
+          search
+        </span>
+
+        <input
+          id="buscar-producto-inventario"
+          type="search"
+          value={busqueda}
+          onChange={(e) => {
+            setBusqueda(e.target.value);
+            setPaginaActual(1);
+          }}
+          placeholder={t("inventarios.searchPlaceholder")}
+          className="w-full h-10 rounded-xl border-2 border-[#e6bdc7] bg-white pl-12 pr-3 text-base text-[#8c6773] shadow-sm transition placeholder:text-[#a1818a] focus:border-[#875d69] focus:outline-none"
+        />
       </div>
+    </div>
+
+  </div>
+</div>
+
 
       {/* Estado de carga */}
       {cargando && (
@@ -148,7 +183,10 @@ function Inventarios() {
       )}
 
       {/* Inventarios */}
-      {!cargando && !error && inventarios.length > 0 && (
+      {!cargando &&
+  !error &&
+  inventarios.length > 0 &&
+  inventariosFiltrados.length > 0 && (
         <div>
           {/* Resumen */}
           <div className="mb-4 flex items-center justify-between">
@@ -159,7 +197,7 @@ function Inventarios() {
 
               <p className="text-sm text-[#a1818a]">
                 {t("inventarios.productCount", {
-                  count: inventarios.length,
+                  count: inventariosFiltrados.length,
                 })}
               </p>
             </div>
@@ -299,18 +337,28 @@ function Inventarios() {
       )}
 
       {/* Sin inventarios */}
-      {!cargando && !error && inventarios.length === 0 && (
+      {!cargando &&
+  !error &&
+  (inventarios.length === 0 || inventariosFiltrados.length === 0) && (
         <div className="rounded-2xl border border-[#ead8d8] bg-white/70 px-6 py-12 text-center shadow-sm">
           <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#fff1f3]">
             <span className="text-2xl text-[#875d69]">📦</span>
           </div>
 
           <h2 className="mb-2 text-lg font-semibold text-[#5f3c46]">
-            {t("inventarios.emptyTitle")}
+            {t(
+              inventarios.length === 0
+                ? "inventarios.emptyTitle"
+                : "inventarios.noSearchResults"
+            )}
           </h2>
 
           <p className="mx-auto max-w-md text-sm text-[#9a7b84]">
-            {t("inventarios.emptyDescription")}
+            {t(
+              inventarios.length === 0
+                ? "inventarios.emptyDescription"
+                : "inventarios.noSearchResultsDescription"
+            )}
           </p>
         </div>
       )}
