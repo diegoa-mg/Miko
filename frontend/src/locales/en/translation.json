@@ -267,9 +267,13 @@
     "emptyDescription": "There are no products registered in the inventory for the selected branch.",
     "inactiveBranches": "Inactive branches",
     "paginacion": {
-      "anterior": "Previous page",
-      "siguiente": "Next page"
-    }
+  "anterior": "Previous page",
+  "siguiente": "Next page"
+},
+"searchLabel": "Search product by name",
+"searchPlaceholder": "Enter the product name...",
+"noSearchResults": "No products found",
+"noSearchResultsDescription": "Try another product name."
   },
   "ventas": {
     "titulo": "Sales",

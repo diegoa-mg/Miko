@@ -268,9 +268,13 @@
     "emptyDescription": "No hay productos registrados en el inventario de la sucursal seleccionada.",
     "inactiveBranches": "Sucursales inactivas",
     "paginacion": {
-      "anterior": "Página anterior",
-      "siguiente": "Página siguiente"
-    }
+  "anterior": "Página anterior",
+  "siguiente": "Página siguiente"
+},
+"searchLabel": "Buscar producto por nombre",
+"searchPlaceholder": "Escribe el nombre del producto...",
+"noSearchResults": "No se encontraron productos",
+"noSearchResultsDescription": "Intenta con otro nombre de producto."
   },
   "ventas": {
     "titulo": "Ventas",
