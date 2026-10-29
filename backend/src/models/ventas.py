@@ -43,7 +43,9 @@ class Venta(Base):
     sucursal_id: Mapped[int] = mapped_column(ForeignKey("sucursales.id"))
     usuario_id: Mapped[int] = mapped_column(ForeignKey("usuarios.id"))
     metodo_pago_id: Mapped[int] = mapped_column(ForeignKey("metodos_pago.id"))
-    fecha: Mapped[datetime] = mapped_column(DateTime, server_default=func.now())
+    fecha: Mapped[datetime] = mapped_column(
+        DateTime, server_default=func.now(), index=True
+    )
     total: Mapped[Decimal] = mapped_column(Numeric(10, 2))
 
     sucursal: Mapped["Sucursal"] = relationship()

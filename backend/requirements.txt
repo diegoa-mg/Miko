@@ -12,3 +12,4 @@ supabase==2.32.0
 python-multipart==0.0.32
 pillow==12.3.0
 pillow-heif==1.8.0
+reportlab==5.1.0
