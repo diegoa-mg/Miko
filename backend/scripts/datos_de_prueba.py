@@ -6,7 +6,7 @@ Ejecutar dentro del contenedor (con las migraciones ya aplicadas):
 
     docker compose exec backend python -m scripts.datos_de_prueba
 
-Todas las cuentas creadas usan la contraseña: Miko12345
+Todas las cuentas creadas usan la contraseña: Miko.12345
 
 El script es idempotente: se puede correr varias veces sin duplicar nada.
 Cada registro se busca por su dato único (email, nombre de sucursal,
@@ -38,7 +38,7 @@ from src.models import (
 from src.security import hash_password
 from src.services import ZONA_NEGOCIO, hoy_en_negocio
 
-PASSWORD = "Miko12345"
+PASSWORD = "Miko.12345"
 DIAS_DE_VENTAS = 30
 UMBRAL_BAJO = 5  # mismo default que el dashboard
 

@@ -1,5 +1,5 @@
 from src.schemas.auth import LoginRequest, TokenResponse
-from src.schemas.usuarios import UsuarioOut, CuentaUpdateData, CuentaUpdatePassword
+from src.schemas.usuarios import UsuarioOut, CuentaUpdateData, CuentaUpdatePassword, PasswordSegura
 from src.schemas.sucursales import (
     SucursalBase,
     SucursalCreate,

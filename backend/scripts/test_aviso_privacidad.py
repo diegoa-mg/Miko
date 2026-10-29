@@ -42,7 +42,7 @@ def test_aviso_completo():
             admin = Usuario(
                 nombre="Admin Aviso",
                 email="test_admin_aviso@miko.com",
-                password_hash=hash_password("Miko12345"),
+                password_hash=hash_password("Miko.12345"),
                 rol_id=rol_admin.id,
                 activo=True,
             )
@@ -56,7 +56,7 @@ def test_aviso_completo():
             gerente1 = Usuario(
                 nombre="Gerente Suc 1",
                 email="test_gerente1_aviso@miko.com",
-                password_hash=hash_password("Miko12345"),
+                password_hash=hash_password("Miko.12345"),
                 rol_id=rol_gerente.id,
                 activo=True,
                 aviso_aceptado_en=datetime.now(timezone.utc).replace(tzinfo=None),
@@ -73,7 +73,7 @@ def test_aviso_completo():
             cajero_suc1 = Usuario(
                 nombre="Cajero Pendiente Suc 1",
                 email="test_cajero1_aviso@miko.com",
-                password_hash=hash_password("Miko12345"),
+                password_hash=hash_password("Miko.12345"),
                 rol_id=rol_cajero.id,
                 sucursal_id=suc1.id,
                 activo=True,
@@ -92,7 +92,7 @@ def test_aviso_completo():
             cajero_suc2 = Usuario(
                 nombre="Cajero Pendiente Suc 2",
                 email="test_cajero2_aviso@miko.com",
-                password_hash=hash_password("Miko12345"),
+                password_hash=hash_password("Miko.12345"),
                 rol_id=rol_cajero.id,
                 sucursal_id=suc2.id,
                 activo=True,
@@ -106,7 +106,7 @@ def test_aviso_completo():
             db.commit()
 
         # 1. Login con usuario admin (no requiere aviso)
-        resp = client.post("/login", json={"email": "test_admin_aviso@miko.com", "password": "Miko12345"})
+        resp = client.post("/login", json={"email": "test_admin_aviso@miko.com", "password": "Miko.12345"})
         assert resp.status_code == 200, f"Admin login failed: {resp.text}"
         admin_token = resp.json()["token"]
         print("✓ 1. Login de admin da 200")
@@ -118,7 +118,7 @@ def test_aviso_completo():
         print("✓ 2. Contraseña incorrecta para usuario pendiente da 401 genérico")
 
         # 3. Login con contraseña correcta de usuario pendiente: 401 con código aviso_pendiente
-        resp = client.post("/login", json={"email": "test_cajero1_aviso@miko.com", "password": "Miko12345"})
+        resp = client.post("/login", json={"email": "test_cajero1_aviso@miko.com", "password": "Miko.12345"})
         assert resp.status_code == 401, f"Expected 401, got {resp.status_code}"
         detail = resp.json().get("detail", {})
         assert detail.get("codigo") == "aviso_pendiente", f"Expected codigo aviso_pendiente, got {detail}"
@@ -153,7 +153,7 @@ def test_aviso_completo():
         print("✓ 7. Repetir aceptación es idempotente (200 sin cambiar fecha)")
 
         # 8. Login con usuario después de aceptar: 200
-        resp = client.post("/login", json={"email": "test_cajero1_aviso@miko.com", "password": "Miko12345"})
+        resp = client.post("/login", json={"email": "test_cajero1_aviso@miko.com", "password": "Miko.12345"})
         assert resp.status_code == 200, f"Expected 200 after accept, got {resp.status_code}: {resp.text}"
         print("✓ 8. Login de usuario tras aceptar aviso da 200")
 
@@ -183,7 +183,7 @@ def test_aviso_completo():
         print("✓ 11. Reenviar aviso como admin a cajero pendiente da 200")
 
         # 12. Login de gerente 1
-        resp_ger = client.post("/login", json={"email": "test_gerente1_aviso@miko.com", "password": "Miko12345"})
+        resp_ger = client.post("/login", json={"email": "test_gerente1_aviso@miko.com", "password": "Miko.12345"})
         assert resp_ger.status_code == 200
         gerente_token = resp_ger.json()["token"]
 
