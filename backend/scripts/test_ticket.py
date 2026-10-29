@@ -25,6 +25,7 @@ from src.models import (
 )
 from src.schemas import DetalleVentaCreate, VentaCreate
 from src.routers.ventas import (
+    obtener_ticket_pdf,
     obtener_ticket_venta,
     obtener_venta,
     registrar_venta,
@@ -266,6 +267,52 @@ def run_tests():
         for campo in campos_producto:
             assert campo in ticket_dict["productos"][0], f"Campo '{campo}' falta en productos"
         print(f"  ✓ Campos de producto presentes: {campos_producto}")
+
+        # ═══════════════════════════════════════════════════════════
+        # TEST 7: Generar Ticket PDF (Admin - Happy path)
+        # ═══════════════════════════════════════════════════════════
+        print("\n--- Test 7: Admin descarga ticket en PDF (happy path) ---")
+        pdf_response = obtener_ticket_pdf(venta_id=venta_id, db=db, usuario_actual=admin)
+        assert pdf_response.media_type == "application/pdf"
+        assert pdf_response.status_code == 200
+        assert f"ticket_venta_{venta_id}.pdf" in pdf_response.headers.get("Content-Disposition", "")
+        pdf_bytes = pdf_response.body
+        assert len(pdf_bytes) > 0, "El PDF no debe estar vacío"
+        assert pdf_bytes.startswith(b"%PDF-"), "El contenido debe comenzar con la firma %PDF-"
+        print(f"  ✓ Ticket PDF generado correctamente ({len(pdf_bytes)} bytes, firma %PDF- válida)")
+
+        # ═══════════════════════════════════════════════════════════
+        # TEST 8: Cajero de la misma sucursal puede descargar el PDF
+        # ═══════════════════════════════════════════════════════════
+        print("\n--- Test 8: Cajero de la misma sucursal descarga ticket PDF ---")
+        pdf_cajero = obtener_ticket_pdf(venta_id=venta_id, db=db, usuario_actual=cajero_a)
+        assert pdf_cajero.media_type == "application/pdf"
+        assert pdf_cajero.status_code == 200
+        assert pdf_cajero.body.startswith(b"%PDF-")
+        print("  ✓ Cajero A descarga el ticket PDF correctamente")
+
+        # ═══════════════════════════════════════════════════════════
+        # TEST 9: Cajero de OTRA sucursal recibe 403 al pedir PDF
+        # ═══════════════════════════════════════════════════════════
+        print("\n--- Test 9: Cajero de otra sucursal recibe 403 al pedir PDF ---")
+        try:
+            obtener_ticket_pdf(venta_id=venta_id, db=db, usuario_actual=cajero_b)
+            assert False, "Debió lanzar HTTPException 403"
+        except HTTPException as exc:
+            assert exc.status_code == 403, f"Esperado 403, obtenido {exc.status_code}"
+            assert "otra sucursal" in exc.detail.lower()
+            print(f"  ✓ 403 Forbidden para PDF: {exc.detail}")
+
+        # ═══════════════════════════════════════════════════════════
+        # TEST 10: Venta inexistente devuelve 404 al pedir PDF
+        # ═══════════════════════════════════════════════════════════
+        print("\n--- Test 10: Venta inexistente devuelve 404 al pedir PDF ---")
+        try:
+            obtener_ticket_pdf(venta_id=999999, db=db, usuario_actual=admin)
+            assert False, "Debió lanzar HTTPException 404"
+        except HTTPException as exc:
+            assert exc.status_code == 404, f"Esperado 404, obtenido {exc.status_code}"
+            print(f"  ✓ 404 Not Found para PDF: {exc.detail}")
 
         # ═══════════════════════════════════════════════════════════
         # Limpieza: eliminar la venta de prueba

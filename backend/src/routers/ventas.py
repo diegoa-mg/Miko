@@ -2,9 +2,9 @@ from datetime import date
 from decimal import Decimal
 from typing import Optional
 
-from fastapi import APIRouter, Depends, HTTPException, Query, status
+from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
 from sqlalchemy import func
-from sqlalchemy.orm import Session
+from sqlalchemy.orm import Session, joinedload, selectinload
 
 from src.database import get_db
 from src.dependencies import requiere_rol
@@ -27,6 +27,7 @@ from src.schemas import (
     VentaUpdate,
 )
 from src.services import (
+    generar_pdf_ticket,
     obtener_sucursal_del_gerente,
     rango_del_dia_en_utc,
 )
@@ -276,7 +277,13 @@ def listar_ventas(
         query = query.filter(Venta.fecha >= inicio_utc, Venta.fecha <= fin_utc)
 
     ventas = (
-        query.order_by(Venta.fecha.desc())
+        query.options(
+            joinedload(Venta.sucursal),
+            joinedload(Venta.usuario),
+            joinedload(Venta.metodo_pago),
+            selectinload(Venta.detalles).joinedload(DetalleVenta.producto),
+        )
+        .order_by(Venta.fecha.desc())
         .offset(offset)
         .limit(limit)
         .all()
@@ -314,7 +321,13 @@ def listar_mis_ventas(
         query = query.filter(Venta.fecha >= inicio_utc, Venta.fecha <= fin_utc)
 
     ventas = (
-        query.order_by(Venta.fecha.desc())
+        query.options(
+            joinedload(Venta.sucursal),
+            joinedload(Venta.usuario),
+            joinedload(Venta.metodo_pago),
+            selectinload(Venta.detalles).joinedload(DetalleVenta.producto),
+        )
+        .order_by(Venta.fecha.desc())
         .offset(offset)
         .limit(limit)
         .all()
@@ -383,6 +396,31 @@ def obtener_ticket_venta(
         productos=productos,
         metodo_pago=metodo_nombre,
         total=Decimal(str(venta.total)),
+    )
+
+
+@router.get("/{venta_id}/ticket/pdf")
+def obtener_ticket_pdf(
+    venta_id: int,
+    db: Session = Depends(get_db),
+    usuario_actual: Usuario = Depends(
+        requiere_rol("admin_general", "gerente_sede", "cajero")
+    ),
+):
+    """
+    Genera y descarga el comprobante/ticket de una venta en formato PDF.
+    Respeta las mismas restricciones de acceso que el ticket de datos.
+    """
+    ticket = obtener_ticket_venta(
+        venta_id=venta_id, db=db, usuario_actual=usuario_actual
+    )
+    pdf_bytes = generar_pdf_ticket(ticket)
+    return Response(
+        content=pdf_bytes,
+        media_type="application/pdf",
+        headers={
+            "Content-Disposition": f"inline; filename=ticket_venta_{venta_id}.pdf"
+        },
     )
 
 
