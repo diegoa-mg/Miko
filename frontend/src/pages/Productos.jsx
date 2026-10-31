@@ -10,6 +10,7 @@ import {
   AlertCircle,
   CheckCircle2,
   RotateCcw,
+  Barcode,
 } from "lucide-react";
 
 import {
@@ -42,11 +43,12 @@ export default function Productos() {
   const [productoEditar, setProductoEditar] = useState(null);
 
   const [formulario, setFormulario] = useState({
-    nombre: "",
-    precio: "",
-    categoria_id: "",
-    existencia_inicial: "0",
-  });
+  nombre: "",
+  codigo: "",
+  precio: "",
+  categoria_id: "",
+  existencia_inicial: "0",
+});
 
   const [confirmacion, setConfirmacion] = useState(null);
 
@@ -133,12 +135,14 @@ useEffect(() => {
 
   const abrirCrear = () => {
     setProductoEditar(null);
-    setFormulario({
+   setFormulario({
       nombre: "",
+      codigo: "",
       precio: "",
       categoria_id: "",
       existencia_inicial: "0",
     });
+
     setError("");
     setMensaje("");
     setPanelAbierto(true);
@@ -147,11 +151,12 @@ useEffect(() => {
   const abrirEditar = (producto) => {
     setProductoEditar(producto);
     setFormulario({
-      nombre: producto.nombre ?? "",
-      precio: String(producto.precio ?? ""),
-      categoria_id: String(producto.categoria_id ?? ""),
-      existencia_inicial: "0",
-    });
+  nombre: producto.nombre ?? "",
+  codigo: producto.codigo ?? "",
+  precio: String(producto.precio ?? ""),
+  categoria_id: String(producto.categoria_id ?? ""),
+  existencia_inicial: "0",
+});
     setError("");
     setMensaje("");
     setPanelAbierto(true);
@@ -218,10 +223,11 @@ useEffect(() => {
     }
 
     const datos = {
-      nombre,
-      precio: precio.toFixed(2),
-      categoria_id: categoriaId,
-    };
+  nombre,
+  codigo: formulario.codigo.trim() || null,
+  precio: precio.toFixed(2),
+  categoria_id: categoriaId,
+};
 
     setGuardando(true);
 
@@ -523,8 +529,19 @@ useEffect(() => {
                     key={producto.id}
                     className="transition-colors hover:bg-[#fffaf7]"
                   >
-                    <td className="px-5 py-4 font-semibold text-[#875d69]">
-                      {producto.nombre}
+                    <td className="px-5 py-4">
+                      <p className="font-semibold text-[#875d69]">
+                        {producto.nombre}
+                      </p>
+
+                      <div className="mt-1 flex items-center gap-1.5 text-xs text-[#9b7b83]">
+                        <Barcode size={14} />
+                        <span>
+                          {producto.codigo || t("productos.sinCodigoBarras", {
+                            defaultValue: "Sin código de barras",
+                          })}
+                        </span>
+                      </div>
                     </td>
                     <td className="px-5 py-4 text-[#9b7b83]">
                       {producto.categoria_nombre}
@@ -808,6 +825,35 @@ useEffect(() => {
                   className="w-full rounded-xl border-2 border-[#ead8d8] bg-white px-4 py-3 text-[#875d69] focus:border-[#cda4b4] focus:outline-none"
                 />
               </div>
+
+              <div>
+              <label className="mb-2 block text-sm font-semibold text-[#875d69]">
+                {t("productos.codigoBarras", {
+                  defaultValue: "Código de barras",
+                })}
+              </label>
+
+              <div className="relative">
+                <Barcode
+                  size={20}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-[#cda4b4]"
+                />
+
+                <input
+                  type="text"
+                  name="codigo"
+                  value={formulario.codigo}
+                  onChange={cambiarCampo}
+                  maxLength={50}
+                  placeholder="Ej. 7501234567890"
+                  className="w-full rounded-xl border-2 border-[#ead8d8] bg-white py-3 pl-12 pr-4 text-[#875d69] focus:border-[#cda4b4] focus:outline-none"
+                />
+              </div>
+
+              <p className="mt-1 text-xs text-[#9b7b83]">
+                Campo opcional. Máximo 50 caracteres.
+              </p>
+            </div>
 
               <div>
                 <label className="mb-2 block text-sm font-semibold text-[#875d69]">

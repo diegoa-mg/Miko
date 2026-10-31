@@ -161,7 +161,9 @@
   "actualizado": "Product updated successfully.",
   "paginaAnterior": "Previous page",
   "paginaSiguiente": "Next page",
-  "productosContador": "{{count}} products"
+  "productosContador": "{{count}} products",
+  "codigoBarras": "Barcode",
+  "sinCodigoBarras": "No barcode"
 },
   "cajeros": {
     "titulo": "Cashiers",

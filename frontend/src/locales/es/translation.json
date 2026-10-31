@@ -162,7 +162,9 @@
   "actualizado": "Producto actualizado correctamente.",
   "paginaAnterior": "Página anterior",
   "paginaSiguiente": "Página siguiente",
-  "productosContador": "{{count}} productos"
+  "productosContador": "{{count}} productos",
+  "codigoBarras": "Código de barras",
+  "sinCodigoBarras": "Sin código de barras"
 },
   "cajeros": {
     "titulo": "Cajeros",
