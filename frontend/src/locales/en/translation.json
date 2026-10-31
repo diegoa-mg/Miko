@@ -300,6 +300,12 @@
     "cargando": "Loading sales...",
     "errorCarga": "Unable to load sales. Please try again.",
     "reintentar": "Retry",
+    "filtrarVentas": "Filter sales",
+    "filtrarPorFecha": "Filter by date",
+    "limpiarFiltros": "Clear filters",
+    "sucursalesActivas": "Active branches",
+    "sucursalesInactivas": "Inactive branches",
+    "seleccionarSucursal": "Select a branch",
     "metodosPago": {
       "efectivo": "Cash",
       "tarjeta": "Card",
