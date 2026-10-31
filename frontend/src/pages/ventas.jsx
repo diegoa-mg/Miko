@@ -9,127 +9,102 @@ function Ventas() {
 
   const [ventas, setVentas] = useState([]);
   const [sucursales, setSucursales] = useState([]);
+  const sucursalesActivas = sucursales.filter(
+  (sucursal) => sucursal.estado === "activa"
+);
+
+const sucursalesInactivas = sucursales.filter(
+  (sucursal) => sucursal.estado === "inactiva"
+);
   const [sucursalSeleccionada, setSucursalSeleccionada] = useState("");
+  const [tipoSucursal, setTipoSucursal] = useState("todas");
+  const [fechaSeleccionada, setFechaSeleccionada] = useState("");
   const [paginaActual, setPaginaActual] = useState(1);
   const [cargando, setCargando] = useState(true);
+  const [haySiguiente, setHaySiguiente] = useState(false);
+  const [errorCarga, setErrorCarga] = useState("");
 
   const ventasPorPagina = 15;
 
-  
+  // Las sucursales se cargan una sola vez.
   useEffect(() => {
     let cancelado = false;
 
-    async function cargarDatos() {
+    async function cargarSucursales() {
       try {
-        const [datosVentas, datosSucursales] = await Promise.all([
+        const datosSucursales = await obtenerSucursales(true);
+        if (!cancelado) {
+          setSucursales(Array.isArray(datosSucursales) ? datosSucursales : []);
+        }
+      } catch (error) {
+        if (!cancelado) setSucursales([]);
+        console.error("Error al cargar sucursales:", error);
+      }
+    }
 
-          obtenerVentas(),
-          obtenerSucursales(true),
-        ]);
+    cargarSucursales();
+    return () => {
+      cancelado = true;
+    };
+  }, []);
 
-        console.log("VENTAS ADMIN:", datosVentas);
-        console.log(
-  "TOTAL SUMADO ADMIN:",
-  datosVentas.reduce(
-    (suma, venta) => suma + (Number(venta.total) || 0),
-    0
-  )
-);
+  // Cada cambio de página o filtro consulta únicamente los registros necesarios.
+  useEffect(() => {
+    let cancelado = false;
 
-console.log(
-  "IDS ADMIN:",
-  datosVentas.map((venta) => venta.id).sort((a, b) => a - b)
-);
-        console.log("RESUMEN ADMIN:", {
-  cantidad: datosVentas.length,
-  ids: datosVentas.map((venta) => venta.id).sort((a, b) => a - b),
-  totalCalculado: datosVentas.reduce(
-    (suma, venta) => suma + (Number(venta.total) || 0),
-    0
-  ),
-});
+    async function cargarVentas() {
+      setCargando(true);
+      setErrorCarga("");
+      setVentas([]);
+      setHaySiguiente(false);
+
+      if (tipoSucursal !== "todas" && sucursalSeleccionada === "") {
+      setCargando(false);
+      return;
+}
+
+      try {
+        const datosVentas = await obtenerVentas(
+          sucursalSeleccionada === "" ? null : Number(sucursalSeleccionada),
+          {
+            // Se solicita un registro extra para saber si existe otra página.
+            limit: ventasPorPagina + 1,
+            offset: (paginaActual - 1) * ventasPorPagina,
+            fechaInicio: fechaSeleccionada || null,
+            fechaFin: fechaSeleccionada || null,
+          }
+        );
 
         if (cancelado) return;
 
-        setVentas(Array.isArray(datosVentas) ? datosVentas : []);
-        setSucursales(
-          Array.isArray(datosSucursales) ? datosSucursales : []
-        );
+        const lista = Array.isArray(datosVentas) ? datosVentas : [];
+        setHaySiguiente(lista.length > ventasPorPagina);
+        setVentas(lista.slice(0, ventasPorPagina));
       } catch (error) {
         console.error("Error al cargar ventas:", error);
         if (!cancelado) {
           setVentas([]);
-          setSucursales([]);
+          setHaySiguiente(false);
+          setErrorCarga(t("ventas.errorCarga"));
         }
       } finally {
         if (!cancelado) setCargando(false);
       }
     }
 
-    cargarDatos();
-
+    cargarVentas();
     return () => {
       cancelado = true;
     };
-  }, []);
+  }, [tipoSucursal, sucursalSeleccionada, fechaSeleccionada, paginaActual]);
 
-  
-const ventasFiltradas = useMemo(() => {
-  if (sucursalSeleccionada === "") return ventas;
-
-  if (sucursalSeleccionada === "inactivas") {
-    const idsInactivos = new Set(
-      sucursales
-        .filter((sucursal) => {
-          const estado = String(sucursal.estado ?? "").toLowerCase();
-          return estado === "inactiva" || estado === "inactivo";
-        })
-        .map((sucursal) => sucursal.id)
-    );
-
-    return ventas.filter((venta) =>
-      idsInactivos.has(venta.sucursal_id)
-    );
-  }
-
-  return ventas.filter(
-    (venta) => venta.sucursal_id === Number(sucursalSeleccionada)
+  const totalVendido = useMemo(
+    () => ventas.reduce(
+      (acumulado, venta) => acumulado + (Number(venta.total) || 0),
+      0
+    ),
+    [ventas]
   );
-}, [ventas, sucursales, sucursalSeleccionada]);
-
-
-  const totalPaginas = Math.ceil(
-  ventasFiltradas.length / ventasPorPagina
-);
-
-const indiceInicial = (paginaActual - 1) * ventasPorPagina;
-const indiceFinal = indiceInicial + ventasPorPagina;
-
-const ventasPaginadas = ventasFiltradas.slice(
-  indiceInicial,
-  indiceFinal
-);
-
-  
-const totalVendido = useMemo(() => {
-  return ventasFiltradas.reduce(
-    (acumulado, venta) =>
-      acumulado + (Number(venta.total) || 0),
-    0
-  );
-}, [ventasFiltradas]);
-
-console.log("Ventas recibidas:", ventas.length);
-console.log("Ventas filtradas:", ventasFiltradas.length);
-console.log("Total vendido:", totalVendido);
-console.log(
-  "Detalle de ventas:",
-  ventas.map((venta) => ({
-    id: venta.id,
-    total: venta.total,
-  }))
-);
-
 
   const formatearPrecio = (precio) =>
   Number(precio || 0).toLocaleString(
@@ -204,58 +179,105 @@ const traducirMetodoPago = (metodo) => {
         </div>
       </div>
 
-      {/* FILTRO POR SUCURSAL */}
-      <section className="mb-6 rounded-3xl border border-[#ead8d8] bg-white/80 p-6 shadow-sm">
+      
+{/* FILTROS DE VENTAS */}
+<section className="mb-6 rounded-3xl border border-[#ead8d8] bg-white/80 p-6 shadow-sm">
 
-        <div className="mb-5 flex items-center gap-3">
+  {/* TÍTULO */}
+  <h2 className="mb-6 text-xl font-bold text-[#5f3c46]">
+    {t("ventas.filtrarVentas")}
+  </h2>
 
-          <span className="material-icons text-2xl text-[#d06b7d]">
-            store
-          </span>
+  {/* FILTROS EN DOS COLUMNAS */}
+  <div className="grid grid-cols-1 gap-6 md:grid-cols-2">
 
-          <div>
-            
-          <h2 className="font-bold text-[#5f3c46]">
-            {t("ventas.filtroTitulo")}
-          </h2>
+    {/* FILTRO POR SUCURSAL */}
+    <div>
+      <label
+        htmlFor="sucursal-ventas"
+        className="mb-3 block text-sm font-semibold text-[#5f3c46]"
+      >
+        {t("ventas.filtroTitulo")}
+      </label>
 
-          <p className="text-sm text-[#8c6773]">
-            {t("ventas.filtroDescripcion")}
-          </p>
-
-          </div>
-
-        </div>
-
-        <select
-  value={sucursalSeleccionada}
+      
+<select
+  id="sucursal-ventas"
+  value={tipoSucursal}
   onChange={(e) => {
-  setSucursalSeleccionada(e.target.value);
-  setPaginaActual(1);
-}}
-  className="w-full max-w-lg rounded-full border-2 border-[#e6bdc7] bg-white px-5 py-3 text-[#6f5a61] outline-none transition focus:border-[#c96f80]"
+    setTipoSucursal(e.target.value);
+    setSucursalSeleccionada("");
+    setPaginaActual(1);
+  }}
+  className="h-[52px] w-full rounded-full border-2 border-[#e6bdc7] bg-white px-5 text-sm text-[#8c6773] outline-none transition focus:border-[#875d69]"
 >
-  
-<option value="">
-  {t("ventas.todasSucursales")}
-</option>
-
-<option value="inactivas">
-  {t("ventas.inactivas")}
-</option>
-
-
-  {sucursales.map((sucursal) => (
-    <option
-      key={sucursal.id}
-      value={sucursal.id}
-    >
-      {sucursal.nombre}
-    </option>
-  ))}
+ <option value="todas">{t("ventas.todasSucursales")}</option>
+<option value="activas">{t("ventas.sucursalesActivas")}</option>
+<option value="inactivas">{t("ventas.sucursalesInactivas")}</option>
 </select>
 
-      </section>
+{tipoSucursal !== "todas" && (
+  <select
+    value={sucursalSeleccionada}
+    onChange={(e) => {
+      setSucursalSeleccionada(e.target.value);
+      setPaginaActual(1);
+    }}
+    className="mt-3 h-[52px] w-full rounded-full border-2 border-[#e6bdc7] bg-white px-5 text-sm text-[#8c6773]"
+  >
+   <option value="">{t("ventas.seleccionarSucursal")}</option>
+
+    {(tipoSucursal === "activas"
+      ? sucursalesActivas
+      : sucursalesInactivas
+    ).map((sucursal) => (
+      <option key={sucursal.id} value={sucursal.id}>
+        {sucursal.nombre}
+      </option>
+    ))}
+  </select>
+)}
+    </div>
+
+    {/* FILTRO POR FECHA */}
+    <div>
+      <label
+        htmlFor="fecha-ventas"
+        className="mb-3 block text-sm font-semibold text-[#5f3c46]"
+      >
+        {t("ventas.filtrarPorFecha")}
+      </label>
+
+      <input
+        id="fecha-ventas"
+        type="date"
+        value={fechaSeleccionada}
+        onChange={(e) => {
+          setFechaSeleccionada(e.target.value);
+          setPaginaActual(1);
+        }}
+        className="h-[52px] w-full rounded-full border-2 border-[#e6bdc7] bg-white px-5 text-sm text-[#8c6773] outline-none focus:border-[#875d69]"
+      />
+    </div>
+
+  </div>
+
+  {/* LIMPIAR FILTROS */}
+  {fechaSeleccionada && (
+    <button
+      type="button"
+      onClick={() => {
+        setFechaSeleccionada("");
+        setPaginaActual(1);
+      }}
+      className="mt-6 rounded-full px-4 py-2 text-sm font-semibold text-[#b6536b] transition hover:bg-[#fff1f3]"
+    >
+      {t("ventas.limpiarFiltros")}
+    </button>
+  )}
+
+</section>
+
 
       {/* RESUMEN */}
       <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
@@ -277,7 +299,7 @@ const traducirMetodoPago = (metodo) => {
               </p>
 
               <p className="text-2xl font-bold text-[#5f3c46]">
-                {ventasFiltradas.length}
+                {ventas.length}
               </p>
             </div>
 
@@ -336,11 +358,30 @@ const traducirMetodoPago = (metodo) => {
 
         </div>
 
-        {ventasFiltradas.length > 0 ? (
+        {cargando ? (
+          <div className="flex flex-col items-center justify-center gap-3 px-6 py-14 text-[#8c6773]" role="status">
+            <span className="material-icons animate-spin text-4xl text-[#d06b7d]">
+              progress_activity
+            </span>
+            <p className="font-medium">{t("ventas.cargando")}</p>
+          </div>
+        ) : errorCarga ? (
+          <div className="px-6 py-12 text-center text-sm font-medium text-[#a34b5d]">
+            {errorCarga}
+          </div>
+        ) : ventas.length > 0 ? (
 
-          <div className="overflow-x-auto">
+          <div className="w-full overflow-x-auto">
 
-            <table className="w-full">
+        <table className="w-full table-fixed">
+          <colgroup>
+          <col className="w-[11%]" />
+          <col className="w-[14%]" />
+          <col className="w-[17%]" />
+          <col className="w-[22%]" />
+          <col className="w-[21%]" />
+          <col className="w-[15%]" />
+        </colgroup>
 
               <thead>
             <tr className="border-b border-[#ead8d8] bg-[#fffaf8]">
@@ -371,7 +412,7 @@ const traducirMetodoPago = (metodo) => {
           </thead>
 
               <tbody>
-  {ventasPaginadas.map((venta) => (
+  {ventas.map((venta) => (
     <tr
       key={venta.id}
       className="border-b border-[#f0e3e3] last:border-b-0 transition-colors hover:bg-[#fff5f6]"
@@ -393,7 +434,7 @@ const traducirMetodoPago = (metodo) => {
 
       {/* CAJERO */}
       <td className="p-4">
-        <div className="flex items-center gap-2 whitespace-nowrap text-[#5f3c46]">
+        <div className="flex min-w-0 items-center gap-2 break-words text-[#5f3c46]">
           <span className="material-icons text-lg text-[#bd8794]">
             person
           </span>
@@ -402,7 +443,7 @@ const traducirMetodoPago = (metodo) => {
       </td>
 
       {/* FECHA */}
-      <td className="whitespace-nowrap p-4 text-[#8c6773]">
+      <td className="p-3 text-sm leading-5 text-[#8c6773] break-words">
         {formatearFecha(venta.fecha)}
       </td>
 
@@ -417,7 +458,7 @@ const traducirMetodoPago = (metodo) => {
 
           return (
             <span
-              className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-semibold ${
+              className={`inline-flex max-w-full flex-wrap items-center gap-1.5 rounded-full px-3 py-2 text-sm font-semibold ${
                 estilosPago[venta.metodo_pago_nombre] ||
                 "bg-[#fae4df] text-[#8b5e6b]"
               }`}
@@ -477,80 +518,45 @@ const traducirMetodoPago = (metodo) => {
         )}
 
         {/* PAGINACIÓN */}
-      {ventasFiltradas.length > 0 && (
-        <div className="flex flex-col items-center gap-4 border-t border-[#ead8d8] bg-[#fffaf8] px-5 py-4">
+{!cargando && !errorCarga && ventas.length > 0 && (
+  <div className="flex flex-col items-center gap-4 border-t border-[#ead8d8] bg-[#fffaf8] px-5 py-4">
+    <div className="flex flex-wrap items-center justify-center gap-2">
 
-          <div className="flex flex-wrap items-center justify-center gap-2">
-            <button
-              type="button"
-              onClick={() =>
-                setPaginaActual((pagina) => Math.max(1, pagina - 1))
-              }
-              disabled={paginaActual === 1}
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#ead8d8] bg-white text-[#8b5e6b] transition hover:bg-[#fae4df] disabled:cursor-not-allowed disabled:opacity-40"
-              aria-label={t("ventas.paginacion.anterior")}
-            >
-              <span className="material-icons text-xl">
-                chevron_left
-              </span>
-            </button>
+      {/* ANTERIOR */}
+      <button
+        type="button"
+        onClick={() => setPaginaActual((pagina) => Math.max(1, pagina - 1))}
+        disabled={paginaActual === 1}
+        className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#ead8d8] bg-white text-[#8b5e6b] transition hover:bg-[#fae4df] disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        <span className="material-icons text-xl">
+          chevron_left
+        </span>
+      </button>
 
-            {Array.from({ length: totalPaginas }, (_, indice) => indice + 1)
-              .filter(
-                (pagina) =>
-                  pagina === 1 ||
-                  pagina === totalPaginas ||
-                  Math.abs(pagina - paginaActual) <= 1
-              )
-              .reduce((elementos, pagina, indice, paginas) => {
-                if (indice > 0 && pagina - paginas[indice - 1] > 1) {
-                  elementos.push(
-                    <span
-                      key={`puntos-${pagina}`}
-                      className="px-1 text-[#8c6773]"
-                    >
-                      …
-                    </span>
-                  );
-                }
+      {/* PÁGINA ACTUAL */}
+      <span
+        aria-current="page"
+        className="flex h-10 min-w-10 items-center justify-center rounded-xl border border-[#d06b7d] bg-[#d06b7d] px-3 text-sm font-semibold text-white"
+      >
+        {paginaActual}
+      </span>
 
-                elementos.push(
-                  <button
-                    key={pagina}
-                    type="button"
-                    onClick={() => setPaginaActual(pagina)}
-                    aria-current={paginaActual === pagina ? "page" : undefined}
-                    className={`h-9 min-w-9 rounded-xl border px-3 text-sm font-semibold transition ${
-                      paginaActual === pagina
-                        ? "border-[#d06b7d] bg-[#d06b7d] text-white"
-                        : "border-[#ead8d8] bg-white text-[#8b5e6b] hover:bg-[#fae4df]"
-                    }`}
-                  >
-                    {pagina}
-                  </button>
-                );
+      {/* SIGUIENTE */}
+      <button
+        type="button"
+        onClick={() => setPaginaActual((pagina) => pagina + 1)}
+        disabled={!haySiguiente || cargando}
+        className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#ead8d8] bg-white text-[#8b5e6b] transition hover:bg-[#fae4df] disabled:cursor-not-allowed disabled:opacity-40"
+      >
+        <span className="material-icons text-xl">
+          chevron_right
+        </span>
+      </button>
 
-                return elementos;
-              }, [])}
-
-            <button
-              type="button"
-              onClick={() =>
-                setPaginaActual((pagina) =>
-                  Math.min(totalPaginas, pagina + 1)
-                )
-              }
-              disabled={paginaActual === totalPaginas}
-              className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#ead8d8] bg-white text-[#8b5e6b] transition hover:bg-[#fae4df] disabled:cursor-not-allowed disabled:opacity-40"
-              aria-label={t("ventas.paginacion.siguiente")}
-            >
-              <span className="material-icons text-xl">
-                chevron_right
-              </span>
-            </button>
-          </div>
-        </div>
-      )}
+    </div>
+  </div>
+)}
 
       </section>
 

@@ -301,6 +301,12 @@
     "cargando": "Cargando ventas...",
     "errorCarga": "No fue posible cargar las ventas. Intenta nuevamente.",
     "reintentar": "Reintentar",
+    "filtrarVentas": "Filtrar ventas",
+    "filtrarPorFecha": "Filtrar por fecha",
+    "limpiarFiltros": "Limpiar filtros",
+    "sucursalesActivas": "Sucursales activas",
+    "sucursalesInactivas": "Sucursales inactivas",
+    "seleccionarSucursal": "Selecciona una sucursal",
     "metodosPago": {
       "efectivo": "Efectivo",
       "tarjeta": "Tarjeta",
