@@ -45,8 +45,8 @@ def login(credenciales: LoginRequest, db: Session = Depends(get_db)): # db: Sess
             },
         )
 
-    # Se conecta con security.py. crear_access_token lleva únicamente el id ya que el JWT solo lleva el id dentro de sub. Filosofía de token mínimo.
-    token = crear_access_token(usuario.id)
+    # Se conecta con security.py. crear_access_token lleva el id y la version del token. Filosofía de token mínimo.
+    token = crear_access_token(usuario.id, usuario.token_version)
     return TokenResponse(token=token)
 
 # response_model=UsuarioOut: se valida la salida contra la clase declarada (UsuarioOut), además de la entrada.

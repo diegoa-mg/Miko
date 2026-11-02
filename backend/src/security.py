@@ -30,7 +30,7 @@ def verify_password(password: str, password_hash: str) -> bool:
     return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))
 
 # Función para crear el access token
-def crear_access_token(usuario_id: int) -> str:
+def crear_access_token(usuario_id: int, token_version: int) -> str:
     """
     El JWT se mantiene mínimo a propósito: solo lleva lo que el backend
     necesita para identificar y autorizar al usuario en cada request
@@ -42,6 +42,7 @@ def crear_access_token(usuario_id: int) -> str:
     # payload contiene el JSON que el backend necesita para identificar y autorizar al usuario en cada request
     payload = {
         "sub": str(usuario_id),
+        "ver": token_version,
         "iat": ahora,
         "exp": ahora + timedelta(minutes=JWT_EXPIRE_MINUTES),
     }

@@ -33,6 +33,7 @@ class Usuario(Base):
     activo: Mapped[bool] = mapped_column(server_default="true")
     foto_url: Mapped[str | None] = mapped_column(String(255))
     aviso_aceptado_en: Mapped[datetime | None] = mapped_column(DateTime)
+    token_version: Mapped[int] = mapped_column(default=0, server_default="0")
 
     rol: Mapped["Rol"] = relationship(back_populates="usuarios")
     sucursal: Mapped[Optional["Sucursal"]] = relationship(
