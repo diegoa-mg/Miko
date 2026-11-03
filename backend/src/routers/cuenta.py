@@ -113,3 +113,13 @@ def editar_foto(foto: UploadFile, usuario: Usuario = Depends(get_current_user), 
     borrar_foto(url_vieja)
 
     return llenar_usuario_out(usuario)
+
+
+@router.post("/cerrar-sesiones", status_code=status.HTTP_200_OK)
+def cerrar_sesiones(usuario: Usuario = Depends(get_current_user), db: Session = Depends(get_db)):
+    usuario.token_version += 1 # Cambia la versión del token: invalida todos los tokens emitidos antes del cambio, en todos los dispositivos
+    db.commit()
+
+    return {
+        "message": "Se cerró la sesión en todos los dispositivos"
+    }
