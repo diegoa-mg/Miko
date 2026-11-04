@@ -85,7 +85,9 @@
     "forgotPassword": "Forgot your password?",
     "submit": "Sign in",
     "error": "Incorrect email or password",
-    "avisoPendiente": "You must accept the privacy policy before logging in. Please check your email."
+    "avisoPendiente": "You must accept the privacy policy before logging in. Please check your email.",
+    "errorSinConexion": "Could not connect to the server. Check your connection and try again.",
+    "errorServidor": "A server error occurred. Please try again later."
   },
   "sidebar": {
     "subtitle": "POINT OF SALE",
