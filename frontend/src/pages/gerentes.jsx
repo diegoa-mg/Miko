@@ -129,7 +129,10 @@ const manejarGuardar = async (e) => {
   } catch (err) {
     console.error("Error al guardar gerente:", err);
     console.error("Respuesta backend:", err.response?.data);
-    setError("No se pudo guardar el gerente.");
+    const detalle = err.response?.data?.detail;
+    setError(
+      typeof detalle === "string" ? detalle : "No se pudo guardar el gerente."
+    );
   }
 };
 
@@ -603,7 +606,6 @@ const manejarReenviarAviso = async (id) => {
               <form
                 className="space-y-5"
                 onSubmit={manejarGuardar}
-                noValidate
               >
 
                 {/* Nombre */}

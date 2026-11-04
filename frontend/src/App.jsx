@@ -51,8 +51,20 @@ function Login() {
       }
     } catch (error) {
       console.error(error);
+      const status = error.response?.status;
       const codigo = error.response?.data?.detail?.codigo;
-      setError(codigo === "aviso_pendiente" ? t("login.avisoPendiente") : t("login.error"));
+
+      if (codigo === "aviso_pendiente") {
+        setError(t("login.avisoPendiente"));
+      } else if (!error.response) {
+        // El servidor no respondió (backend caído, sin conexión)
+        setError(t("login.errorSinConexion"));
+      } else if (status === 401) {
+        setError(t("login.error"));
+      } else {
+        // 500 u otro error inesperado del servidor
+        setError(t("login.errorServidor"));
+      }
     }
   };
 

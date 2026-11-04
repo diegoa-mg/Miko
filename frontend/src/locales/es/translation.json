@@ -85,7 +85,9 @@
     "forgotPassword": "¿Olvidaste tu contraseña?",
     "submit": "Iniciar sesión",
     "error": "Correo electrónico o contraseña incorrectos",
-    "avisoPendiente": "Debes aceptar el aviso de privacidad. Revisa tu correo."
+    "avisoPendiente": "Debes aceptar el aviso de privacidad. Revisa tu correo.",
+    "errorSinConexion": "No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.",
+    "errorServidor": "Ocurrió un error en el servidor. Inténtalo más tarde."
   },
   "sidebar": {
     "subtitle": "PUNTO DE VENTA",
