@@ -490,6 +490,10 @@
     "loading": "Cargando...",
     "noAccess": "No tienes acceso a esta sección"
   },
+  "theme": {
+   "toDark": "Activar modo oscuro",
+    "toLight": "Activar modo claro"
+  }, 
   "inventarioGerente": {
     "resumen": "Resumen del inventario",
     "etiquetaBuscar": "Buscar producto",

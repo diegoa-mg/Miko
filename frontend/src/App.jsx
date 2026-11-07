@@ -21,6 +21,8 @@ import GerenteLayout from "./layouts/GerenteLayout";
 import CajeroLayout from "./layouts/CajeroLayout";
 import Configuracion from "./pages/Configuracion";
 import LanguageSwitcher from "./components/LanguageSwitcher";
+import ThemeToggle from "./components/ThemeToggle";
+import { ThemeProvider } from "./context/ThemeContext";
 import VentasGerente from "./pages/VentasGerente";
 import Productos from "./pages/Productos";
 import AvisoPrivacidad from "./pages/AvisoPrivacidad";
@@ -70,7 +72,7 @@ function Login() {
   };
 
   return (
-    <div className="min-h-screen relative overflow-hidden flex items-center justify-center bg-[#fdf6e3]">
+    <div className="min-h-screen relative overflow-hidden flex items-center justify-center bg-[#fdf6e3] text-[#4a2f38] transition-colors dark:bg-[var(--dark-bg)] dark:text-[var(--dark-text)]">
       <div className="blob w-80 h-80 bg-rose-300 top-[-5rem] left-[-5rem]" />
       <div className="blob w-96 h-96 bg-amber-200 bottom-[-6rem] right-[-6rem]" style={{ animationDelay: "3s" }} />
       <div className="blob w-64 h-64 bg-rose-200 top-1/3 right-[10%]" style={{ animationDelay: "7s" }} />
@@ -79,7 +81,7 @@ function Login() {
       <div className="p-10 w-full max-w-sm">
         <div className="flex flex-col items-center mb-6">
           <img src={logoMiko} alt="Miko" className="h-20 mb-4" />
-          <span className="font-logo font-light text-rose-400">
+          <span className="font-logo font-light text-rose-400 dark:text-rose-300">
             {t("login.subtitle")}
           </span>
         </div>
@@ -88,7 +90,7 @@ function Login() {
           <div>
             <label className="block text-sm font-medium mb-1">{t("login.user")}</label>
             <div className="relative">
-              <span className="material-icons absolute left-4 top-1/2 -translate-y-1/2  mt-5 text-[#cda4b4]">
+              <span className="material-icons absolute left-4 top-1/2 -translate-y-1/2  mt-5 text-[#cda4b4] dark:text-[var(--dark-muted)]">
                 person
               </span>
             </div>
@@ -98,14 +100,14 @@ function Login() {
               onChange={(e) => setEmail(e.target.value)}
               placeholder=""
               required
-              className="w-full rounded-full bg-[#f9eeb4] border-2 border-[#e6bdc7] text-[#8c6773] px-10 py-2 focus:outline-none focus:border-[#875d69]"
+              className="w-full rounded-full bg-[#f9eeb4] border-2 border-[#e6bdc7] text-[#8c6773] px-10 py-2 focus:outline-none focus:border-[#875d69] dark:bg-[var(--dark-surface)] dark:border-[var(--dark-border)] dark:text-[var(--dark-text)] dark:focus:border-rose-300"
             />
           </div>
 
           <div>
             <label className="block text-sm font-medium mb-1">{t("login.password")}</label>
             <div className="relative">
-              <span className="material-icons absolute left-4 top-1/2 -translate-y-1/2  mt-5 text-[#cda4b4]">
+              <span className="material-icons absolute left-4 top-1/2 -translate-y-1/2  mt-5 text-[#cda4b4] dark:text-[var(--dark-muted)]">
                 lock
               </span>
             </div>
@@ -114,7 +116,7 @@ function Login() {
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               required
-              className="w-full rounded-full bg-[#f9eeb4] border-2 border-[#e6bdc7] text-[#8c6773] px-10 py-2 focus:outline-none focus:border-[#875d69]"
+              className="w-full rounded-full bg-[#f9eeb4] border-2 border-[#e6bdc7] text-[#8c6773] px-10 py-2 focus:outline-none focus:border-[#875d69] dark:bg-[var(--dark-surface)] dark:border-[var(--dark-border)] dark:text-[var(--dark-text)] dark:focus:border-rose-300"
             />
           </div>
 
@@ -123,16 +125,16 @@ function Login() {
               <input type="checkbox" />
               {t("login.remember")}
             </label>
-            <a href="#" className="text-rose-400 hover:underline">
+            <a href="#" className="text-rose-400 hover:underline dark:text-rose-300">
               {t("login.forgotPassword")}
             </a>
           </div>
 
-          {error && <p className="text-red-500 text-sm">{error}</p>}
+          {error && <p className="text-red-500 text-sm dark:text-red-400">{error}</p>}
 
           <button
             type="submit"
-            className="bg-rose-800 hover:bg-rose-900 text-white rounded-lg py-2 mt-2 transition-colors"
+            className="bg-rose-800 hover:bg-rose-900 text-white rounded-lg py-2 mt-2 transition-colors dark:bg-rose-700 dark:hover:bg-rose-600"
           >
             {t("login.submit")}
           </button>
@@ -163,8 +165,10 @@ function PuntoDeVenta() {
 
 export default function App() {
   return (
+    <ThemeProvider>
     <AuthProvider>
       <LanguageSwitcher />
+      <ThemeToggle />
       <div>
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
@@ -215,5 +219,6 @@ export default function App() {
         </Routes>
       </div>
     </AuthProvider>
+    </ThemeProvider>
   );
 }
