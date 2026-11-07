@@ -24,6 +24,7 @@ import LanguageSwitcher from "./components/LanguageSwitcher";
 import VentasGerente from "./pages/VentasGerente";
 import Productos from "./pages/Productos";
 import AvisoPrivacidad from "./pages/AvisoPrivacidad";
+import PuntoDeVentaCajero from "./pages/PuntoDeVentaCajero";
 
 function Login() {
   const { login } = useAuth();
@@ -198,7 +199,7 @@ export default function App() {
             <Route element={<RoleRoute allowedRoles={["cajero"]} />}>
               <Route path="/cajero" element={<CajeroLayout />}>
                 <Route index element={<DashboardCajero />} />
-                <Route path="pos" element={<PuntoDeVenta />} />
+                <Route path="pos" element={<PuntoDeVentaCajero />} />
                 <Route path="ventas" element={<EnConstruccion titleKey="sidebar.mySales" />} />
                 <Route path="configuracion" element={<Configuracion />} />
               </Route>
