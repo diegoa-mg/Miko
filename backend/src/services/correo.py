@@ -6,7 +6,7 @@ from html import escape
 from email.message import EmailMessage
 from pathlib import Path
 
-from src.security import AVISO_EXPIRE_DIAS, crear_token_aviso
+from src.security import AVISO_EXPIRE_DIAS, RESTABLECER_EXPIRE_MINUTES, crear_token_aviso, crear_token_restablecer
 
 logger = logging.getLogger(__name__)
 
@@ -120,3 +120,54 @@ def enviar_aviso_privacidad(usuario_id: int, nombre: str, email: str, rol: str) 
     except Exception:
         # Se registra el id y no el correo, para no llenar el log de datos personales
         logger.exception("No se pudo enviar el aviso de privacidad al usuario %s", usuario_id)
+
+
+def construir_correo_restablecer(nombre: str, token: str) -> tuple[str, str, str]:
+    """Devuelve (asunto, texto, html) del correo para restablecer la contraseña."""
+    enlace = f"{FRONTEND_URL}/restablecer-password?token={token}"
+    asunto = "Restablezca su contraseña de Miko"
+
+    texto = f"""Hola, {nombre}:
+
+Recibimos una solicitud para restablecer la contraseña de su cuenta en Miko.
+
+Para elegir una contraseña nueva, abra este enlace:
+{enlace}
+
+El enlace es personal y es válido por {RESTABLECER_EXPIRE_MINUTES} minutos. Solo puede usarse una vez; al restablecer la contraseña se cerrarán todas sus sesiones abiertas.
+
+Si usted no solicitó este cambio, ignore este correo: su contraseña actual sigue siendo la misma.
+
+Miko Panaderías
+Este correo se genera automáticamente; no responda a este mensaje.
+"""
+
+    # escape(): el nombre lo escribe un usuario, nunca se mete crudo en HTML
+    html = f"""<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;color:#222;line-height:1.5">
+  <h2 style="color:#8B5A6B">Miko</h2>
+  <p>Hola, <strong>{escape(nombre)}</strong>:</p>
+  <p>Recibimos una solicitud para restablecer la contraseña de su cuenta en Miko.</p>
+  <p style="text-align:center;margin:28px 0">
+    <a href="{enlace}" style="background:#8B5A6B;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold">Restablecer mi contraseña</a>
+  </p>
+  <p style="font-size:13px;color:#555">El enlace es personal y es válido por {RESTABLECER_EXPIRE_MINUTES} minutos. Solo puede usarse una vez; al restablecer la contraseña se cerrarán todas sus sesiones abiertas.</p>
+  <p>Si usted no solicitó este cambio, ignore este correo: su contraseña actual sigue siendo la misma.</p>
+  <hr style="border:none;border-top:1px solid #ddd">
+  <p style="font-size:12px;color:#777">Miko Panaderías. Este correo se genera automáticamente; no responda a este mensaje.</p>
+</div>"""
+
+    return asunto, texto, html
+
+
+def enviar_restablecimiento(usuario_id: int, nombre: str, email: str, token_version: int) -> None:
+    """
+    Envía el correo de restablecimiento. NUNCA lanza excepción: se ejecuta en segundo
+    plano y, si el SMTP falla, solo se registra en el log (el usuario puede volver a solicitarlo).
+    """
+    try:
+        token = crear_token_restablecer(usuario_id, token_version)
+        asunto, texto, html = construir_correo_restablecer(nombre, token)
+        enviar_correo(email, asunto, texto, html)
+    except Exception:
+        # Se registra el id y no el correo, para no llenar el log de datos personales
+        logger.exception("No se pudo enviar el correo de restablecimiento al usuario %s", usuario_id)

@@ -1,4 +1,4 @@
-from src.schemas.auth import LoginRequest, TokenResponse
+from src.schemas.auth import LoginRequest, TokenResponse, OlvidePasswordRequest, RestablecerPasswordRequest
 from src.schemas.usuarios import UsuarioOut, CuentaUpdateData, CuentaUpdatePassword, PasswordSegura
 from src.schemas.sucursales import (
     SucursalBase,
