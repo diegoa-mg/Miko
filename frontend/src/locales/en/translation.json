@@ -77,18 +77,19 @@
     "enviando": "Sending..."
   },
   "login": {
-    "title": "Login",
-    "subtitle": "POINT OF SALE",
-    "user": "Username",
-    "password": "Password",
-    "remember": "Remember me",
-    "forgotPassword": "Forgot your password?",
-    "submit": "Sign in",
-    "error": "Incorrect email or password",
-    "avisoPendiente": "You must accept the privacy policy before logging in. Please check your email.",
-    "errorSinConexion": "Could not connect to the server. Check your connection and try again.",
-    "errorServidor": "A server error occurred. Please try again later."
-  },
+  "title": "Login",
+  "subtitle": "POINT OF SALE",
+  "user": "Username",
+  "password": "Password",
+  "remember": "Remember me",
+  "forgotPassword": "Forgot your password?",
+  "submit": "Sign in",
+  "error": "Incorrect email or password",
+  "avisoPendiente": "You must accept the privacy policy before logging in. Please check your email.",
+  "errorSinConexion": "Could not connect to the server. Check your connection and try again.",
+  "errorServidor": "A server error occurred. Please try again later.",
+  "sesionNoValida": "Your session is no longer valid or has expired. Please sign in again."
+},
   "sidebar": {
     "subtitle": "POINT OF SALE",
     "dashboard": "Dashboard",

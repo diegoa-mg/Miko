@@ -77,18 +77,19 @@
     "enviando": "Enviando..."
   },
   "login": {
-    "title": "Iniciar sesión",
-    "subtitle": "PUNTO DE VENTA",
-    "user": "Usuario",
-    "password": "Contraseña",
-    "remember": "Recordarme",
-    "forgotPassword": "¿Olvidaste tu contraseña?",
-    "submit": "Iniciar sesión",
-    "error": "Correo electrónico o contraseña incorrectos",
-    "avisoPendiente": "Debes aceptar el aviso de privacidad. Revisa tu correo.",
-    "errorSinConexion": "No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.",
-    "errorServidor": "Ocurrió un error en el servidor. Inténtalo más tarde."
-  },
+  "title": "Iniciar sesión",
+  "subtitle": "PUNTO DE VENTA",
+  "user": "Usuario",
+  "password": "Contraseña",
+  "remember": "Recordarme",
+  "forgotPassword": "¿Olvidaste tu contraseña?",
+  "submit": "Iniciar sesión",
+  "error": "Correo electrónico o contraseña incorrectos",
+  "avisoPendiente": "Debes aceptar el aviso de privacidad. Revisa tu correo.",
+  "errorSinConexion": "No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.",
+  "errorServidor": "Ocurrió un error en el servidor. Inténtalo más tarde.",
+  "sesionNoValida": "Tu sesión ha dejado de ser válida o ha vencido. Por favor, inicia sesión nuevamente."
+},
   "sidebar": {
     "subtitle": "PUNTO DE VENTA",
     "dashboard": "Dashboard",
