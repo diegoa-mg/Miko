@@ -1,6 +1,6 @@
 import { Routes, Route, useNavigate, Navigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { login as loginApi } from "./api/auth";
 import { AuthProvider, useAuth } from "./context/AuthContext";
 import ProtectedRoute from "./routes/protectedRoute";
@@ -36,6 +36,16 @@ function Login() {
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [error, setError] = useState("");
+  const [avisoSesion, setAvisoSesion] = useState(false);
+
+  useEffect(() => {
+  const aviso = sessionStorage.getItem("avisoSesionNoValida");
+
+  if (aviso === "true") {
+    setAvisoSesion(true);
+    sessionStorage.removeItem("avisoSesionNoValida");
+  }
+}, []);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -130,7 +140,20 @@ function Login() {
             </a>
           </div>
 
-          {error && <p className="text-red-500 text-sm dark:text-red-400">{error}</p>}
+          {avisoSesion && (
+          <div className="rounded-xl border border-[#e6bdc7] bg-[#ead8d8] px-4 py-3 text-sm text-[#875d69]">
+            <div className="flex items-center gap-2">
+              <span className="material-icons text-lg">info</span>
+              <p>{t("login.sesionNoValida")}</p>
+            </div>
+          </div>
+        )}
+
+        {error && (
+          <p className="text-red-500 text-sm dark:text-red-400">
+            {error}
+          </p>
+        )}
 
           <button
             type="submit"
