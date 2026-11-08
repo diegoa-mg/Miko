@@ -12,6 +12,13 @@ export const cambiarPasswordApi = async (password_actual, password_nueva) => {
     password_actual,
     password_nueva,
   });
+
+  // El backend sube token_version al cambiar la contraseña: el token viejo ya no sirve.
+  // Se guarda el token nuevo para que esta sesión siga activa (las de otros dispositivos se cierran).
+  if (data.token) {
+    localStorage.setItem("token", data.token);
+  }
+
   return data;
 };
 

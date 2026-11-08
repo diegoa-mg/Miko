@@ -9,6 +9,8 @@ JWT_ALGORITHM = "HS256"
 JWT_EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES", "480")) # 480 es el default, se usa en caso de que la variable JWT_EXPIRE_MINUTES no está definida
 
 AVISO_EXPIRE_DIAS = 7
+RESTABLECER_EXPIRE_MINUTES = 30
+TIPO_TOKEN_RESTABLECER = "restablecer_password"
 
 # Función para guardar la contraseña con hash
 def hash_password(password: str) -> str:
@@ -30,7 +32,7 @@ def verify_password(password: str, password_hash: str) -> bool:
     return bcrypt.checkpw(password.encode("utf-8"), password_hash.encode("utf-8"))
 
 # Función para crear el access token
-def crear_access_token(usuario_id: int) -> str:
+def crear_access_token(usuario_id: int, token_version: int) -> str:
     """
     El JWT se mantiene mínimo a propósito: solo lleva lo que el backend
     necesita para identificar y autorizar al usuario en cada request
@@ -42,6 +44,7 @@ def crear_access_token(usuario_id: int) -> str:
     # payload contiene el JSON que el backend necesita para identificar y autorizar al usuario en cada request
     payload = {
         "sub": str(usuario_id),
+        "ver": token_version,
         "iat": ahora,
         "exp": ahora + timedelta(minutes=JWT_EXPIRE_MINUTES),
     }
@@ -78,3 +81,28 @@ def decodificar_token_aviso(token: str) -> int:
     if payload.get("tipo") != "aviso_privacidad":
         raise jwt.InvalidTokenError("El token no es de aviso de privacidad")
     return int(payload["uid"])
+
+
+# Función para crear el token para restablecer contraseña
+def crear_token_restablecer(usuario_id: int, token_version: int):
+    "Token para restablecer la contraseña."
+    ahora = datetime.now(timezone.utc)
+    payload = {
+        "uid": usuario_id,
+        "ver": token_version,
+        "tipo": TIPO_TOKEN_RESTABLECER,
+        "iat": ahora,
+        "exp": ahora + timedelta(minutes=RESTABLECER_EXPIRE_MINUTES)
+    }
+
+    return jwt.encode(payload, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
+
+
+# Función para decodificar el token del restablecimiento de contraseña.
+def decodificar_token_restablecer(token: str):
+    payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
+
+    if payload.get("tipo") != TIPO_TOKEN_RESTABLECER:
+        raise jwt.InvalidTokenError("El token no es de restablecer contraseña")
+        # payload["ver"] lanza KeyError si falta: el endpoint lo trata como token inválido
+    return int(payload["uid"]), int(payload["ver"])

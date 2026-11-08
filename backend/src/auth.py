@@ -34,24 +34,29 @@ def get_current_user(
     if credenciales is None:
         raise credenciales_invalidas
 
-    # jwt.PyJWTError: cubre un token con firma inválida (alterado o con otra clave) y un token expirado. PyJWT revisa el campo exp al decodificar y lanza la excepción si ya pasó.
-    # KeyError: si el payload no lleva la llave "sub".
+    # jwt.PyJWTError: cubre un token con firma inválida (alterado o con otra clave) y un token expirado.
+    # KeyError: si el payload no lleva "sub" o "ver". Un token sin "ver" es de antes de token_version,
+    #           y se rechaza a propósito (fallar cerrado): si no, un token robado antes del cambio nunca se podría revocar.
     # ValueError: si payload["sub"] existe pero no se puede convertir a entero con int(...).
     # Todas devuelven el mismo mensaje: credenciales_invalidas
-    
     try:
         payload = decodificar_access_token(credenciales.credentials)
         usuario_id = int(payload["sub"])
+        token_version = payload["ver"]
     except (jwt.PyJWTError, KeyError, ValueError):
         raise credenciales_invalidas
 
-    usuario = db.get(Usuario, usuario_id) # Consulta el id del usuario
-    #         db.get(Modelo, id)
-    
+    usuario = db.get(Usuario, usuario_id)  # Consulta el id del usuario
+
     # None: el id del token ya no existe en la BD
-    # not activo: Un usuario desactivado no puede usar ninguna parte del sistema, así que su sesión deja de ser válida y el frontend debe mandarlo al login, 
-    # así desactivar a alguien corta su acceso en el siguiente request, sin esperar a que el token expire.
+    # not activo: un usuario desactivado pierde el acceso en el siguiente request, sin esperar a que el token expire.
     if usuario is None or not usuario.activo:
         raise credenciales_invalidas
-    
+
+    # Versión del token distinta a la de la BD: el token es de antes de un cambio de contraseña
+    # o de un "cerrar sesión en todos los dispositivos", así que ya no es válido.
+    # Se devuelve el mismo 401 genérico para no revelar que el token fue válido alguna vez.
+    if token_version != usuario.token_version:
+        raise credenciales_invalidas
+
     return usuario

@@ -1,12 +1,12 @@
-from fastapi import APIRouter, Depends, HTTPException, status
+from fastapi import APIRouter, Depends, HTTPException, status, BackgroundTasks
 from sqlalchemy.orm import Session
 
 from src.auth import get_current_user
 from src.database import get_db
 from src.models import Usuario
-from src.schemas import LoginRequest, TokenResponse, UsuarioOut
+from src.schemas import LoginRequest, TokenResponse, UsuarioOut, OlvidePasswordRequest, RestablecerPasswordRequest
 from src.security import crear_access_token, verify_password
-from src.services import llenar_usuario_out, aviso_pendiente
+from src.services import llenar_usuario_out, aviso_pendiente, MENSAJE_OLVIDE, restablecer_password, solicitar_restablecimiento
 
 """
 APIRouter es un mini FastAPI, agrupa rutas relaciones para no meterlas en main.py. 
@@ -45,8 +45,8 @@ def login(credenciales: LoginRequest, db: Session = Depends(get_db)): # db: Sess
             },
         )
 
-    # Se conecta con security.py. crear_access_token lleva únicamente el id ya que el JWT solo lleva el id dentro de sub. Filosofía de token mínimo.
-    token = crear_access_token(usuario.id)
+    # Se conecta con security.py. crear_access_token lleva el id y la version del token. Filosofía de token mínimo.
+    token = crear_access_token(usuario.id, usuario.token_version)
     return TokenResponse(token=token)
 
 # response_model=UsuarioOut: se valida la salida contra la clase declarada (UsuarioOut), además de la entrada.
@@ -54,3 +54,13 @@ def login(credenciales: LoginRequest, db: Session = Depends(get_db)): # db: Sess
 # Se llama al endpoint me y se ejecuta
 def me(usuario: Usuario = Depends(get_current_user)): # usuario es un parametro que llega resuelto por Depends(get_current_user), es el que valida el usuario
     return llenar_usuario_out(usuario)
+
+
+@router.post("/restablecer-password", status_code=status.HTTP_200_OK)
+def restablecer_password_endpoint(datos: RestablecerPasswordRequest, db: Session = Depends(get_db)):
+    return restablecer_password(db, datos.token, datos.password_nueva)
+
+@router.post("/olvide-password", status_code=status.HTTP_200_OK)
+def olvide_password(datos: OlvidePasswordRequest, background_tasks: BackgroundTasks, db: Session = Depends(get_db)):
+    solicitar_restablecimiento(db, datos.email, background_tasks)
+    return {"message": MENSAJE_OLVIDE}

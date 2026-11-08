@@ -6,6 +6,16 @@ html {
   font-size: 120%; /* o 125%, 130%... */
 }
 
+/* Modo oscuro: paleta */
+.dark {
+  --dark-bg: #1c1517;       /* fondo general */
+  --dark-surface: #2a2023;  /* inputs, tarjetas */
+  --dark-border: #4a3640;
+  --dark-text: #f5e6ea;
+  --dark-muted: #c9a9b4;    /* íconos y texto secundario */
+}
+
+
 @keyframes float-blob {
   0%, 100% {
     transform: translate(0, 0) scale(1);
@@ -25,6 +35,10 @@ html {
   opacity: 0.5;
   animation: float-blob 14s ease-in-out infinite;
   pointer-events: none;
+}
+
+.dark .blob {
+  opacity: 0.15;
 }
 
 /* Animación botón eliminar de sucursales */

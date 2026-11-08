@@ -6,7 +6,7 @@ from src.database import get_db
 from src.models import Usuario
 from src.services import llenar_usuario_out, subir_foto, borrar_foto, procesar_imagen
 from src.schemas import CuentaUpdateData, CuentaUpdatePassword, UsuarioOut
-from src.security import verify_password, hash_password
+from src.security import verify_password, hash_password, crear_access_token
 
 TAMANO_MAXIMO_FOTO = 10 * 1024 * 1024  # 10 MB
 
@@ -65,11 +65,18 @@ def editar_password(password_in: CuentaUpdatePassword, usuario: Usuario = Depend
 
     # Se guarda la contraseña ya hasheada utilizando la función hash_password
     usuario.password_hash = hash_password(password_in.password_nueva)
+    usuario.token_version += 1 # Cambia la versión del token: invalida todos los tokens emitidos antes del cambio, en todos los dispositivos
     db.commit()
+    db.refresh(usuario)
+
+    # Token nuevo con la versión nueva, los demás dispositivos cierran la sesión menos la sesión actual
+    token_nuevo = crear_access_token(usuario.id, usuario.token_version)
 
     return {
         "message": "La contraseña fue cambiada exitosamente en la base de datos.",
-        "usuario_id": usuario.id
+        "usuario_id": usuario.id,
+        "token": token_nuevo,
+        "token_type": "bearer",
     }
 
 @router.put("/foto", response_model=UsuarioOut)
@@ -106,3 +113,13 @@ def editar_foto(foto: UploadFile, usuario: Usuario = Depends(get_current_user), 
     borrar_foto(url_vieja)
 
     return llenar_usuario_out(usuario)
+
+
+@router.post("/cerrar-sesiones", status_code=status.HTTP_200_OK)
+def cerrar_sesiones(usuario: Usuario = Depends(get_current_user), db: Session = Depends(get_db)):
+    usuario.token_version += 1 # Cambia la versión del token: invalida todos los tokens emitidos antes del cambio, en todos los dispositivos
+    db.commit()
+
+    return {
+        "message": "Se cerró la sesión en todos los dispositivos"
+    }

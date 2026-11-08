@@ -17,13 +17,13 @@ const cambiarIdioma = (lng) => {
       <div className="flex items-center gap-2">
         {/* Barrita que se despliega */}
         {open && (
-          <div className="flex bg-white rounded-full shadow-lg p-1 gap-1 border border-gray-200">
+          <div className="flex bg-white rounded-full shadow-lg p-1 gap-1 border border-gray-200 dark:bg-[var(--dark-surface)] dark:border-[var(--dark-border)]">
             <button
               onClick={() => cambiarIdioma("es")}
               className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
                 i18n.language === "es"
                   ? "bg-rose-800 text-white"
-                  : "text-gray-500 hover:bg-gray-100"
+                  : "text-gray-500 hover:bg-gray-100 dark:text-[var(--dark-muted)] dark:hover:bg-[var(--dark-border)]"
               }`}
             >
               ES
@@ -33,7 +33,7 @@ const cambiarIdioma = (lng) => {
               className={`px-3 py-1.5 rounded-full text-xs font-semibold transition-colors ${
                 i18n.language === "en"
                   ? "bg-rose-800 text-white"
-                  : "text-gray-500 hover:bg-gray-100"
+                  : "text-gray-500 hover:bg-gray-100 dark:text-[var(--dark-muted)] dark:hover:bg-[var(--dark-border)]"
               }`}
             >
               EN
