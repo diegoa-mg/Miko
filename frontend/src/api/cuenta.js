@@ -27,3 +27,9 @@ export const subirFotoPerfilApi = async (archivo) => {
   });
   return data;
 };
+
+// 4. Cerrar sesiones en todos los dispositivos
+export const cerrarSesionesApi = async () => {
+  const { data } = await api.post("/cuenta/cerrar-sesiones");
+  return data;
+};

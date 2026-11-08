@@ -400,6 +400,13 @@
     "passwordNuevaPlaceholder": "Ingresa la nueva contraseña",
     "actualizarPassword": "Actualizar Contraseña",
     "cerrarSesion": "Cerrar sesión",
+    "cerrarTodasSesiones": "Cerrar sesión en todos los dispositivos",
+    "cerrarTodasSesionesDescripcion": "Cierra tu cuenta en todos los dispositivos donde hayas iniciado sesión.",
+    "confirmarCerrarSesionesTitulo": "Cerrar todas las sesiones",
+    "confirmarCerrarSesiones": "¿Estás segura de que deseas cerrar sesión en todos los dispositivos? Tendrás que iniciar sesión nuevamente.",
+    "sesionesCerradas": "Se cerraron todas las sesiones correctamente.",
+    "errorCerrarSesiones": "No se pudieron cerrar las sesiones. Inténtalo nuevamente.",
+    "cerrandoSesiones": "Cerrando sesiones...",
     "nombrePlaceholder": "Ej. Admin de prueba",
     "correoNoModificable": "Este correo no se puede modificar directamente",
     "verPassword": "Ver contraseña",
@@ -427,7 +434,8 @@
     "guardarFoto": "Guardar foto",
     "passwordActualPlaceholder": "Ingresa tu contraseña actual",
     "passwordActualRequerida": "Debes escribir tu contraseña actual para cambiarla",
-    "passwordActualAviso": "Ingresa tu contraseña actual para cambiarla"
+    "passwordActualAviso": "Ingresa tu contraseña actual para cambiarla",
+    "aceptar": "Aceptar"
   },
   "common": {
     "notFound": "Página no encontrada",
