@@ -27,6 +27,7 @@ import VentasGerente from "./pages/VentasGerente";
 import Productos from "./pages/Productos";
 import AvisoPrivacidad from "./pages/AvisoPrivacidad";
 import PuntoDeVentaCajero from "./pages/PuntoDeVentaCajero";
+import ConfirmarEmail from "./pages/ConfirmarEmail";
 
 function Login() {
   const { login } = useAuth();
@@ -197,6 +198,7 @@ export default function App() {
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
           <Route path="/aviso-privacidad" element={<AvisoPrivacidad />} />
+          <Route path="/confirmar-email" element={<ConfirmarEmail />} />
 
           <Route element={<ProtectedRoute />}>
             <Route element={<RoleRoute allowedRoles={["admin_general"]} />}>

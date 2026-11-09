@@ -40,3 +40,9 @@ export const cerrarSesionesApi = async () => {
   const { data } = await api.post("/cuenta/cerrar-sesiones");
   return data;
 };
+
+// 5. Confirmar nuevo correo electrónico (POST /cuenta/confirmar-email)
+export const confirmarEmailApi = async (token) => {
+  const { data } = await api.post("/cuenta/confirmar-email", { token });
+  return data;
+};
