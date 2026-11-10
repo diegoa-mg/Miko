@@ -77,18 +77,19 @@
     "enviando": "Sending..."
   },
   "login": {
-    "title": "Login",
-    "subtitle": "POINT OF SALE",
-    "user": "Username",
-    "password": "Password",
-    "remember": "Remember me",
-    "forgotPassword": "Forgot your password?",
-    "submit": "Sign in",
-    "error": "Incorrect email or password",
-    "avisoPendiente": "You must accept the privacy policy before logging in. Please check your email.",
-    "errorSinConexion": "Could not connect to the server. Check your connection and try again.",
-    "errorServidor": "A server error occurred. Please try again later."
-  },
+  "title": "Login",
+  "subtitle": "POINT OF SALE",
+  "user": "Username",
+  "password": "Password",
+  "remember": "Remember me",
+  "forgotPassword": "Forgot your password?",
+  "submit": "Sign in",
+  "error": "Incorrect email or password",
+  "avisoPendiente": "You must accept the privacy policy before logging in. Please check your email.",
+  "errorSinConexion": "Could not connect to the server. Check your connection and try again.",
+  "errorServidor": "A server error occurred. Please try again later.",
+  "sesionNoValida": "Your session is no longer valid or has expired. Please sign in again."
+},
   "sidebar": {
     "subtitle": "POINT OF SALE",
     "dashboard": "Dashboard",
@@ -498,6 +499,13 @@
     "passwordNuevaPlaceholder": "Enter the new password",
     "actualizarPassword": "Update Password",
     "cerrarSesion": "Log out",
+    "cerrarTodasSesiones": "Log out of all devices",
+    "cerrarTodasSesionesDescripcion": "Log out of your account on all devices where you are signed in.",
+    "confirmarCerrarSesionesTitulo": "Log out of all devices",
+    "confirmarCerrarSesiones": "Are you sure you want to log out of all devices? You will need to sign in again.",
+    "sesionesCerradas": "All sessions have been closed successfully.",
+    "errorCerrarSesiones": "Could not close the sessions. Please try again.",
+    "cerrandoSesiones": "Closing sessions...",
     "nombrePlaceholder": "E.g. Test admin",
     "correoNoModificable": "This email cannot be changed directly",
     "verPassword": "Show password",
@@ -511,6 +519,7 @@
     "fotoActualizada": "Profile picture updated successfully",
     "correoInvalido": "The new email address must include a valid '@'",
     "datosActualizados": "Personal information updated successfully",
+    "correoVerificacionEnviado": "We sent a confirmation link to {{email}}. Please click the link to apply the change.",
     "passwordCambiada": "Password changed successfully",
     "errorSubirImagen": "Error uploading the image",
     "errorActualizarPerfil": "Error updating profile",
@@ -525,7 +534,8 @@
     "guardarFoto": "Save photo",
     "passwordActualPlaceholder": "Enter your current password",
     "passwordActualRequerida": "You must enter your current password to change it",
-    "passwordActualAviso": "Enter your current password to change it"
+    "passwordActualAviso": "Enter your current password to change it",
+    "aceptar": "Accept"
   },
   "common": {
     "notFound": "Page not found",
@@ -598,5 +608,19 @@
     "verDocumentoCompleto": "View full policy in PDF",
     "botonAceptar": "Accept privacy policy",
     "procesando": "Processing..."
+  },
+  "confirmarEmail": {
+    "titulo": "Email Address Verification",
+    "tokenFaltante": "The confirmation link is not valid.",
+    "procesando": "Confirming your new email address...",
+    "exitoTitulo": "Email confirmed successfully!",
+    "exitoDescripcion": "Your new email address has been verified and updated in your Miko account.",
+    "volverPerfil": "Back to Settings",
+    "iniciarSesion": "Log in",
+    "errorTitulo": "Could not confirm email",
+    "irInicio": "Go home",
+    "instruccion": "Please access using the link we sent to your email address.",
+    "irLogin": "Go to login",
+    "errorGenerico": "An error occurred while confirming your email address."
   }
 }

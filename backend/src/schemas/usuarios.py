@@ -59,3 +59,22 @@ class CuentaUpdateData(BaseModel):
 class CuentaUpdatePassword(BaseModel):
     password_actual: str
     password_nueva: PasswordSegura
+
+
+class ConfirmarEmailRequest(BaseModel):
+    token: str
+
+
+class CuentaUpdateResponse(BaseModel):
+    id: int
+    nombre: str
+    email: str
+    rol: str
+    sucursal_id: int | None = None
+    activo: bool
+    foto_url: str | None = None
+    aviso_pendiente: bool = False
+    mensaje: str | None = None
+    email_pendiente: str | None = None
+
+    model_config = ConfigDict(from_attributes=True)

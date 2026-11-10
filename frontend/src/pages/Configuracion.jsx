@@ -6,6 +6,7 @@ import {
   actualizarPerfilApi,
   cambiarPasswordApi,
   subirFotoPerfilApi,
+  cerrarSesionesApi,
 } from "../api/cuenta";
 import CropFotoModal from "../components/CropFotoModal";
 
@@ -40,6 +41,9 @@ export default function Configuracion() {
   // Estados para ver u ocultar las contraseñas
   const [mostrarPasswordActual, setMostrarPasswordActual] = useState(false);
   const [mostrarPasswordNueva, setMostrarPasswordNueva] = useState(false);
+  const [mostrarConfirmacionSesiones, setMostrarConfirmacionSesiones] = useState(false);
+  const [cerrandoSesiones, setCerrandoSesiones] = useState(false);
+  const [errorCerrarSesiones, setErrorCerrarSesiones] = useState("");
 
   // Estados de carga y feedback
   const [subiendoFoto, setSubiendoFoto] = useState(false);
@@ -58,6 +62,24 @@ export default function Configuracion() {
     logout();
     navigate("/login");
   };
+
+  const handleCerrarTodasSesiones = async () => {
+  setCerrandoSesiones(true);
+  setErrorCerrarSesiones("");
+
+  try {
+    await cerrarSesionesApi();
+
+    logout();
+    navigate("/login", { replace: true });
+  } catch (err) {
+    setErrorCerrarSesiones(
+      getError(err, t("perfil.errorCerrarSesiones"), t)
+    );
+  } finally {
+    setCerrandoSesiones(false);
+  }
+};
 
   // Al elegir la imagen: validar y abrir el recortador (todavía no se sube)
   const handleFotoChange = (e) => {
@@ -123,11 +145,21 @@ export default function Configuracion() {
         email: nuevoCorreoLimpio ? nuevoCorreoLimpio : emailActual.trim(),
       };
 
-      const usuarioActualizado = await actualizarPerfilApi(payload);
-      updateUser(usuarioActualizado);
-      setEmailActual(usuarioActualizado.email || payload.email);
+      const respuesta = await actualizarPerfilApi(payload);
+      updateUser(respuesta);
+      setEmailActual(respuesta.email || payload.email);
       setEmailNuevo("");
-      setMensaje({ tipo: "success", texto: t("perfil.datosActualizados") });
+
+      if (respuesta.email_pendiente) {
+        setMensaje({
+          tipo: "success",
+          texto:
+            respuesta.mensaje ||
+            t("perfil.correoVerificacionEnviado", { email: respuesta.email_pendiente }),
+        });
+      } else {
+        setMensaje({ tipo: "success", texto: t("perfil.datosActualizados") });
+      }
     } catch (err) {
       setMensaje({ tipo: "error", texto: getError(err, t("perfil.errorActualizarPerfil"), t) });
     } finally {
@@ -421,6 +453,21 @@ export default function Configuracion() {
                 </button>
               </div>
 
+              {/* Cerrar sesión en todos los dispositivos */}
+              <div className="mt-4">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setErrorCerrarSesiones("");
+                    setMostrarConfirmacionSesiones(true);
+                  }}
+                  className="font-sans w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-red-300 text-red-600 text-sm font-semibold hover:bg-red-50 transition-colors"
+                >
+                  <span className="material-icons text-base">devices</span>
+                  {t("perfil.cerrarTodasSesiones")}
+                </button>
+              </div>
+
             </div>
           </div>
         </div>
@@ -433,6 +480,58 @@ export default function Configuracion() {
           onConfirm={handleConfirmarRecorte}
         />
       )}
+
+      {/* Modal para cerrar todas las sesiones */}
+        {mostrarConfirmacionSesiones && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+
+              <div className="flex flex-col items-center text-center">
+                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#ead8d8]">
+                  <span className="material-icons text-3xl text-[#875d69]">
+                    devices
+                  </span>
+                </div>
+
+                <h3 className="font-sans text-lg font-bold text-[#875d69]">
+                  {t("perfil.confirmarCerrarSesionesTitulo")}
+                </h3>
+
+                <p className="mt-3 font-sans text-sm text-gray-600">
+                  {t("perfil.confirmarCerrarSesiones")}
+                </p>
+
+                {errorCerrarSesiones && (
+                  <p className="mt-4 text-sm font-medium text-red-600">
+                    {errorCerrarSesiones}
+                  </p>
+                )}
+              </div>
+
+              <div className="mt-6 flex gap-3">
+                <button
+                  type="button"
+                  disabled={cerrandoSesiones}
+                  onClick={() => setMostrarConfirmacionSesiones(false)}
+                  className="flex-1 rounded-xl border border-[#cda4b4] py-3 font-sans text-sm font-semibold text-[#875d69] hover:bg-[#fdf6e3] disabled:opacity-50"
+                >
+                  {t("perfil.cancelar")}
+                </button>
+
+                <button
+                  type="button"
+                  disabled={cerrandoSesiones}
+                  onClick={handleCerrarTodasSesiones}
+                  className="flex-1 rounded-xl bg-[#875d69] py-3 font-sans text-sm font-semibold text-white hover:bg-[#704956] disabled:opacity-50"
+                >
+                  {cerrandoSesiones
+                    ? t("perfil.cerrandoSesiones")
+                    : t("perfil.aceptar")}
+                </button>
+              </div>
+            </div>
+          </div>
+        )}
     </div>
   );
 }

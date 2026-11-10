@@ -1,12 +1,30 @@
+import jwt
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile
 from sqlalchemy.orm import Session
 
 from src.auth import get_current_user
 from src.database import get_db
 from src.models import Usuario
-from src.services import llenar_usuario_out, subir_foto, borrar_foto, procesar_imagen
-from src.schemas import CuentaUpdateData, CuentaUpdatePassword, UsuarioOut
-from src.security import verify_password, hash_password, crear_access_token
+from src.services import (
+    llenar_usuario_out,
+    subir_foto,
+    borrar_foto,
+    procesar_imagen,
+    enviar_confirmacion_cambio_email,
+)
+from src.schemas import (
+    CuentaUpdateData,
+    CuentaUpdatePassword,
+    CuentaUpdateResponse,
+    ConfirmarEmailRequest,
+    UsuarioOut,
+)
+from src.security import (
+    verify_password,
+    hash_password,
+    crear_access_token,
+    decodificar_token_confirmar_email,
+)
 
 TAMANO_MAXIMO_FOTO = 10 * 1024 * 1024  # 10 MB
 
@@ -15,28 +33,116 @@ router = APIRouter(
     tags=["cuenta"]
 )
 
-@router.patch("", response_model=UsuarioOut, status_code=status.HTTP_200_OK)
-def editar_datos(usuario_in: CuentaUpdateData, usuario: Usuario = Depends(get_current_user), db: Session = Depends(get_db)):
-    """Editar nombre o email en los ajustes de cuenta."""
-    
+@router.patch("", response_model=CuentaUpdateResponse, status_code=status.HTTP_200_OK)
+def editar_datos(
+    usuario_in: CuentaUpdateData,
+    usuario: Usuario = Depends(get_current_user),
+    db: Session = Depends(get_db),
+):
+    """Editar nombre o solicitar cambio de correo en los ajustes de cuenta."""
+    mensaje = None
+    email_pendiente = None
+
     # Agregar nuevo nombre si se requiere. Ignora None y tambien si viene vacio
     if usuario_in.nombre:
-        usuario.nombre = usuario_in.nombre
+        usuario.nombre = usuario_in.nombre.strip()
 
     # Si hay cambios en el correo pasa a la validación
     if usuario_in.email:
-        # Consulta para obtener un usuario mediante el correo ingresado.
-        # Si el correo ingresado mediante usuario_in coincide con un correo ya existente
-        # significa que otro usuario ya tiene ese correo y se responde con 400
-        email_nuevo = db.query(Usuario).filter(Usuario.email == usuario_in.email, Usuario.id != usuario.id).first()
-        
-        if email_nuevo:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail=f"El email {usuario_in.email} ya está en uso"
-            ) 
-        usuario.email = usuario_in.email
+        nuevo_correo = usuario_in.email.strip().lower()
+        if nuevo_correo != usuario.email.lower():
+            # Consulta para verificar si otro usuario ya tiene ese correo
+            email_ocupado = (
+                db.query(Usuario)
+                .filter(Usuario.email == nuevo_correo, Usuario.id != usuario.id)
+                .first()
+            )
 
+            if email_ocupado:
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail=f"El email {nuevo_correo} ya está en uso",
+                )
+
+            # Enviar correo de confirmación con token firmado a la nueva dirección
+            try:
+                enviar_confirmacion_cambio_email(
+                    usuario_id=usuario.id,
+                    nombre=usuario.nombre,
+                    nuevo_email=nuevo_correo,
+                )
+            except Exception as e:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="No se pudo enviar el correo de confirmación. Intente más tarde.",
+                ) from e
+
+            email_pendiente = nuevo_correo
+            mensaje = (
+                f"Hemos enviado un enlace de confirmación a {nuevo_correo}. "
+                "El cambio se aplicará una vez que confirmes el enlace."
+            )
+
+    db.commit()
+    db.refresh(usuario)
+
+    usuario_out = llenar_usuario_out(usuario)
+    return CuentaUpdateResponse(
+        id=usuario_out.id,
+        nombre=usuario_out.nombre,
+        email=usuario_out.email,
+        rol=usuario_out.rol,
+        sucursal_id=usuario_out.sucursal_id,
+        activo=usuario_out.activo,
+        foto_url=usuario_out.foto_url,
+        aviso_pendiente=usuario_out.aviso_pendiente,
+        mensaje=mensaje,
+        email_pendiente=email_pendiente,
+    )
+
+
+@router.post("/confirmar-email", response_model=UsuarioOut, status_code=status.HTTP_200_OK)
+def confirmar_cambio_email(
+    datos: ConfirmarEmailRequest,
+    db: Session = Depends(get_db),
+):
+    """
+    Confirma el cambio de correo electrónico utilizando un token firmado.
+    Aplica el cambio en la base de datos si el token es válido y el correo no fue tomado.
+    """
+    try:
+        usuario_id, nuevo_email = decodificar_token_confirmar_email(datos.token)
+    except jwt.ExpiredSignatureError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El enlace de confirmación ha expirado",
+        )
+    except jwt.InvalidTokenError:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail="El token de confirmación es inválido",
+        )
+
+    usuario = db.query(Usuario).filter(Usuario.id == usuario_id).first()
+    if not usuario or not usuario.activo:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail="El usuario no existe o se encuentra inactivo",
+        )
+
+    # Verificar que el nuevo correo no haya sido asignado a otra cuenta en el ínterin
+    email_ocupado = (
+        db.query(Usuario)
+        .filter(Usuario.email == nuevo_email, Usuario.id != usuario.id)
+        .first()
+    )
+    if email_ocupado:
+        raise HTTPException(
+            status_code=status.HTTP_400_BAD_REQUEST,
+            detail=f"El email {nuevo_email} ya está en uso",
+        )
+
+    usuario.email = nuevo_email
     db.commit()
     db.refresh(usuario)
 

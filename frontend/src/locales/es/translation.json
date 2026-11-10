@@ -77,18 +77,19 @@
     "enviando": "Enviando..."
   },
   "login": {
-    "title": "Iniciar sesión",
-    "subtitle": "PUNTO DE VENTA",
-    "user": "Usuario",
-    "password": "Contraseña",
-    "remember": "Recordarme",
-    "forgotPassword": "¿Olvidaste tu contraseña?",
-    "submit": "Iniciar sesión",
-    "error": "Correo electrónico o contraseña incorrectos",
-    "avisoPendiente": "Debes aceptar el aviso de privacidad. Revisa tu correo.",
-    "errorSinConexion": "No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.",
-    "errorServidor": "Ocurrió un error en el servidor. Inténtalo más tarde."
-  },
+  "title": "Iniciar sesión",
+  "subtitle": "PUNTO DE VENTA",
+  "user": "Usuario",
+  "password": "Contraseña",
+  "remember": "Recordarme",
+  "forgotPassword": "¿Olvidaste tu contraseña?",
+  "submit": "Iniciar sesión",
+  "error": "Correo electrónico o contraseña incorrectos",
+  "avisoPendiente": "Debes aceptar el aviso de privacidad. Revisa tu correo.",
+  "errorSinConexion": "No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.",
+  "errorServidor": "Ocurrió un error en el servidor. Inténtalo más tarde.",
+  "sesionNoValida": "Tu sesión ha dejado de ser válida o ha vencido. Por favor, inicia sesión nuevamente."
+},
   "sidebar": {
     "subtitle": "PUNTO DE VENTA",
     "dashboard": "Dashboard",
@@ -498,6 +499,13 @@
     "passwordNuevaPlaceholder": "Ingresa la nueva contraseña",
     "actualizarPassword": "Actualizar Contraseña",
     "cerrarSesion": "Cerrar sesión",
+    "cerrarTodasSesiones": "Cerrar sesión en todos los dispositivos",
+    "cerrarTodasSesionesDescripcion": "Cierra tu cuenta en todos los dispositivos donde hayas iniciado sesión.",
+    "confirmarCerrarSesionesTitulo": "Cerrar todas las sesiones",
+    "confirmarCerrarSesiones": "¿Estás segura de que deseas cerrar sesión en todos los dispositivos? Tendrás que iniciar sesión nuevamente.",
+    "sesionesCerradas": "Se cerraron todas las sesiones correctamente.",
+    "errorCerrarSesiones": "No se pudieron cerrar las sesiones. Inténtalo nuevamente.",
+    "cerrandoSesiones": "Cerrando sesiones...",
     "nombrePlaceholder": "Ej. Admin de prueba",
     "correoNoModificable": "Este correo no se puede modificar directamente",
     "verPassword": "Ver contraseña",
@@ -511,6 +519,7 @@
     "fotoActualizada": "Foto de perfil actualizada exitosamente",
     "correoInvalido": "El nuevo correo electrónico debe incluir un '@' válido",
     "datosActualizados": "Datos personales actualizados correctamente",
+    "correoVerificacionEnviado": "Hemos enviado un enlace de confirmación a {{email}}. Por favor abre el enlace para aplicar el cambio.",
     "passwordCambiada": "Contraseña cambiada con éxito",
     "errorSubirImagen": "Error al subir la imagen",
     "errorActualizarPerfil": "Error al actualizar perfil",
@@ -525,7 +534,8 @@
     "guardarFoto": "Guardar foto",
     "passwordActualPlaceholder": "Ingresa tu contraseña actual",
     "passwordActualRequerida": "Debes escribir tu contraseña actual para cambiarla",
-    "passwordActualAviso": "Ingresa tu contraseña actual para cambiarla"
+    "passwordActualAviso": "Ingresa tu contraseña actual para cambiarla",
+    "aceptar": "Aceptar"
   },
   "common": {
     "notFound": "Página no encontrada",
@@ -598,5 +608,19 @@
     "verDocumentoCompleto": "Ver aviso completo en PDF",
     "botonAceptar": "Acepto el aviso de privacidad",
     "procesando": "Procesando..."
+  },
+  "confirmarEmail": {
+    "titulo": "Verificación de Correo Electrónico",
+    "tokenFaltante": "El enlace de confirmación no es válido.",
+    "procesando": "Confirmando tu nuevo correo electrónico...",
+    "exitoTitulo": "¡Correo confirmado con éxito!",
+    "exitoDescripcion": "Tu nueva dirección de correo ha sido verificada y actualizada en tu cuenta de Miko.",
+    "volverPerfil": "Volver a Configuración",
+    "iniciarSesion": "Iniciar sesión",
+    "errorTitulo": "No se pudo confirmar el correo",
+    "irInicio": "Ir a inicio",
+    "instruccion": "Por favor ingresa utilizando el enlace que enviamos a tu correo.",
+    "irLogin": "Ir al inicio de sesión",
+    "errorGenerico": "Ocurrió un error al procesar la confirmación."
   }
 }

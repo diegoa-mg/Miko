@@ -1,5 +1,12 @@
 from src.schemas.auth import LoginRequest, TokenResponse, OlvidePasswordRequest, RestablecerPasswordRequest
-from src.schemas.usuarios import UsuarioOut, CuentaUpdateData, CuentaUpdatePassword, PasswordSegura
+from src.schemas.usuarios import (
+    UsuarioOut,
+    CuentaUpdateData,
+    CuentaUpdatePassword,
+    CuentaUpdateResponse,
+    ConfirmarEmailRequest,
+    PasswordSegura,
+)
 from src.schemas.sucursales import (
     SucursalBase,
     SucursalCreate,

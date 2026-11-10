@@ -12,15 +12,23 @@ api.interceptors.request.use((config) => {
   return config;
 });
 
-// Si el token expiró o el usuario fue desactivado, se manda al login
+/// Si el token expiró o la sesión fue invalidada, se manda al login
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     const esLogin = error.config?.url?.includes("/login");
+
     if (error.response?.status === 401 && !esLogin) {
+      // Guardar aviso para mostrarlo en el login
+      sessionStorage.setItem("avisoSesionNoValida", "true");
+
+      // Eliminar el token inválido
       localStorage.removeItem("token");
+
+      // Redirigir al login
       window.location.href = "/login";
     }
+
     return Promise.reject(error);
   }
 );
