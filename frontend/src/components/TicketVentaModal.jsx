@@ -1,0 +1,222 @@
+import { useEffect, useState } from "react";
+import { useTranslation } from "react-i18next";
+import { CheckCircle2, Download, Printer, X } from "lucide-react";
+import {
+  abrirTicketPdf,
+  descargarTicketPdf,
+  obtenerTicket,
+  obtenerZonaHoraria,
+} from "../api/ventasCajero";
+import { crearFormatoMoneda, formatearFechaNegocio } from "../api/formatoVentas";
+
+/**
+ * Resumen de una venta con los datos de GET /ventas/{id}/ticket y botones
+ * para imprimir / descargar el PDF. Se usa al terminar un cobro (con cambio)
+ * y en el detalle de Mis ventas.
+ */
+export default function TicketVentaModal({
+  ventaId,
+  cambio = null,
+  recienRegistrada = false,
+  textoCerrar,
+  onClose,
+}) {
+  const { t, i18n } = useTranslation();
+  const money = crearFormatoMoneda(i18n.language);
+
+  const [ticket, setTicket] = useState(null);
+  const [zona, setZona] = useState(null);
+  const [cargando, setCargando] = useState(true);
+  const [error, setError] = useState("");
+  const [ocupado, setOcupado] = useState(false); // pidiendo el PDF
+  const [errorPdf, setErrorPdf] = useState("");
+
+  useEffect(() => {
+    if (ventaId == null) return;
+    let activo = true;
+    setCargando(true);
+    setError("");
+    setErrorPdf("");
+    setTicket(null);
+    Promise.all([obtenerTicket(ventaId), obtenerZonaHoraria()])
+      .then(([datos, zonaHoraria]) => {
+        if (!activo) return;
+        setTicket(datos);
+        setZona(zonaHoraria);
+      })
+      .catch((err) => {
+        if (!activo) return;
+        const detalle = err?.response?.data?.detail;
+        setError(typeof detalle === "string" ? detalle : t("ticketVenta.errorCarga"));
+      })
+      .finally(() => activo && setCargando(false));
+    return () => {
+      activo = false;
+    };
+  }, [ventaId, t]);
+
+  // Esc cierra
+  useEffect(() => {
+    if (ventaId == null) return;
+    const onKey = (e) => e.key === "Escape" && onClose();
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [ventaId, onClose]);
+
+  if (ventaId == null) return null;
+
+  const ejecutarPdf = async (accion) => {
+    setOcupado(true);
+    setErrorPdf("");
+    try {
+      await accion(ventaId);
+    } catch {
+      setErrorPdf(t("ticketVenta.errorPdf"));
+    } finally {
+      setOcupado(false);
+    }
+  };
+
+  const productos = ticket?.productos ?? [];
+
+  return (
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      onMouseDown={(e) => e.target === e.currentTarget && onClose()}
+    >
+      <div
+        role="dialog"
+        aria-modal="true"
+        aria-labelledby="ticket-titulo"
+        className="flex max-h-[90vh] w-full max-w-lg flex-col rounded-xl bg-white p-6 shadow-xl"
+      >
+        <div className="mb-4 flex items-start justify-between">
+          <div className="flex items-center gap-2">
+            {recienRegistrada && <CheckCircle2 size={24} className="text-green-600" />}
+            <div>
+              <h2 id="ticket-titulo" className="font-sans text-xl font-bold text-[#875d69]">
+                {recienRegistrada ? t("ticketVenta.ventaRegistrada") : t("ticketVenta.titulo")}
+              </h2>
+              <p className="text-sm text-gray-500">
+                {t("ticketVenta.venta")} #{ventaId}
+              </p>
+            </div>
+          </div>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label={t("ticketVenta.cerrar")}
+            className="text-gray-400 hover:text-gray-600"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="min-h-0 flex-1 overflow-y-auto">
+          {cargando && <p className="py-6 text-center text-sm text-gray-500">{t("ticketVenta.cargando")}</p>}
+
+          {error && !cargando && (
+            <p role="alert" className="rounded-lg border border-red-300 bg-red-50 px-4 py-2 text-sm text-red-700">
+              {error}
+            </p>
+          )}
+
+          {ticket && (
+            <>
+              <dl className="mb-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
+                <dt className="text-gray-500">{t("ticketVenta.sucursal")}</dt>
+                <dd className="text-right font-medium text-gray-800">{ticket.sucursal}</dd>
+                {ticket.direccion_sucursal && (
+                  <>
+                    <dt className="text-gray-500">{t("ticketVenta.direccion")}</dt>
+                    <dd className="text-right text-gray-800">{ticket.direccion_sucursal}</dd>
+                  </>
+                )}
+                <dt className="text-gray-500">{t("ticketVenta.cajero")}</dt>
+                <dd className="text-right text-gray-800">{ticket.cajero}</dd>
+                <dt className="text-gray-500">{t("ticketVenta.fecha")}</dt>
+                <dd className="text-right text-gray-800">
+                  {formatearFechaNegocio(ticket.fecha, i18n.language, zona)}
+                </dd>
+                <dt className="text-gray-500">{t("ticketVenta.metodoPago")}</dt>
+                <dd className="text-right text-gray-800">
+                  {t(`ventas.metodosPago.${ticket.metodo_pago}`, ticket.metodo_pago)}
+                </dd>
+              </dl>
+
+              <div className="overflow-x-auto">
+                <table className="w-full text-sm">
+                  <thead>
+                    <tr className="border-b text-left text-xs uppercase text-gray-500">
+                      <th className="py-2 pr-2 font-medium">{t("ticketVenta.producto")}</th>
+                      <th className="px-2 py-2 text-center font-medium">{t("ticketVenta.cantidad")}</th>
+                      <th className="px-2 py-2 text-right font-medium">{t("ticketVenta.precio")}</th>
+                      <th className="py-2 pl-2 text-right font-medium">{t("ticketVenta.subtotal")}</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-gray-100">
+                    {productos.map((p, i) => (
+                      <tr key={`${p.nombre}-${i}`}>
+                        <td className="py-2 pr-2 text-gray-800">{p.nombre}</td>
+                        <td className="px-2 py-2 text-center text-gray-800">{p.cantidad}</td>
+                        <td className="px-2 py-2 text-right text-gray-600">{money.format(Number(p.precio_unitario))}</td>
+                        <td className="py-2 pl-2 text-right font-medium text-gray-800">{money.format(Number(p.subtotal))}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+
+              <div className="mt-4 border-t pt-4">
+                <div className="flex justify-between text-xl font-semibold text-gray-800">
+                  <span>{t("ticketVenta.total")}</span>
+                  <span>{money.format(Number(ticket.total))}</span>
+                </div>
+                {cambio > 0 && (
+                  <div className="mt-3 flex justify-between rounded-lg bg-green-50 px-4 py-3 text-lg font-bold text-green-700">
+                    <span>{t("ticketVenta.cambio")}</span>
+                    <span>{money.format(cambio)}</span>
+                  </div>
+                )}
+              </div>
+            </>
+          )}
+        </div>
+
+        {errorPdf && (
+          <p role="alert" className="mt-3 rounded-lg border border-red-300 bg-red-50 px-4 py-2 text-sm text-red-700">
+            {errorPdf}
+          </p>
+        )}
+
+        <div className="mt-5 grid grid-cols-2 gap-3">
+          <button
+            type="button"
+            onClick={() => ejecutarPdf(abrirTicketPdf)}
+            disabled={ocupado || !ticket}
+            className="flex items-center justify-center gap-2 rounded-lg border-2 border-[#e6bdc7] py-2 text-sm font-medium text-[#875d69] hover:bg-[#f4d0d0] disabled:opacity-50"
+          >
+            <Printer size={16} />
+            {t("ticketVenta.imprimir")}
+          </button>
+          <button
+            type="button"
+            onClick={() => ejecutarPdf(descargarTicketPdf)}
+            disabled={ocupado || !ticket}
+            className="flex items-center justify-center gap-2 rounded-lg border-2 border-[#e6bdc7] py-2 text-sm font-medium text-[#875d69] hover:bg-[#f4d0d0] disabled:opacity-50"
+          >
+            <Download size={16} />
+            {t("ticketVenta.descargar")}
+          </button>
+        </div>
+        <button
+          type="button"
+          onClick={onClose}
+          className="mt-3 w-full rounded-lg bg-rose-800 py-2 font-medium text-white transition-colors hover:bg-rose-900"
+        >
+          {textoCerrar ?? t("ticketVenta.cerrar")}
+        </button>
+      </div>
+    </div>
+  );
+}
