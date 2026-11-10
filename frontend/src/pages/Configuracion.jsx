@@ -145,11 +145,21 @@ export default function Configuracion() {
         email: nuevoCorreoLimpio ? nuevoCorreoLimpio : emailActual.trim(),
       };
 
-      const usuarioActualizado = await actualizarPerfilApi(payload);
-      updateUser(usuarioActualizado);
-      setEmailActual(usuarioActualizado.email || payload.email);
+      const respuesta = await actualizarPerfilApi(payload);
+      updateUser(respuesta);
+      setEmailActual(respuesta.email || payload.email);
       setEmailNuevo("");
-      setMensaje({ tipo: "success", texto: t("perfil.datosActualizados") });
+
+      if (respuesta.email_pendiente) {
+        setMensaje({
+          tipo: "success",
+          texto:
+            respuesta.mensaje ||
+            t("perfil.correoVerificacionEnviado", { email: respuesta.email_pendiente }),
+        });
+      } else {
+        setMensaje({ tipo: "success", texto: t("perfil.datosActualizados") });
+      }
     } catch (err) {
       setMensaje({ tipo: "error", texto: getError(err, t("perfil.errorActualizarPerfil"), t) });
     } finally {

@@ -6,7 +6,14 @@ from html import escape
 from email.message import EmailMessage
 from pathlib import Path
 
-from src.security import AVISO_EXPIRE_DIAS, RESTABLECER_EXPIRE_MINUTES, crear_token_aviso, crear_token_restablecer
+from src.security import (
+    AVISO_EXPIRE_DIAS,
+    CONFIRMAR_EMAIL_EXPIRE_MINUTES,
+    RESTABLECER_EXPIRE_MINUTES,
+    crear_token_aviso,
+    crear_token_confirmar_email,
+    crear_token_restablecer,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -171,3 +178,47 @@ def enviar_restablecimiento(usuario_id: int, nombre: str, email: str, token_vers
     except Exception:
         # Se registra el id y no el correo, para no llenar el log de datos personales
         logger.exception("No se pudo enviar el correo de restablecimiento al usuario %s", usuario_id)
+
+
+def construir_correo_confirmacion_email(nombre: str, nuevo_email: str, token: str) -> tuple[str, str, str]:
+    """Devuelve (asunto, texto, html) del correo para confirmar el cambio de dirección electrónica."""
+    enlace = f"{FRONTEND_URL}/confirmar-email?token={token}"
+    asunto = "Confirme su nueva dirección de correo electrónico en Miko"
+
+    texto = f"""Hola, {nombre}:
+
+Recibimos una solicitud para cambiar el correo electrónico asociado a su cuenta de Miko por esta dirección ({nuevo_email}).
+
+Para confirmar y aplicar el cambio, abra este enlace:
+{enlace}
+
+El enlace es personal y es válido por {CONFIRMAR_EMAIL_EXPIRE_MINUTES} minutos. Solo puede usarse una vez.
+
+Si usted no solicitó este cambio, puede ignorar este mensaje; su correo actual no sufrirá modificaciones.
+
+Miko Panaderías
+Este correo se genera automáticamente; no responda a este mensaje.
+"""
+
+    html = f"""<div style="font-family:Arial,sans-serif;max-width:560px;margin:auto;color:#222;line-height:1.5">
+  <h2 style="color:#8B5A6B">Miko</h2>
+  <p>Hola, <strong>{escape(nombre)}</strong>:</p>
+  <p>Recibimos una solicitud para cambiar el correo electrónico asociado a su cuenta de Miko por <strong>{escape(nuevo_email)}</strong>.</p>
+  <p>Para confirmar y aplicar el cambio, haga clic en el siguiente botón:</p>
+  <p style="text-align:center;margin:28px 0">
+    <a href="{enlace}" style="background:#8B5A6B;color:#fff;padding:12px 24px;border-radius:6px;text-decoration:none;font-weight:bold">Confirmar cambio de correo</a>
+  </p>
+  <p style="font-size:13px;color:#555">El enlace es personal y es válido por {CONFIRMAR_EMAIL_EXPIRE_MINUTES} minutos. Solo puede usarse una vez.</p>
+  <p>Si usted no solicitó este cambio, ignore este correo: su cuenta mantendrá su correo anterior.</p>
+  <hr style="border:none;border-top:1px solid #ddd">
+  <p style="font-size:12px;color:#777">Miko Panaderías. Este correo se genera automáticamente; no responda a este mensaje.</p>
+</div>"""
+
+    return asunto, texto, html
+
+
+def enviar_confirmacion_cambio_email(usuario_id: int, nombre: str, nuevo_email: str) -> None:
+    """Envía el correo de confirmación a la nueva dirección. Lanza excepción si falla."""
+    token = crear_token_confirmar_email(usuario_id, nuevo_email)
+    asunto, texto, html = construir_correo_confirmacion_email(nombre, nuevo_email, token)
+    enviar_correo(nuevo_email, asunto, texto, html)

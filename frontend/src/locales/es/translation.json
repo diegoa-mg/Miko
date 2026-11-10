@@ -477,6 +477,7 @@
     "fotoActualizada": "Foto de perfil actualizada exitosamente",
     "correoInvalido": "El nuevo correo electrónico debe incluir un '@' válido",
     "datosActualizados": "Datos personales actualizados correctamente",
+    "correoVerificacionEnviado": "Hemos enviado un enlace de confirmación a {{email}}. Por favor abre el enlace para aplicar el cambio.",
     "passwordCambiada": "Contraseña cambiada con éxito",
     "errorSubirImagen": "Error al subir la imagen",
     "errorActualizarPerfil": "Error al actualizar perfil",
@@ -565,5 +566,19 @@
     "verDocumentoCompleto": "Ver aviso completo en PDF",
     "botonAceptar": "Acepto el aviso de privacidad",
     "procesando": "Procesando..."
+  },
+  "confirmarEmail": {
+    "titulo": "Verificación de Correo Electrónico",
+    "tokenFaltante": "El enlace de confirmación no es válido.",
+    "procesando": "Confirmando tu nuevo correo electrónico...",
+    "exitoTitulo": "¡Correo confirmado con éxito!",
+    "exitoDescripcion": "Tu nueva dirección de correo ha sido verificada y actualizada en tu cuenta de Miko.",
+    "volverPerfil": "Volver a Configuración",
+    "iniciarSesion": "Iniciar sesión",
+    "errorTitulo": "No se pudo confirmar el correo",
+    "irInicio": "Ir a inicio",
+    "instruccion": "Por favor ingresa utilizando el enlace que enviamos a tu correo.",
+    "irLogin": "Ir al inicio de sesión",
+    "errorGenerico": "Ocurrió un error al procesar la confirmación."
   }
 }

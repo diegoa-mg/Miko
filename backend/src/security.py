@@ -10,7 +10,9 @@ JWT_EXPIRE_MINUTES = int(os.getenv("JWT_EXPIRE_MINUTES", "480")) # 480 es el def
 
 AVISO_EXPIRE_DIAS = 7
 RESTABLECER_EXPIRE_MINUTES = 30
+CONFIRMAR_EMAIL_EXPIRE_MINUTES = 60
 TIPO_TOKEN_RESTABLECER = "restablecer_password"
+TIPO_TOKEN_CONFIRMAR_EMAIL = "confirmar_email"
 
 # Función para guardar la contraseña con hash
 def hash_password(password: str) -> str:
@@ -106,3 +108,26 @@ def decodificar_token_restablecer(token: str):
         raise jwt.InvalidTokenError("El token no es de restablecer contraseña")
         # payload["ver"] lanza KeyError si falta: el endpoint lo trata como token inválido
     return int(payload["uid"]), int(payload["ver"])
+
+
+# Función para crear el token de confirmación de nuevo correo
+def crear_token_confirmar_email(usuario_id: int, nuevo_email: str) -> str:
+    """Token de un solo propósito para confirmar el cambio de dirección de correo."""
+    ahora = datetime.now(timezone.utc)
+    payload = {
+        "uid": usuario_id,
+        "email": nuevo_email,
+        "tipo": TIPO_TOKEN_CONFIRMAR_EMAIL,
+        "iat": ahora,
+        "exp": ahora + timedelta(minutes=CONFIRMAR_EMAIL_EXPIRE_MINUTES),
+    }
+    return jwt.encode(payload, JWT_SECRET_KEY, algorithm=JWT_ALGORITHM)
+
+
+# Función para decodificar el token de confirmación de nuevo correo
+def decodificar_token_confirmar_email(token: str) -> tuple[int, str]:
+    payload = jwt.decode(token, JWT_SECRET_KEY, algorithms=[JWT_ALGORITHM])
+
+    if payload.get("tipo") != TIPO_TOKEN_CONFIRMAR_EMAIL:
+        raise jwt.InvalidTokenError("El token no es de confirmación de correo")
+    return int(payload["uid"]), str(payload["email"])
