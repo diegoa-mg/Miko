@@ -88,6 +88,7 @@ const limpiarFormulario = () => {
 };
 const abrirNuevoGerente = () => {
   limpiarFormulario();
+  setError("");
   setMostrarFormulario(true);
 };
 
@@ -100,6 +101,7 @@ const abrirEditarGerente = (gerente) => {
     sucursal_id: gerente.sucursal_id || "",
   });
 
+  setError("");
   setMostrarFormulario(true);
 };
 
@@ -339,7 +341,7 @@ const manejarReenviarAviso = async (id) => {
           </div>
         )}
 
-        {error && (
+        {error && !mostrarFormulario && (
           <div className="bg-red-100 dark:bg-red-950/40 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-xl mb-6 flex justify-between items-center">
             <span>{error}</span>
             <button
@@ -570,7 +572,10 @@ const manejarReenviarAviso = async (id) => {
 
                 <button
                   type="button"
-                  onClick={() => setMostrarFormulario(false)}
+                  onClick={() => {
+                    setError("");
+                    setMostrarFormulario(false);
+                  }}
                   className="font-sans text-2xl text-[#875d69] dark:text-rose-300 hover:text-rose-800 dark:hover:text-rose-200"
                 >
                   ×
@@ -599,6 +604,13 @@ const manejarReenviarAviso = async (id) => {
                   </div>
                 </div>
               </div>
+
+              {/* Error al guardar (la barra de la página queda detrás del panel) */}
+              {error && (
+                <div className="mb-4 rounded-xl border border-red-200 bg-red-50 p-3 text-sm text-red-700 dark:bg-red-900/30 dark:border-red-700 dark:text-red-300">
+                  {error}
+                </div>
+              )}
 
               {/* Formulario visual */}
               <form
@@ -666,7 +678,7 @@ const manejarReenviarAviso = async (id) => {
                   <button
                     type="button"
                     onClick={() => {
-                        console.log("CLICK EN CANCELAR");
+                        setError("");
                         setMostrarFormulario(false);
                     }}
                     className="font-sans flex-1 border-2 border-[#ead8d8] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-surface)] text-[#875d69] dark:text-rose-300 py-3 rounded-xl hover:bg-[#fff4ed] dark:hover:bg-white/5 transition-colors"
