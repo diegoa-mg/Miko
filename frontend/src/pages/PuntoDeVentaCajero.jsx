@@ -310,15 +310,22 @@ export default function PuntoDeVentaCajero() {
         <section className="min-w-0">
           {/* Lector de código de barras */}
           <form onSubmit={enviarCodigo} className="mb-3 flex gap-2">
-            <input
-              ref={codigoRef}
-              value={codigo}
-              onChange={(e) => setCodigo(e.target.value)}
-              placeholder={t("pos.codigoPlaceholder")}
-              aria-label={t("pos.codigoLabel")}
-              autoComplete="off"
-              className="flex-1 rounded-full bg-[#f9eeb4] border-2 border-[#e6bdc7] text-[#8c6773] px-5 py-2 font-mono focus:outline-none focus:border-[#875d69]"
-            />
+            <div className="relative flex-1">
+              <span className="material-icons pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xl text-[#cda4b4]">
+                qr_code_scanner
+              </span>
+              <input
+                ref={codigoRef}
+                value={codigo}
+                onChange={(e) => setCodigo(e.target.value)}
+                placeholder={t("pos.codigoPlaceholder")}
+                aria-label={t("pos.codigoLabel")}
+                autoComplete="off"
+                className={`w-full rounded-full bg-white border-2 border-[#e6bdc7] text-[#4a2f38] placeholder:text-[#b08a98] pl-12 pr-5 py-2 focus:outline-none focus:border-[#875d69] focus:ring-2 focus:ring-rose-200 ${
+                  codigo ? "font-mono" : ""
+                }`}
+              />
+            </div>
             <button
               type="submit"
               disabled={buscandoCodigo || !codigo.trim()}
@@ -335,13 +342,13 @@ export default function PuntoDeVentaCajero() {
               onChange={(e) => setBuscar(e.target.value)}
               placeholder={t("pos.buscar")}
               aria-label={t("pos.buscar")}
-              className="flex-1 rounded-full bg-white border-2 border-[#e6bdc7] text-[#8c6773] px-5 py-2 focus:outline-none focus:border-[#875d69]"
+              className="min-w-0 flex-1 rounded-full bg-white border-2 border-[#e6bdc7] text-[#8c6773] px-5 py-2 focus:outline-none focus:border-[#875d69]"
             />
             <select
               value={categoriaId}
               onChange={(e) => setCategoriaId(e.target.value)}
               aria-label={t("pos.categoria")}
-              className="rounded-full bg-white border-2 border-[#e6bdc7] text-[#8c6773] px-4 py-2 sm:w-56 focus:outline-none focus:border-[#875d69]"
+              className="rounded-full bg-white border-2 border-[#e6bdc7] text-[#8c6773] px-4 py-2 sm:w-60 sm:shrink-0 focus:outline-none focus:border-[#875d69]"
             >
               <option value="">{t("pos.todasCategorias")}</option>
               {categoriasFiltro.map((c) => (
