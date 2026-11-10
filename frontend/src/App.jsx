@@ -29,6 +29,8 @@ import AvisoPrivacidad from "./pages/AvisoPrivacidad";
 import PuntoDeVentaCajero from "./pages/PuntoDeVentaCajero";
 import RecuperarPassword from "./pages/RecuperarPassword";
 import RestablecerPassword from "./pages/RestablecerPassword";
+import MisVentasCajero from "./pages/MisVentasCajero";
+import ConfirmarEmail from "./pages/ConfirmarEmail";
 
 function Login() {
   const { login } = useAuth();
@@ -205,6 +207,7 @@ export default function App() {
           <Route path="/olvide-password" element={<RecuperarPassword />} />
           <Route path="/restablecer-password" element={<RestablecerPassword />} />
           <Route path="/aviso-privacidad" element={<AvisoPrivacidad />} />
+          <Route path="/confirmar-email" element={<ConfirmarEmail />} />
 
 
           <Route element={<ProtectedRoute />}>
@@ -236,7 +239,7 @@ export default function App() {
               <Route path="/cajero" element={<CajeroLayout />}>
                 <Route index element={<DashboardCajero />} />
                 <Route path="pos" element={<PuntoDeVentaCajero />} />
-                <Route path="ventas" element={<EnConstruccion titleKey="sidebar.mySales" />} />
+                <Route path="ventas" element={<MisVentasCajero />} />
                 <Route path="configuracion" element={<Configuracion />} />
               </Route>
             </Route>

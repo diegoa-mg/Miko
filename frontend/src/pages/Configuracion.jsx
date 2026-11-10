@@ -188,14 +188,14 @@ export default function Configuracion() {
     )}&background=875d69&color=fff&size=256&bold=true`;
 
   return (
-    <div className="min-h-screen bg-[#fdf6e3] p-8">
+    <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-8">
       <div className="max-w-7xl mx-auto space-y-6">
         {/* Encabezado */}
         <div className="mb-8">
-          <h1 className="font-sans text-3xl font-bold text-[#875d69]">
+          <h1 className="font-sans text-3xl font-bold text-[#875d69] dark:text-rose-300">
             {t("settings.title")}
           </h1>
-          <p className="font-sans text-gray-600 mt-1">
+          <p className="font-sans text-gray-600 dark:text-[var(--dark-muted)] mt-1">
             {t("perfil.subtitle")}
           </p>
         </div>
@@ -205,8 +205,8 @@ export default function Configuracion() {
           <div
             className={`p-4 rounded-2xl text-sm font-medium border ${
               mensaje.tipo === "error"
-                ? "bg-red-50 text-red-700 border-red-200"
-                : "bg-green-50 text-green-700 border-green-200"
+                ? "bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300 border-red-200 dark:border-red-900"
+                : "bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300 border-green-200 dark:border-green-900"
             }`}
           >
             {mensaje.texto}
@@ -214,20 +214,20 @@ export default function Configuracion() {
         )}
 
         {/* Tarjeta Principal */}
-        <div className="bg-white rounded-3xl shadow-sm border border-[#f0dfdc] p-6 md:p-10">
+        <div className="bg-white dark:bg-[var(--dark-surface)] rounded-3xl shadow-sm border border-[#f0dfdc] dark:border-[var(--dark-border)] p-6 md:p-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
             
             {/* Columna Izquierda: Foto de Perfil */}
             <div className="lg:col-span-4 rounded-2xl p-6 min-h-[700px] flex flex-col items-center justify-center text-center">
-              <h3 className="font-sans text-base font-semibold text-[#875d69] mb-1">
+              <h3 className="font-sans text-base font-semibold text-[#875d69] dark:text-rose-300 mb-1">
                 {t("perfil.fotoTitulo")}
               </h3>
-              <p className="font-sans text-xs text-gray-500 mb-6">
+              <p className="font-sans text-xs text-gray-500 dark:text-[var(--dark-muted)] mb-6">
                 {t("perfil.fotoDescripcion")}
               </p>
 
               <div className="relative mb-5 group">
-                <div className="w-36 h-36 md:w-44 md:h-44 rounded-full p-1 bg-white shadow-md ring-4 ring-[#ead8d8] overflow-hidden">
+                <div className="w-36 h-36 md:w-44 md:h-44 rounded-full p-1 bg-white dark:bg-[var(--dark-surface)] shadow-md ring-4 ring-[#ead8d8] dark:ring-[var(--dark-border)] overflow-hidden">
                   <img
                     src={fotoSrc}
                     alt={t("perfil.fotoTitulo")}
@@ -264,12 +264,12 @@ export default function Configuracion() {
                 type="button"
                 disabled={subiendoFoto}
                 onClick={() => fileInputRef.current?.click()}
-                className="w-full py-2.5 px-4 bg-white border border-[#ead8d8] hover:border-[#cda4b4] text-[#875d69] text-xs font-semibold rounded-xl shadow-xs transition-colors disabled:opacity-50"
+                className="w-full py-2.5 px-4 bg-white dark:bg-[var(--dark-surface)] border border-[#ead8d8] dark:border-[var(--dark-border)] hover:border-[#cda4b4] dark:hover:border-rose-300 text-[#875d69] dark:text-rose-300 text-xs font-semibold rounded-xl shadow-xs transition-colors disabled:opacity-50"
               >
                 {subiendoFoto ? t("perfil.cargandoArchivo") : t("perfil.seleccionarImagen")}
               </button>
 
-              <span className="text-[11px] text-gray-400 mt-3">
+              <span className="text-[11px] text-gray-400 dark:text-[var(--dark-muted)] mt-3">
                 {t("perfil.formatos")}
               </span>
             </div>
@@ -280,17 +280,17 @@ export default function Configuracion() {
               {/* Formulario 1: Datos Personales */}
               <form onSubmit={handleUpdatePerfil} className="space-y-4">
                 <div>
-                  <h3 className="font-sans text-lg font-semibold text-[#875d69]">
+                  <h3 className="font-sans text-lg font-semibold text-[#875d69] dark:text-rose-300">
                     {t("perfil.datosTitulo")}
                   </h3>
-                  <p className="font-sans text-xs text-gray-500">
+                  <p className="font-sans text-xs text-gray-500 dark:text-[var(--dark-muted)]">
                     {t("perfil.datosDescripcion")}
                   </p>
                 </div>
 
                 {/* Fila Nombre Completo */}
                 <div>
-                  <label className="font-sans block text-xs font-medium text-[#875d69] mb-1.5">
+                  <label className="font-sans block text-xs font-medium text-[#875d69] dark:text-rose-300 mb-1.5">
                     {t("perfil.nombreCompleto")} *
                   </label>
                   <input
@@ -299,14 +299,14 @@ export default function Configuracion() {
                     onChange={(e) => setNombre(e.target.value)}
                     required
                     placeholder={t("perfil.nombrePlaceholder")}
-                    className="font-sans w-full border-2 border-[#ead8d8] rounded-xl px-4 py-2.5 text-sm bg-white text-gray-800 focus:outline-none focus:border-[#cda4b4] transition"
+                    className="font-sans w-full border-2 border-[#ead8d8] dark:border-[var(--dark-border)] rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-[var(--dark-bg)] text-gray-800 dark:text-[var(--dark-text)] focus:outline-none focus:border-[#cda4b4] dark:focus:border-rose-300 transition"
                   />
                 </div>
 
                 {/* Fila Correo Actual y Nuevo Correo */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                    <label className="font-sans block text-xs font-medium text-[#875d69] mb-1.5">
+                    <label className="font-sans block text-xs font-medium text-[#875d69] dark:text-rose-300 mb-1.5">
                       {t("perfil.correoActual")} *
                     </label>
                     <input
@@ -315,12 +315,12 @@ export default function Configuracion() {
                       readOnly
                       tabIndex={-1}
                       title={t("perfil.correoNoModificable")}
-                      className="font-sans w-full border-2 border-[#ead8d8] rounded-xl px-4 py-2.5 text-sm bg-white text-gray-800 focus:outline-none cursor-default select-none caret-transparent"
+                      className="font-sans w-full border-2 border-[#ead8d8] dark:border-[var(--dark-border)] rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-[var(--dark-bg)] text-gray-800 dark:text-[var(--dark-text)] focus:outline-none cursor-default select-none caret-transparent"
                     />
                   </div>
 
                   <div>
-                    <label className="font-sans block text-xs font-medium text-[#875d69] mb-1.5">
+                    <label className="font-sans block text-xs font-medium text-[#875d69] dark:text-rose-300 mb-1.5">
                       {t("perfil.nuevoCorreo")}
                     </label>
                     <input
@@ -328,7 +328,7 @@ export default function Configuracion() {
                       value={emailNuevo}
                       onChange={(e) => setEmailNuevo(e.target.value)}
                       placeholder={t("perfil.nuevoCorreoPlaceholder")}
-                      className="font-sans w-full border-2 border-[#ead8d8] rounded-xl px-4 py-2.5 text-sm bg-white text-gray-800 focus:outline-none focus:border-[#cda4b4] transition"
+                      className="font-sans w-full border-2 border-[#ead8d8] dark:border-[var(--dark-border)] rounded-xl px-4 py-2.5 text-sm bg-white dark:bg-[var(--dark-bg)] text-gray-800 dark:text-[var(--dark-text)] focus:outline-none focus:border-[#cda4b4] dark:focus:border-rose-300 transition"
                     />
                   </div>
                 </div>
@@ -342,15 +342,15 @@ export default function Configuracion() {
                 </button>
               </form>
 
-              <div className="border-t border-[#eee1dd]" />
+              <div className="border-t border-[#eee1dd] dark:border-[var(--dark-border)]" />
 
               {/* Formulario 2: Seguridad y Acceso */}
               <form onSubmit={handleUpdatePassword} className="space-y-4">
                 <div>
-                  <h3 className="font-sans text-lg font-semibold text-[#875d69]">
+                  <h3 className="font-sans text-lg font-semibold text-[#875d69] dark:text-rose-300">
                     {t("perfil.seguridadTitulo")}
                   </h3>
-                  <p className="font-sans text-xs text-gray-500">
+                  <p className="font-sans text-xs text-gray-500 dark:text-[var(--dark-muted)]">
                     {t("perfil.seguridadDescripcion")}
                   </p>
                 </div>
@@ -358,10 +358,10 @@ export default function Configuracion() {
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 items-end">
                   {/* Contraseña Actual (Bloqueada, estilo consistente sin puntos deformes) */}
                   <div>
-                    <label className="font-sans block text-xs font-medium text-[#875d69] mb-1.5">
+                    <label className="font-sans block text-xs font-medium text-[#875d69] dark:text-rose-300 mb-1.5">
                       {t("perfil.passwordActual")} *
                     </label>
-                    <p className="font-sans text-[11px] text-gray-500 mb-1.5 truncate">
+                    <p className="font-sans text-[11px] text-gray-500 dark:text-[var(--dark-muted)] mb-1.5 truncate">
                       {t("perfil.passwordActualAviso")}
                     </p>
                     <div className="relative">
@@ -375,12 +375,12 @@ export default function Configuracion() {
                         readOnly={bloqueoAutofill}
                         onFocus={() => setBloqueoAutofill(false)}
                         placeholder={t("perfil.passwordActualPlaceholder")}
-                        className="font-sans w-full border-2 border-[#ead8d8] rounded-xl pl-4 pr-11 py-2.5 text-sm bg-white text-gray-800 focus:outline-none focus:border-[#cda4b4] transition"
+                        className="font-sans w-full border-2 border-[#ead8d8] dark:border-[var(--dark-border)] rounded-xl pl-4 pr-11 py-2.5 text-sm bg-white dark:bg-[var(--dark-bg)] text-gray-800 dark:text-[var(--dark-text)] focus:outline-none focus:border-[#cda4b4] dark:focus:border-rose-300 transition"
                       />
                       <button
                         type="button"
                         onClick={() => setMostrarPasswordActual((prev) => !prev)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#875d69] transition-colors focus:outline-none"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-[var(--dark-muted)] hover:text-[#875d69] dark:hover:text-rose-200 transition-colors focus:outline-none dark:bg-[var(--dark-bg)] dark:text-[var(--dark-text)]"
                         title={mostrarPasswordActual ? t("perfil.ocultarPassword") : t("perfil.verPassword")}
                       >
                         <span className="material-icons text-xl">
@@ -392,7 +392,7 @@ export default function Configuracion() {
 
                   {/* Nueva Contraseña */}
                   <div>
-                    <label className="font-sans block text-xs font-medium text-[#875d69] mb-1.5">
+                    <label className="font-sans block text-xs font-medium text-[#875d69] dark:text-rose-300 mb-1.5">
                       {t("perfil.passwordNueva")} *
                     </label>
                     <div className="relative">
@@ -404,12 +404,12 @@ export default function Configuracion() {
                         name="password_nueva_cambio"
                         autoComplete="new-password"
                         placeholder={t("perfil.passwordNuevaPlaceholder")}
-                        className="font-sans w-full border-2 border-[#ead8d8] rounded-xl pl-4 pr-11 py-2.5 text-sm bg-white text-gray-800 focus:outline-none focus:border-[#cda4b4] transition"
+                        className="font-sans w-full border-2 border-[#ead8d8] dark:border-[var(--dark-border)] rounded-xl pl-4 pr-11 py-2.5 text-sm bg-white dark:bg-[var(--dark-bg)] text-gray-800 dark:text-[var(--dark-text)] focus:outline-none focus:border-[#cda4b4] dark:focus:border-rose-300 transition"
                       />
                       <button
                         type="button"
                         onClick={() => setMostrarPasswordNueva((prev) => !prev)}
-                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-[#875d69] transition-colors focus:outline-none"
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 dark:text-[var(--dark-muted)] hover:text-[#875d69] dark:hover:text-rose-200 transition-colors focus:outline-none dark:bg-[var(--dark-bg)] dark:text-[var(--dark-text)]"
                         title={mostrarPasswordNueva ? t("perfil.ocultarPassword") : t("perfil.verPassword")}
                       >
                         <span className="material-icons text-xl">
@@ -429,14 +429,14 @@ export default function Configuracion() {
                 </button>
               </form>
 
-              <div className="border-t border-[#eee1dd]" />
+              <div className="border-t border-[#eee1dd] dark:border-[var(--dark-border)]" />
 
               {/* Botón de Cerrar Sesión */}
               <div>
                 <button
                   type="button"
                   onClick={handleLogout}
-                  className="font-sans w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-red-200 text-red-600 text-sm font-semibold hover:bg-red-50 transition-colors"
+                  className="font-sans w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 text-sm font-semibold hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
                 >
                   <span className="material-icons text-base">logout</span>
                   {t("perfil.cerrarSesion")}
@@ -451,7 +451,7 @@ export default function Configuracion() {
                     setErrorCerrarSesiones("");
                     setMostrarConfirmacionSesiones(true);
                   }}
-                  className="font-sans w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-red-300 text-red-600 text-sm font-semibold hover:bg-red-50 transition-colors"
+                  className="font-sans w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-red-300 dark:border-red-800 text-red-600 dark:text-red-400 text-sm font-semibold hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
                 >
                   <span className="material-icons text-base">devices</span>
                   {t("perfil.cerrarTodasSesiones")}
@@ -474,25 +474,25 @@ export default function Configuracion() {
       {/* Modal para cerrar todas las sesiones */}
         {mostrarConfirmacionSesiones && (
           <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl">
+            <div className="w-full max-w-md rounded-2xl bg-white dark:bg-[var(--dark-surface)] p-6 shadow-xl">
 
               <div className="flex flex-col items-center text-center">
-                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#ead8d8]">
-                  <span className="material-icons text-3xl text-[#875d69]">
+                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#ead8d8] dark:bg-[var(--dark-border)]">
+                  <span className="material-icons text-3xl text-[#875d69] dark:text-rose-300">
                     devices
                   </span>
                 </div>
 
-                <h3 className="font-sans text-lg font-bold text-[#875d69]">
+                <h3 className="font-sans text-lg font-bold text-[#875d69] dark:text-rose-300">
                   {t("perfil.confirmarCerrarSesionesTitulo")}
                 </h3>
 
-                <p className="mt-3 font-sans text-sm text-gray-600">
+                <p className="mt-3 font-sans text-sm text-gray-600 dark:text-[var(--dark-muted)]">
                   {t("perfil.confirmarCerrarSesiones")}
                 </p>
 
                 {errorCerrarSesiones && (
-                  <p className="mt-4 text-sm font-medium text-red-600">
+                  <p className="mt-4 text-sm font-medium text-red-600 dark:text-red-400">
                     {errorCerrarSesiones}
                   </p>
                 )}
@@ -503,7 +503,7 @@ export default function Configuracion() {
                   type="button"
                   disabled={cerrandoSesiones}
                   onClick={() => setMostrarConfirmacionSesiones(false)}
-                  className="flex-1 rounded-xl border border-[#cda4b4] py-3 font-sans text-sm font-semibold text-[#875d69] hover:bg-[#fdf6e3] disabled:opacity-50"
+                  className="flex-1 rounded-xl border border-[#cda4b4] dark:border-[var(--dark-border)] py-3 font-sans text-sm font-semibold text-[#875d69] dark:text-rose-300 hover:bg-[#fdf6e3] dark:hover:bg-white/5 disabled:opacity-50"
                 >
                   {t("perfil.cancelar")}
                 </button>

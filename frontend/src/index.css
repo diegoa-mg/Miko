@@ -6,7 +6,7 @@ html {
   font-size: 120%; /* o 125%, 130%... */
 }
 
-/* Modo oscuro: paleta */
+/* Modo oscuro: paleta (ajusta aquí qué tan oscuro se ve) */
 .dark {
   --dark-bg: #1c1517;       /* fondo general */
   --dark-surface: #2a2023;  /* inputs, tarjetas */
@@ -14,6 +14,23 @@ html {
   --dark-text: #f5e6ea;
   --dark-muted: #c9a9b4;    /* íconos y texto secundario */
 }
+
+/* Texto y fondo base en oscuro (lo que no tiene clase de color lo hereda de aquí) */
+.dark body {
+  background-color: var(--dark-bg);
+  color: var(--dark-text);
+}
+
+/* Bordes sin color explícito (border-b, border-t, divide-y...) usan el borde oscuro.
+   Va en @layer base para que cualquier border-<color> de Tailwind siga ganando. */
+@layer base {
+  .dark *,
+  .dark ::before,
+  .dark ::after {
+    border-color: var(--dark-border);
+  }
+}
+
 
 
 @keyframes float-blob {
@@ -281,4 +298,44 @@ html {
   opacity: 0.5;
   cursor: not-allowed;
   transform: none;
+}
+
+/* Modo oscuro: modal de confirmación y botones de sucursales */
+.dark .miko-confirm-modal {
+  background: var(--dark-surface);
+  border: 1px solid var(--dark-border);
+  box-shadow: 0 20px 60px rgba(0, 0, 0, 0.5);
+}
+
+.dark .miko-confirm-icon {
+  background: var(--dark-border);
+  color: #fda4af;
+}
+
+.dark .miko-confirm-modal h2 {
+  color: #fda4af;
+}
+
+.dark .miko-confirm-modal p {
+  color: var(--dark-muted);
+}
+
+.dark .miko-confirm-cancel {
+  background: var(--dark-border);
+  color: var(--dark-text);
+}
+
+.dark .miko-confirm-cancel:hover {
+  background: #5a4350;
+}
+
+.dark .miko-confirm-modal .miko-confirm-error {
+  color: #f87171;
+}
+
+/* Los botones redondos (rgb 20,20,20) casi no se ven sobre fondo oscuro.
+   :not(:hover) para no pisar el color rojo/azul del hover. */
+.dark .miko-delete-button:not(:hover),
+.dark .miko-edit-button:not(:hover) {
+  background-color: #3a2c31;
 }

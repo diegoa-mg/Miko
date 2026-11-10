@@ -194,7 +194,7 @@ const manejarReenviarAviso = async (id) => {
 );
 
   return (
-    <div className="min-h-screen bg-[#fdf6e3] p-8">
+    <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-8">
         {gerenteAEliminar && (
     <div className="miko-confirm-overlay">
         <div className="miko-confirm-modal">
@@ -250,11 +250,11 @@ const manejarReenviarAviso = async (id) => {
         {/* Encabezado */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="font-sans text-3xl font-bold text-[#875d69]">
+            <h1 className="font-sans text-3xl font-bold text-[#875d69] dark:text-rose-300">
                 {t("gerentes.titulo")}
             </h1>
 
-            <p className="font-sans text-gray-600 mt-1">
+            <p className="font-sans text-gray-600 dark:text-[var(--dark-muted)] mt-1">
               {t("gerentes.descripcion")}
             </p>
           </div>
@@ -263,7 +263,7 @@ const manejarReenviarAviso = async (id) => {
             <button
               type="button"
               onClick={abrirNuevoGerente}
-              className="font-sans bg-rose-800 hover:bg-rose-900 text-white px-5 py-3 rounded-lg transition-colors"
+              className="font-sans bg-rose-800 dark:bg-rose-700 hover:bg-rose-900 dark:hover:bg-rose-600 text-white px-5 py-3 rounded-lg transition-colors"
             >
               + {t("gerentes.nuevo")}
             </button>
@@ -271,7 +271,7 @@ const manejarReenviarAviso = async (id) => {
         </div>
 
         {/* Barra superior */}
-        <div className="bg-white rounded-2xl shadow-sm p-4 mb-6">
+        <div className="bg-white dark:bg-[var(--dark-surface)] rounded-2xl shadow-sm p-4 mb-6">
           <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
 
             {/* Opciones */}
@@ -285,7 +285,7 @@ const manejarReenviarAviso = async (id) => {
                 className={`font-sans px-5 py-3 rounded-full transition-colors ${
                   !mostrarInactivos
                     ? "bg-[#875d69] text-white"
-                    : "bg-[#E8B4B8] text-[#875d69] hover:bg-[#dda0a5]"
+                    : "bg-[#E8B4B8] dark:bg-[var(--dark-border)] text-[#875d69] dark:text-rose-300 hover:bg-[#dda0a5] dark:hover:bg-rose-900/50"
                 }`}
               >
                 <span className="flex items-center gap-2">
@@ -303,7 +303,7 @@ const manejarReenviarAviso = async (id) => {
                 className={`font-sans px-5 py-3 rounded-full transition-colors ${
                   mostrarInactivos
                     ? "bg-[#875d69] text-white"
-                    : "bg-[#E8B4B8] text-[#875d69] hover:bg-[#dda0a5]"
+                    : "bg-[#E8B4B8] dark:bg-[var(--dark-border)] text-[#875d69] dark:text-rose-300 hover:bg-[#dda0a5] dark:hover:bg-rose-900/50"
                 }`}
               >
                 <span className="flex items-center gap-2">
@@ -320,7 +320,7 @@ const manejarReenviarAviso = async (id) => {
                 value={buscar}
                 onChange={(e) => setBuscar(e.target.value)}
                 placeholder={t("gerentes.buscar")}
-                className="font-sans w-full rounded-full border-2 border-[#ead8d8] bg-[#fffaf2] px-5 py-3 text-[#875d69] focus:outline-none focus:border-[#cda4b4]"
+                className="font-sans w-full rounded-full border-2 border-[#ead8d8] dark:border-[var(--dark-border)] bg-[#fffaf2] dark:bg-[var(--dark-bg)] px-5 py-3 text-[#875d69] dark:text-rose-300 focus:outline-none focus:border-[#cda4b4] dark:focus:border-rose-300"
               />
             </div>
 
@@ -329,12 +329,12 @@ const manejarReenviarAviso = async (id) => {
 
         {/* Mensajes de feedback */}
         {mensaje && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl mb-6 flex justify-between items-center">
+          <div className="bg-green-100 dark:bg-green-950/40 border border-green-400 dark:border-green-800 text-green-700 dark:text-green-300 px-4 py-3 rounded-xl mb-6 flex justify-between items-center">
             <span>{mensaje}</span>
             <button
               type="button"
               onClick={() => setMensaje("")}
-              className="text-green-700 hover:text-green-900 font-bold ml-2"
+              className="text-green-700 dark:text-green-300 hover:text-green-900 dark:hover:text-green-200 font-bold ml-2"
             >
               ×
             </button>
@@ -342,12 +342,12 @@ const manejarReenviarAviso = async (id) => {
         )}
 
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-6 flex justify-between items-center">
+          <div className="bg-red-100 dark:bg-red-950/40 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-xl mb-6 flex justify-between items-center">
             <span>{error}</span>
             <button
               type="button"
               onClick={() => setError("")}
-              className="text-red-700 hover:text-red-900 font-bold ml-2"
+              className="text-red-700 dark:text-red-300 hover:text-red-900 dark:hover:text-red-200 font-bold ml-2"
             >
               ×
             </button>
@@ -356,8 +356,8 @@ const manejarReenviarAviso = async (id) => {
 
         {/* Lista de gerentes */}
         {gerentesFiltrados.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow-sm p-10 text-center">
-            <p className="font-sans text-gray-500">
+          <div className="bg-white dark:bg-[var(--dark-surface)] rounded-2xl shadow-sm p-10 text-center">
+            <p className="font-sans text-gray-500 dark:text-[var(--dark-muted)]">
               {t("gerentes.sinResultados")}
             </p>
           </div>
@@ -366,7 +366,7 @@ const manejarReenviarAviso = async (id) => {
             {gerentesFiltrados.map((gerente) => (
               <div
                 key={gerente.id}
-                className="bg-white rounded-3xl shadow-sm border border-[#f0dfdc] overflow-hidden hover:shadow-md transition-shadow"
+                className="bg-white dark:bg-[var(--dark-surface)] rounded-3xl shadow-sm border border-[#f0dfdc] dark:border-[var(--dark-border)] overflow-hidden hover:shadow-md transition-shadow"
               >
                 {/* Información principal */}
                 <div className="p-6">
@@ -377,7 +377,7 @@ const manejarReenviarAviso = async (id) => {
 
                       
         {/* Avatar */}
-        <div className="w-20 h-20 rounded-full bg-[#f6d5ca] flex items-center justify-center text-[#875d69] text-xl font-semibold overflow-hidden shrink-0">
+        <div className="w-20 h-20 rounded-full bg-[#f6d5ca] dark:bg-[var(--dark-border)] flex items-center justify-center text-[#875d69] dark:text-rose-300 text-xl font-semibold overflow-hidden shrink-0">
           {gerente.foto_url ? (
             <img
               src={gerente.foto_url}
@@ -400,7 +400,7 @@ const manejarReenviarAviso = async (id) => {
 
                       <div>
                         <div className="flex items-center gap-3">
-                          <h2 className="text-xl font-semibold text-[#875d69]">
+                          <h2 className="text-xl font-semibold text-[#875d69] dark:text-rose-300">
                             {gerente.nombre}
                           </h2>
 
@@ -414,18 +414,18 @@ const manejarReenviarAviso = async (id) => {
                           ></span>
 
                           {gerente.aviso_pendiente && (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-amber-100 text-amber-800 border border-amber-300">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
                               <Mail size={12} />
                               {t("gerentes.avisoPendiente", "Aviso pendiente")}
                             </span>
                           )}
                         </div>
 
-                        <p className="font-sans text-sm text-gray-600 mt-2">
+                        <p className="font-sans text-sm text-gray-600 dark:text-[var(--dark-muted)] mt-2">
                           ✉ {gerente.email}
                         </p>
 
-                        <p className="font-sans text-sm text-gray-600 mt-1">
+                        <p className="font-sans text-sm text-gray-600 dark:text-[var(--dark-muted)] mt-1">
                           # {gerente.id}
                         </p>
 
@@ -436,18 +436,18 @@ const manejarReenviarAviso = async (id) => {
                     <button
                       type="button"
                       aria-label={t("gerentes.masOpciones")}
-                      className="font-sans text-2xl text-[#875d69] hover:text-rose-800"
+                      className="font-sans text-2xl text-[#875d69] dark:text-rose-300 hover:text-rose-800 dark:hover:text-rose-200"
                     >
                       ⋯
                     </button>
                   </div>
 
                   {/* Separador */}
-                  <div className="border-t border-[#eee1dd] my-5" />
+                  <div className="border-t border-[#eee1dd] dark:border-[var(--dark-border)] my-5" />
             </div>
 
             {/* Acciones */}
-            <div className="bg-[#fffaf2] px-6 py-4 flex justify-end">
+            <div className="bg-[#fffaf2] dark:bg-[var(--dark-bg)] px-6 py-4 flex justify-end">
               <div className="flex gap-2">
           {mostrarInactivos ? (
                 <button
@@ -467,7 +467,7 @@ const manejarReenviarAviso = async (id) => {
                     type="button"
                     onClick={() => manejarReenviarAviso(gerente.id)}
                     disabled={reenviandoId === gerente.id}
-                    className="font-sans flex items-center gap-1.5 rounded-xl border border-[#cda4b4] bg-[#fff0f2] hover:bg-[#fde4e8] px-3 py-2 text-xs font-medium text-[#875d69] transition-colors disabled:opacity-50"
+                    className="font-sans flex items-center gap-1.5 rounded-xl border border-[#cda4b4] dark:border-[var(--dark-border)] bg-[#fff0f2] dark:bg-[var(--dark-border)] hover:bg-[#fde4e8] dark:hover:bg-rose-900/50 px-3 py-2 text-xs font-medium text-[#875d69] dark:text-rose-300 transition-colors disabled:opacity-50"
                     title={t("gerentes.reenviarAviso", "Reenviar aviso")}
                     aria-label={t("gerentes.reenviarAviso", "Reenviar aviso")}
                   >
@@ -560,11 +560,11 @@ const manejarReenviarAviso = async (id) => {
         {mostrarFormulario && (
           <div className="fixed inset-0 bg-black/30 flex justify-end z-50">
 
-            <div className="bg-[#fffaf2] w-full max-w-md shadow-2xl p-6 overflow-y-auto">
+            <div className="bg-[#fffaf2] dark:bg-[var(--dark-surface)] w-full max-w-md shadow-2xl p-6 overflow-y-auto">
 
               {/* Encabezado */}
               <div className="flex items-center justify-between mb-6">
-                <h2 className="font-sans text-2xl font-bold text-[#875d69]">
+                <h2 className="font-sans text-2xl font-bold text-[#875d69] dark:text-rose-300">
                   {editandoGerente
                     ? t("gerentes.editarGerente")
                     : t("gerentes.nuevo")}
@@ -573,27 +573,27 @@ const manejarReenviarAviso = async (id) => {
                 <button
                   type="button"
                   onClick={() => setMostrarFormulario(false)}
-                  className="font-sans text-2xl text-[#875d69] hover:text-rose-800"
+                  className="font-sans text-2xl text-[#875d69] dark:text-rose-300 hover:text-rose-800 dark:hover:text-rose-200"
                 >
                   ×
                 </button>
               </div>
 
               {/* Información */}
-              <div className="bg-[#f9e5e4] rounded-2xl p-4 mb-6">
+              <div className="bg-[#f9e5e4] dark:bg-[var(--dark-bg)] rounded-2xl p-4 mb-6">
                 <div className="flex gap-3 items-center">
-                  <div className="w-12 h-12 rounded-xl bg-[#f4d0d0] flex items-center justify-center text-xl">
+                  <div className="w-12 h-12 rounded-xl bg-[#f4d0d0] dark:bg-[var(--dark-border)] flex items-center justify-center text-xl">
                     👤
                   </div>
 
                   <div>
-                    <h3 className="font-sans font-semibold text-[#875d69]">
+                    <h3 className="font-sans font-semibold text-[#875d69] dark:text-rose-300">
                       {editandoGerente
                         ? t("gerentes.editarInformacion")
                         : t("gerentes.agregaNuevo")}
                     </h3>
 
-                    <p className="font-sans text-xs text-gray-600 mt-1">
+                    <p className="font-sans text-xs text-gray-600 dark:text-[var(--dark-muted)] mt-1">
                       {editandoGerente
                         ? t("gerentes.descripcionEdicion")
                         : t("gerentes.descripcionFormulario")}
@@ -610,7 +610,7 @@ const manejarReenviarAviso = async (id) => {
 
                 {/* Nombre */}
                 <div>
-                  <label className="font-sans block text-sm font-medium text-[#875d69] mb-2">
+                  <label className="font-sans block text-sm font-medium text-[#875d69] dark:text-rose-300 mb-2">
                     {t("gerentes.nombreCompleto")} *
                   </label>
 
@@ -621,13 +621,13 @@ const manejarReenviarAviso = async (id) => {
                     onChange={manejarCambio}
                     placeholder={t("gerentes.nombrePlaceholder")}
                     required
-                    className="font-sans w-full border-2 border-[#ead8d8] rounded-xl px-4 py-3 bg-white focus:outline-none focus:border-[#cda4b4]"
+                    className="font-sans w-full border-2 border-[#ead8d8] dark:border-[var(--dark-border)] rounded-xl px-4 py-3 bg-white dark:bg-[var(--dark-bg)] focus:outline-none focus:border-[#cda4b4] dark:focus:border-rose-300"
                   />
                 </div>
 
                 {/* Correo */}
                 <div>
-                  <label className="font-sans block text-sm font-medium text-[#875d69] mb-2">
+                  <label className="font-sans block text-sm font-medium text-[#875d69] dark:text-rose-300 mb-2">
                     {t("gerentes.correo")} *
                   </label>
 
@@ -638,14 +638,14 @@ const manejarReenviarAviso = async (id) => {
                     onChange={manejarCambio}
                     placeholder={t("gerentes.correoPlaceholder")}
                     required
-                    className="font-sans w-full border-2 border-[#ead8d8] rounded-xl px-4 py-3"
+                    className="font-sans w-full border-2 border-[#ead8d8] dark:border-[var(--dark-border)] rounded-xl px-4 py-3 dark:bg-[var(--dark-bg)] dark:text-[var(--dark-text)]"
                   />
                 </div>
 
                 {/* Contraseña */}
                   {!editandoGerente && (
                     <div>
-                      <label className="font-sans block text-sm font-medium text-[#875d69] mb-2">
+                      <label className="font-sans block text-sm font-medium text-[#875d69] dark:text-rose-300 mb-2">
                         {t("gerentes.contraseña")} *
                       </label>
 
@@ -656,7 +656,7 @@ const manejarReenviarAviso = async (id) => {
                         onChange={manejarCambio}
                         placeholder={t("gerentes.contraseñaPlaceholder")}
                         required
-                        className="font-sans w-full border-2 border-[#ead8d8] rounded-xl px-4 py-3 bg-white focus:outline-none focus:border-[#cda4b4]"
+                        className="font-sans w-full border-2 border-[#ead8d8] dark:border-[var(--dark-border)] rounded-xl px-4 py-3 bg-white dark:bg-[var(--dark-bg)] focus:outline-none focus:border-[#cda4b4] dark:focus:border-rose-300"
                       />
                     </div>
                   )}
@@ -671,7 +671,7 @@ const manejarReenviarAviso = async (id) => {
                         console.log("CLICK EN CANCELAR");
                         setMostrarFormulario(false);
                     }}
-                    className="font-sans flex-1 border-2 border-[#ead8d8] bg-white text-[#875d69] py-3 rounded-xl hover:bg-[#fff4ed] transition-colors"
+                    className="font-sans flex-1 border-2 border-[#ead8d8] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-surface)] text-[#875d69] dark:text-rose-300 py-3 rounded-xl hover:bg-[#fff4ed] dark:hover:bg-white/5 transition-colors"
                 >
                     {t("gerentes.cancelar")}
                   </button>
@@ -685,7 +685,7 @@ const manejarReenviarAviso = async (id) => {
                           : "🔥 CLICK EN CREAR GERENTE"
                       )
                     }
-                    className="font-sans flex-1 bg-rose-800 hover:bg-rose-900 text-white py-3 rounded-xl transition-colors"
+                    className="font-sans flex-1 bg-rose-800 dark:bg-rose-700 hover:bg-rose-900 dark:hover:bg-rose-600 text-white py-3 rounded-xl transition-colors"
                   >
                     {editandoGerente
                       ? t("gerentes.guardarCambios")

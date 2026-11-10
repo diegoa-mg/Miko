@@ -72,7 +72,7 @@ export default function Sidebar({
 
   return (
     <aside
-      className={`bg-[#5c3a42] text-white flex flex-col transition-all duration-300 ease-in-out shrink-0 sticky top-0 h-screen self-start ${
+      className={`bg-[#5c3a42] text-white dark:bg-[var(--dark-surface)] dark:border-r dark:border-[var(--dark-border)] flex flex-col transition-all duration-300 ease-in-out shrink-0 sticky top-0 h-screen self-start ${
         open ? "w-64" : "w-20"
       }`}
     >
@@ -136,7 +136,7 @@ export default function Sidebar({
       {user && (
         <div className="relative border-t border-white/10">
           <div
-            className={`absolute bg-white rounded-lg shadow-xl overflow-hidden text-[#5c3a42] whitespace-nowrap transition-all duration-200 origin-bottom ${
+            className={`absolute bg-white dark:bg-[var(--dark-bg)] dark:border dark:border-[var(--dark-border)] rounded-lg shadow-xl overflow-hidden text-[#5c3a42] dark:text-[var(--dark-text)] whitespace-nowrap transition-all duration-200 origin-bottom ${
               open
                 ? "bottom-full left-2 right-2 mb-2"
                 : "left-full bottom-2 ml-2 min-w-[180px]"
@@ -149,16 +149,16 @@ export default function Sidebar({
             <NavLink
               to={settingsPath}
               onClick={() => setMenuOpen(false)}
-              className="flex items-center gap-2 px-4 py-3 text-sm hover:bg-gray-100 transition-colors"
+              className="flex items-center gap-2 px-4 py-3 text-sm hover:bg-gray-100 dark:hover:bg-[var(--dark-border)] transition-colors"
             >
-              <span className="material-icons text-lg text-gray-500">settings</span>
+              <span className="material-icons text-lg text-gray-500 dark:text-[var(--dark-muted)]">settings</span>
               {t("sidebar.settings")}
             </NavLink>
 
             <button
               type="button"
               onClick={handleLogout}
-              className="w-full flex items-center gap-2 px-4 py-3 text-sm text-left text-sm hover:bg-gray-100 transition-colors"
+              className="w-full flex items-center gap-2 px-4 py-3 text-sm text-left text-sm hover:bg-gray-100 dark:hover:bg-[var(--dark-border)] transition-colors"
             >
               <span className="material-icons text-lg">logout</span>
               {t("sidebar.logout")}
@@ -181,7 +181,7 @@ export default function Sidebar({
                   className="w-full h-full object-cover"
                 />
               </div>
-              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-400 border-2 border-[#5c3a42]" />
+              <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full bg-green-400 border-2 border-[#5c3a42] dark:border-[var(--dark-surface)]" />
             </div>
 
             <div

@@ -50,8 +50,8 @@ export default function DashboardGerente() {
 
   if (cargando) {
     return (
-      <div className="min-h-screen bg-[#fdf6e3] p-8">
-        <div className="max-w-7xl mx-auto text-gray-500">
+      <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-8">
+        <div className="max-w-7xl mx-auto text-gray-500 dark:text-[var(--dark-muted)]">
           {t("common.loading")}
         </div>
       </div>
@@ -60,8 +60,8 @@ export default function DashboardGerente() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#fdf6e3] p-8">
-        <div className="max-w-7xl mx-auto text-red-500">
+      <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-8">
+        <div className="max-w-7xl mx-auto text-red-500 dark:text-red-400">
           {mensajeError(error, t("dashboard.error"))}
         </div>
       </div>
@@ -73,15 +73,15 @@ export default function DashboardGerente() {
   const sucursalActiva = sucursal?.estado === "activa";
 
   return (
-    <div className="min-h-screen bg-[#fdf6e3] p-4 sm:p-8">
+    <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-4 sm:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Encabezado */}
         <div className="flex items-center justify-between mb-6 sm:mb-8">
           <div>
-            <h1 className="font-sans text-2xl sm:text-3xl font-bold text-[#875d69]">
+            <h1 className="font-sans text-2xl sm:text-3xl font-bold text-[#875d69] dark:text-rose-300">
               {t("dashboard.title")}
             </h1>
-            <p className="font-sans text-gray-600 mt-1">
+            <p className="font-sans text-gray-600 dark:text-[var(--dark-muted)] mt-1">
               {t("dashboard.descripcionGerente")}
             </p>
           </div>
@@ -89,16 +89,16 @@ export default function DashboardGerente() {
 
         {/* Información de su sucursal */}
         {sucursal && (
-          <div className="bg-white rounded-xl shadow p-5 mb-6">
+          <div className="bg-white dark:bg-[var(--dark-surface)] rounded-xl shadow dark:shadow-none dark:border dark:border-[var(--dark-border)] p-5 mb-6">
             <div className="flex items-center gap-3 mb-4">
-              <div className="w-10 h-10 shrink-0 rounded-full bg-pink-100 flex items-center justify-center text-pink-500">
+              <div className="w-10 h-10 shrink-0 rounded-full bg-pink-100 dark:bg-rose-900/40 flex items-center justify-center text-pink-500 dark:text-rose-300">
                 <Store size={20} />
               </div>
               <div className="min-w-0">
-                <p className="text-sm text-gray-500">
+                <p className="text-sm text-gray-500 dark:text-[var(--dark-muted)]">
                   {t("dashboard.branchInfoTitle")}
                 </p>
-                <h2 className="font-sans text-xl font-semibold text-[#875d69] break-words">
+                <h2 className="font-sans text-xl font-semibold text-[#875d69] dark:text-rose-300 break-words">
                   {sucursal.nombre}
                 </h2>
               </div>
@@ -106,40 +106,40 @@ export default function DashboardGerente() {
 
             <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
               <div className="flex items-start gap-2 min-w-0">
-                <MapPin size={18} className="mt-0.5 shrink-0 text-[#875d69]" />
+                <MapPin size={18} className="mt-0.5 shrink-0 text-[#875d69] dark:text-rose-300" />
                 <div className="min-w-0">
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-gray-400 dark:text-[var(--dark-muted)]">
                     {t("dashboard.branchAddress")}
                   </p>
-                  <p className="text-gray-800 break-words">
+                  <p className="text-gray-800 dark:text-[var(--dark-text)] break-words">
                     {sucursal.direccion}
                   </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-2 min-w-0">
-                <Phone size={18} className="mt-0.5 shrink-0 text-[#875d69]" />
+                <Phone size={18} className="mt-0.5 shrink-0 text-[#875d69] dark:text-rose-300" />
                 <div className="min-w-0">
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-gray-400 dark:text-[var(--dark-muted)]">
                     {t("dashboard.branchPhone")}
                   </p>
-                  <p className="text-gray-800 break-words">
+                  <p className="text-gray-800 dark:text-[var(--dark-text)] break-words">
                     {sucursal.telefono || t("dashboard.branchNoPhone")}
                   </p>
                 </div>
               </div>
 
               <div className="flex items-start gap-2 min-w-0">
-                <Info size={18} className="mt-0.5 shrink-0 text-[#875d69]" />
+                <Info size={18} className="mt-0.5 shrink-0 text-[#875d69] dark:text-rose-300" />
                 <div className="min-w-0">
-                  <p className="text-xs text-gray-400">
+                  <p className="text-xs text-gray-400 dark:text-[var(--dark-muted)]">
                     {t("dashboard.branchStatus")}
                   </p>
                   <span
                     className={`inline-block mt-0.5 text-xs font-medium px-3 py-1 rounded-full ${
                       sucursalActiva
-                        ? "text-green-700 bg-green-100"
-                        : "text-gray-600 bg-gray-200"
+                        ? "text-green-700 dark:text-green-300 bg-green-100 dark:bg-green-900/40"
+                        : "text-gray-600 dark:text-[var(--dark-muted)] bg-gray-200 dark:bg-[var(--dark-border)]"
                     }`}
                   >
                     {sucursalActiva
@@ -154,19 +154,19 @@ export default function DashboardGerente() {
 
         {/* Tarjetas resumen */}
         <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
-          <div className="bg-white rounded-xl shadow p-5 flex items-center gap-4">
-            <div className="w-10 h-10 shrink-0 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+          <div className="bg-white dark:bg-[var(--dark-surface)] rounded-xl shadow dark:shadow-none dark:border dark:border-[var(--dark-border)] p-5 flex items-center gap-4">
+            <div className="w-10 h-10 shrink-0 rounded-full bg-green-100 dark:bg-green-900/40 flex items-center justify-center text-green-600 dark:text-green-400">
               <CircleDollarSign size={20} />
             </div>
             <div className="min-w-0">
-              <p className="text-sm text-gray-500 break-words">
+              <p className="text-sm text-gray-500 dark:text-[var(--dark-muted)] break-words">
                 {t("dashboard.periodSales")}
               </p>
-              <p className="text-2xl font-bold text-gray-800 break-words">
+              <p className="text-2xl font-bold text-gray-800 dark:text-[var(--dark-text)] break-words">
                 {formatMoney(data.ventas_total_periodo)}
               </p>
               {/* Un solo día: solo la fecha; si es un rango, inicio a fin */}
-              <p className="text-xs text-gray-400">
+              <p className="text-xs text-gray-400 dark:text-[var(--dark-muted)]">
                 {data.periodo_inicio === data.periodo_fin
                   ? data.periodo_inicio
                   : t("dashboard.periodRange", {
@@ -177,53 +177,53 @@ export default function DashboardGerente() {
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow p-5 flex items-center gap-4">
-            <div className="w-10 h-10 shrink-0 rounded-full bg-yellow-100 flex items-center justify-center text-yellow-600">
+          <div className="bg-white dark:bg-[var(--dark-surface)] rounded-xl shadow dark:shadow-none dark:border dark:border-[var(--dark-border)] p-5 flex items-center gap-4">
+            <div className="w-10 h-10 shrink-0 rounded-full bg-yellow-100 dark:bg-yellow-900/40 flex items-center justify-center text-yellow-600 dark:text-yellow-400">
               <TriangleAlert size={20} />
             </div>
             <div className="min-w-0">
-              <p className="text-sm text-gray-500">{t("dashboard.inventoryAlerts")}</p>
-              <p className="text-2xl font-bold text-gray-800">
+              <p className="text-sm text-gray-500 dark:text-[var(--dark-muted)]">{t("dashboard.inventoryAlerts")}</p>
+              <p className="text-2xl font-bold text-gray-800 dark:text-[var(--dark-text)]">
                 {data.alertas_inventario.length}
               </p>
             </div>
           </div>
 
-          <div className="bg-white rounded-xl shadow p-5 flex items-center gap-4">
-            <div className="w-10 h-10 shrink-0 rounded-full bg-[#f4d0d0] flex items-center justify-center text-[#875d69]">
+          <div className="bg-white dark:bg-[var(--dark-surface)] rounded-xl shadow dark:shadow-none dark:border dark:border-[var(--dark-border)] p-5 flex items-center gap-4">
+            <div className="w-10 h-10 shrink-0 rounded-full bg-[#f4d0d0] dark:bg-[var(--dark-border)] flex items-center justify-center text-[#875d69] dark:text-rose-300">
               <Users size={20} />
             </div>
             <div className="min-w-0">
-              <p className="text-sm text-gray-500">{t("dashboard.activeCashiers")}</p>
-              <p className="text-2xl font-bold text-gray-800">{cajeros.length}</p>
+              <p className="text-sm text-gray-500 dark:text-[var(--dark-muted)]">{t("dashboard.activeCashiers")}</p>
+              <p className="text-2xl font-bold text-gray-800 dark:text-[var(--dark-text)]">{cajeros.length}</p>
             </div>
           </div>
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
           {/* Lista de alertas (solo de su sucursal) */}
-          <div className="bg-white rounded-xl shadow p-5">
+          <div className="bg-white dark:bg-[var(--dark-surface)] rounded-xl shadow dark:shadow-none dark:border dark:border-[var(--dark-border)] p-5">
             <div className="flex items-center justify-between gap-2 flex-wrap mb-3">
-              <h2 className="font-sans text-lg font-semibold text-[#875d69]">
+              <h2 className="font-sans text-lg font-semibold text-[#875d69] dark:text-rose-300">
                 {t("dashboard.lowStockTitle")}
               </h2>
-              <span className="text-xs text-gray-400 shrink-0">
+              <span className="text-xs text-gray-400 dark:text-[var(--dark-muted)] shrink-0">
                 {t("dashboard.threshold")}: {data.umbral_bajo_inventario}
               </span>
             </div>
             {data.alertas_inventario.length === 0 ? (
-              <p className="text-gray-500 text-sm">{t("dashboard.noAlerts")}</p>
+              <p className="text-gray-500 dark:text-[var(--dark-muted)] text-sm">{t("dashboard.noAlerts")}</p>
             ) : (
-              <ul className="divide-y divide-gray-100">
+              <ul className="divide-y divide-gray-100 dark:divide-[var(--dark-border)]">
                 {data.alertas_inventario.map((alerta) => (
                   <li
                     key={`${alerta.producto_id}-${alerta.sucursal_id}`}
                     className="py-3 flex items-center justify-between gap-2 flex-wrap"
                   >
-                    <p className="font-medium text-gray-800 break-words min-w-0">
+                    <p className="font-medium text-gray-800 dark:text-[var(--dark-text)] break-words min-w-0">
                       {alerta.producto_nombre}
                     </p>
-                    <p className="text-sm text-yellow-700 font-semibold shrink-0">
+                    <p className="text-sm text-yellow-700 dark:text-yellow-400 font-semibold shrink-0">
                       {t("dashboard.stock")}: {alerta.existencia}
                     </p>
                   </li>
@@ -233,20 +233,20 @@ export default function DashboardGerente() {
           </div>
 
           {/* Cajeros de su sucursal */}
-          <div className="bg-white rounded-xl shadow p-5">
-            <h2 className="font-sans text-lg font-semibold text-[#875d69] mb-3">
+          <div className="bg-white dark:bg-[var(--dark-surface)] rounded-xl shadow dark:shadow-none dark:border dark:border-[var(--dark-border)] p-5">
+            <h2 className="font-sans text-lg font-semibold text-[#875d69] dark:text-rose-300 mb-3">
               {t("dashboard.cashiersTitle")}
             </h2>
             {cajeros.length === 0 ? (
-              <p className="text-gray-500 text-sm">{t("dashboard.noCashiers")}</p>
+              <p className="text-gray-500 dark:text-[var(--dark-muted)] text-sm">{t("dashboard.noCashiers")}</p>
             ) : (
-              <ul className="divide-y divide-gray-100 max-h-80 overflow-y-auto">
+              <ul className="divide-y divide-gray-100 dark:divide-[var(--dark-border)] max-h-80 overflow-y-auto">
                 {cajeros.map((cajero) => (
                   <li key={cajero.id} className="py-3">
-                    <p className="font-medium text-gray-800 break-words">
+                    <p className="font-medium text-gray-800 dark:text-[var(--dark-text)] break-words">
                       {cajero.nombre}
                     </p>
-                    <p className="text-sm text-gray-500 break-words">
+                    <p className="text-sm text-gray-500 dark:text-[var(--dark-muted)] break-words">
                       {cajero.email}
                     </p>
                   </li>

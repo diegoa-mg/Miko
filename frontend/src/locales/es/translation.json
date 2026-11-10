@@ -217,11 +217,53 @@
     "cobrando": "Cobrando...",
     "cancelar": "Cancelar",
     "errorCobro": "No se pudo registrar la venta. Inténtalo de nuevo.",
-    "ventaRegistrada": "Venta registrada correctamente.",
-    "ventaRegistradaCambio": "Venta registrada correctamente. Entrega de cambio: {{cambio}}",
     "metodoPago": "Método de pago",
     "efectivoExacto": "Exacto",
     "errorMetodosPago": "No se pudieron cargar los métodos de pago. Recarga la página."
+  },
+  "ticketVenta": {
+    "titulo": "Resumen de la venta",
+    "venta": "Venta",
+    "ventaRegistrada": "Venta registrada correctamente",
+    "sucursal": "Sucursal",
+    "direccion": "Dirección",
+    "cajero": "Cajero",
+    "fecha": "Fecha",
+    "metodoPago": "Método de pago",
+    "producto": "Producto",
+    "cantidad": "Cant.",
+    "precio": "Precio",
+    "subtotal": "Subtotal",
+    "total": "Total",
+    "cambio": "Cambio a entregar",
+    "imprimir": "Imprimir ticket",
+    "descargar": "Descargar PDF",
+    "cerrar": "Cerrar",
+    "nuevaVenta": "Nueva venta",
+    "cargando": "Cargando ticket...",
+    "errorCarga": "No se pudo cargar el ticket.",
+    "errorPdf": "No se pudo abrir el ticket en PDF. Inténtalo de nuevo."
+  },
+  "misVentas": {
+    "titulo": "Mis ventas",
+    "descripcion": "Consulta las ventas que has registrado.",
+    "desde": "Desde",
+    "hasta": "Hasta",
+    "hoy": "Hoy",
+    "ultimos7": "Últimos 7 días",
+    "ultimos30": "Últimos 30 días",
+    "rangoInvalido": "La fecha de inicio no puede ser posterior a la fecha de fin.",
+    "totalVendido": "Total vendido del periodo",
+    "numeroVentas": "Número de ventas",
+    "listado": "Ventas del periodo",
+    "sinVentas": "No hay ventas en este periodo.",
+    "cargando": "Cargando ventas...",
+    "errorCarga": "No se pudieron cargar tus ventas.",
+    "reintentar": "Reintentar",
+    "detalle": "Detalle",
+    "imprimir": "Imprimir",
+    "pdf": "PDF",
+    "verMas": "Ver más ({{count}})"
   },
   "cajeros": {
     "titulo": "Cajeros",
@@ -477,6 +519,7 @@
     "fotoActualizada": "Foto de perfil actualizada exitosamente",
     "correoInvalido": "El nuevo correo electrónico debe incluir un '@' válido",
     "datosActualizados": "Datos personales actualizados correctamente",
+    "correoVerificacionEnviado": "Hemos enviado un enlace de confirmación a {{email}}. Por favor abre el enlace para aplicar el cambio.",
     "passwordCambiada": "Contraseña cambiada con éxito",
     "errorSubirImagen": "Error al subir la imagen",
     "errorActualizarPerfil": "Error al actualizar perfil",
@@ -500,9 +543,9 @@
     "noAccess": "No tienes acceso a esta sección"
   },
   "theme": {
-   "toDark": "Activar modo oscuro",
+    "toDark": "Activar modo oscuro",
     "toLight": "Activar modo claro"
-  }, 
+  },
   "inventarioGerente": {
     "resumen": "Resumen del inventario",
     "etiquetaBuscar": "Buscar producto",
@@ -595,5 +638,19 @@
   "enlaceInvalido": "El enlace no es válido.",
   "error": "No fue posible restablecer la contraseña.",
   "exito": "Tu contraseña se restableció correctamente."
-}
+},
+  "confirmarEmail": {
+    "titulo": "Verificación de Correo Electrónico",
+    "tokenFaltante": "El enlace de confirmación no es válido.",
+    "procesando": "Confirmando tu nuevo correo electrónico...",
+    "exitoTitulo": "¡Correo confirmado con éxito!",
+    "exitoDescripcion": "Tu nueva dirección de correo ha sido verificada y actualizada en tu cuenta de Miko.",
+    "volverPerfil": "Volver a Configuración",
+    "iniciarSesion": "Iniciar sesión",
+    "errorTitulo": "No se pudo confirmar el correo",
+    "irInicio": "Ir a inicio",
+    "instruccion": "Por favor ingresa utilizando el enlace que enviamos a tu correo.",
+    "irLogin": "Ir al inicio de sesión",
+    "errorGenerico": "Ocurrió un error al procesar la confirmación."
+  }
 }
