@@ -6,10 +6,10 @@ import Sidebar from "../components/Sidebar";
 // su ruta ya está en App.jsx; aquí solo se agrega/quita la opción.
 const items = [
   { to: "/gerente", end: true, icon: "dashboard", key: "sidebar.dashboard" },
-  { to: "/gerente/inventario", icon: "inventory_2", key: "sidebar.inventory" },
   { to: "/gerente/ventas", icon: "trending_up", key: "sidebar.sales" },
-  { to: "/gerente/cajeros", icon: "badge", key: "sidebar.cashiers" },
+  { to: "/gerente/inventario", icon: "inventory_2", key: "sidebar.inventory" },
   { to: "/gerente/productos", icon: "cake", key: "sidebar.products" },
+  { to: "/gerente/cajeros", icon: "badge", key: "sidebar.cashiers" },
 ];
 
 export default function GerenteLayout() {

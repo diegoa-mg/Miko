@@ -172,13 +172,13 @@
     "titulo": "Point of sale",
     "descripcion": "Search products or scan their barcode to build the sale.",
     "codigoLabel": "Barcode",
-    "codigoPlaceholder": "Scan or type the barcode and press Enter",
+    "codigoPlaceholder": "Scan or type the barcode",
     "agregarCodigo": "Add",
     "buscandoCodigo": "Searching...",
     "codigoNoExiste": "The code \"{{codigo}}\" does not exist in your branch's catalog.",
     "errorCodigo": "Could not look up the code. Please try again.",
     "productoAgregado": "\"{{nombre}}\" added to the cart.",
-    "buscar": "Search products by name...",
+    "buscar": "Search by name...",
     "categoria": "Category",
     "todasCategorias": "All categories",
     "cargando": "Loading products...",
@@ -655,5 +655,9 @@
     "instruccion": "Please access using the link we sent to your email address.",
     "irLogin": "Go to login",
     "errorGenerico": "An error occurred while confirming your email address."
+  },
+  "errores": {
+    "correoInvalido": "Enter a valid email address.",
+    "campoRequerido": "Please fill in all required fields."
   }
 }

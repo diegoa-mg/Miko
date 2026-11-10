@@ -3,9 +3,9 @@ from sqlalchemy.orm import Session
 
 from src.database import get_db
 from src.dependencies import requiere_rol
-from src.models import Inventario, Producto, Categoria, Sucursal, Usuario
+from src.models import Inventario, Sucursal, Usuario
 from src.schemas import InventarioOut, InventarioUpdate
-from src.services import llenar_inventario_out, consulta_inventario, crear_lista_inventario, obtener_sucursal_del_gerente, calcular_alertas_inventario
+from src.services import llenar_inventario_out, consulta_inventario, crear_lista_inventario, obtener_sucursal_del_gerente
 
 router = APIRouter(
     prefix="/inventarios",

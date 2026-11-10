@@ -116,6 +116,13 @@ export default function MisVentasCajero() {
     "rounded-full bg-white border-2 border-[#e6bdc7] text-[#8c6773] px-4 py-2 focus:outline-none focus:border-[#875d69]";
   const botonRango =
     "rounded-full border-2 border-[#e6bdc7] px-4 py-2 text-sm font-medium text-[#875d69] hover:bg-[#f4d0d0] transition-colors";
+  const botonRangoActivo =
+    "rounded-full border-2 border-[#d06b7d] dark:border-rose-700 bg-[#d06b7d] dark:bg-rose-700 px-4 py-2 text-sm font-medium text-white transition-colors";
+
+  // Un acceso rápido está activo si el rango de fechas coincide exactamente con él
+  const hoy = zona === undefined ? null : fechaHoy(zona);
+  const rangoActivo = (dias) =>
+    Boolean(hoy) && hasta === hoy && desde === restarDias(hoy, dias);
   const botonAccion =
     "flex items-center gap-1 rounded-full border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] px-3 py-1 text-xs font-semibold text-[#8b5e6b] dark:text-[var(--dark-muted)] transition hover:bg-[#fae4df] dark:hover:bg-[var(--dark-border)] disabled:opacity-50";
 
@@ -171,13 +178,28 @@ export default function MisVentasCajero() {
             />
           </div>
           <div className="flex flex-wrap gap-2">
-            <button type="button" onClick={() => aplicarRango(0)} className={botonRango}>
+            <button
+              type="button"
+              onClick={() => aplicarRango(0)}
+              aria-pressed={rangoActivo(0)}
+              className={rangoActivo(0) ? botonRangoActivo : botonRango}
+            >
               {t("misVentas.hoy")}
             </button>
-            <button type="button" onClick={() => aplicarRango(6)} className={botonRango}>
+            <button
+              type="button"
+              onClick={() => aplicarRango(6)}
+              aria-pressed={rangoActivo(6)}
+              className={rangoActivo(6) ? botonRangoActivo : botonRango}
+            >
               {t("misVentas.ultimos7")}
             </button>
-            <button type="button" onClick={() => aplicarRango(29)} className={botonRango}>
+            <button
+              type="button"
+              onClick={() => aplicarRango(29)}
+              aria-pressed={rangoActivo(29)}
+              className={rangoActivo(29) ? botonRangoActivo : botonRango}
+            >
               {t("misVentas.ultimos30")}
             </button>
           </div>

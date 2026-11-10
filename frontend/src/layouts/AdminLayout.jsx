@@ -3,10 +3,10 @@ import Sidebar from "../components/Sidebar";
 
 const adminNavItems = [
   { icon: "dashboard", key: "sidebar.dashboard", to: "/admin", end: true },
-  { icon: "inventory_2", key: "sidebar.inventory", to: "/admin/inventarios" },
   { icon: "trending_up", key: "sidebar.sales", to: "/admin/ventas" },
-  { icon: "supervisor_account", key: "sidebar.managers", to: "/admin/gerentes" },
+  { icon: "inventory_2", key: "sidebar.inventory", to: "/admin/inventarios" },
   { icon: "store", key: "sidebar.branches", to: "/admin/sucursales" },
+  { icon: "supervisor_account", key: "sidebar.managers", to: "/admin/gerentes" },
   { icon: "category", key: "sidebar.categories", to: "/admin/categorias" },
 ];
 

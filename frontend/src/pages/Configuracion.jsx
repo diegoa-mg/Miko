@@ -9,6 +9,7 @@ import {
   cerrarSesionesApi,
 } from "../api/cuenta";
 import CropFotoModal from "../components/CropFotoModal";
+import { extraerMensajeError } from "../api/errores";
 
 // Extrae el mensaje de error del backend (en 422 "detail" es un arreglo, no un texto)
 const getError = (err, fallback, t) => {
@@ -16,8 +17,9 @@ const getError = (err, fallback, t) => {
     return `${fallback}: ${t("perfil.sinRespuesta")}`;
   }
   const d = err.response.data?.detail;
-  if (typeof d === "string") return d;
-  if (Array.isArray(d)) return `${fallback}: ${d[0]?.msg || t("perfil.datosInvalidos")}`;
+  const mensaje = extraerMensajeError(err, t);
+  if (typeof d === "string") return mensaje;
+  if (Array.isArray(d)) return `${fallback}: ${mensaje || t("perfil.datosInvalidos")}`;
   return t("perfil.errorHttp", { fallback, status: err.response.status });
 };
 
