@@ -55,11 +55,11 @@ export default function CropFotoModal({ imageSrc, onCancel, onConfirm }) {
 
   return (
     <div className="fixed inset-0 z-50 bg-black/60 flex items-center justify-center p-4">
-      <div className="bg-white rounded-3xl shadow-xl w-full max-w-md p-6">
-        <h3 className="font-sans text-lg font-semibold text-[#875d69]">
+      <div className="bg-white dark:bg-[var(--dark-surface)] dark:border dark:border-[var(--dark-border)] rounded-3xl shadow-xl w-full max-w-md p-6">
+        <h3 className="font-sans text-lg font-semibold text-[#875d69] dark:text-rose-300">
           {t("perfil.recortarTitulo")}
         </h3>
-        <p className="font-sans text-xs text-gray-500 mb-4">
+        <p className="font-sans text-xs text-gray-500 dark:text-[var(--dark-muted)] mb-4">
           {t("perfil.recortarDescripcion")}
         </p>
 
@@ -78,7 +78,7 @@ export default function CropFotoModal({ imageSrc, onCancel, onConfirm }) {
         </div>
 
         <div className="flex items-center gap-3 mt-4">
-          <span className="material-icons text-gray-400 text-base">remove</span>
+          <span className="material-icons text-gray-400 dark:text-[var(--dark-muted)] text-base">remove</span>
           <input
             type="range"
             min={1}
@@ -86,9 +86,9 @@ export default function CropFotoModal({ imageSrc, onCancel, onConfirm }) {
             step={0.01}
             value={zoom}
             onChange={(e) => setZoom(Number(e.target.value))}
-            className="flex-1 accent-[#875d69]"
+            className="flex-1 accent-[#875d69] dark:accent-rose-300"
           />
-          <span className="material-icons text-gray-400 text-base">add</span>
+          <span className="material-icons text-gray-400 dark:text-[var(--dark-muted)] text-base">add</span>
         </div>
 
         <div className="flex gap-3 mt-6">
@@ -96,7 +96,7 @@ export default function CropFotoModal({ imageSrc, onCancel, onConfirm }) {
             type="button"
             onClick={onCancel}
             disabled={procesando}
-            className="flex-1 py-2.5 border border-[#ead8d8] text-[#875d69] text-xs font-semibold rounded-xl hover:border-[#cda4b4] transition-colors disabled:opacity-50"
+            className="flex-1 py-2.5 border border-[#ead8d8] dark:border-[var(--dark-border)] text-[#875d69] dark:text-rose-300 text-xs font-semibold rounded-xl hover:border-[#cda4b4] dark:hover:border-rose-300 transition-colors disabled:opacity-50"
           >
             {t("perfil.cancelar")}
           </button>

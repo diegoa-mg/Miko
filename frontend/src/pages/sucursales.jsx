@@ -171,7 +171,7 @@ const reactivarSucursal = async (sucursal) => {
   }
 };
   return (
-    <div className="min-h-screen bg-[#fdf6e3] p-8">
+    <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-8">
       {sucursalAEliminar && (
   <div className="miko-confirm-overlay">
     <div className="miko-confirm-modal">
@@ -226,11 +226,11 @@ const reactivarSucursal = async (sucursal) => {
         {/* Encabezado */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="text-3xl font-bold text-[#875d69]">
+            <h1 className="text-3xl font-bold text-[#875d69] dark:text-rose-300">
               {t("sucursales.titulo")}
             </h1>
 
-            <p className="font-sans text-gray-600 mt-1">
+            <p className="font-sans text-gray-600 dark:text-[var(--dark-muted)] mt-1">
               {t("sucursales.descripcion")}
             </p>
           </div>
@@ -248,7 +248,7 @@ const reactivarSucursal = async (sucursal) => {
                   gerente_id: "",
                 });
               }}
-              className="font-sans bg-rose-800 hover:bg-rose-900 text-white px-5 py-3 rounded-lg transition-colors"
+              className="font-sans bg-rose-800 dark:bg-rose-700 hover:bg-rose-900 dark:hover:bg-rose-600 text-white px-5 py-3 rounded-lg transition-colors"
             >
               {mostrarFormulario
                 ? t("sucursales.cancelar")
@@ -259,15 +259,15 @@ const reactivarSucursal = async (sucursal) => {
 
         {/* Error */}
         {error && (
-          <div className="mb-5 bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-lg">
+          <div className="mb-5 bg-red-100 dark:bg-red-950/40 border border-red-300 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-lg">
             {error}
           </div>
         )}
 
         {/* Formulario */}
         {mostrarFormulario && (
-          <div className="bg-white rounded-xl shadow-sm p-6 mb-8">
-            <h2 className="text-xl font-semibold text-[#875d69] mb-5">
+          <div className="bg-white dark:bg-[var(--dark-surface)] rounded-xl shadow-sm p-6 mb-8">
+            <h2 className="text-xl font-semibold text-[#875d69] dark:text-rose-300 mb-5">
                 {sucursalEditando
                     ? t("sucursales.editar")
                     : t("sucursales.nueva")}
@@ -289,7 +289,7 @@ const reactivarSucursal = async (sucursal) => {
                   value={formulario.nombre}
                   onChange={manejarCambio}
                   required
-                  className="font-sans w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-rose-800"
+                  className="font-sans w-full border border-gray-300 dark:border-[var(--dark-border)] rounded-lg px-4 py-2 focus:outline-none dark:bg-[var(--dark-bg)] dark:text-[var(--dark-text)] focus:border-rose-800 dark:focus:border-rose-300"
                   placeholder={t("sucursales.nombrePlaceholder")}
                 />
               </div>
@@ -306,7 +306,7 @@ const reactivarSucursal = async (sucursal) => {
                   value={formulario.direccion}
                   onChange={manejarCambio}
                   required
-                  className="font-sans w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-rose-800"
+                  className="font-sans w-full border border-gray-300 dark:border-[var(--dark-border)] rounded-lg px-4 py-2 focus:outline-none dark:bg-[var(--dark-bg)] dark:text-[var(--dark-text)] focus:border-rose-800 dark:focus:border-rose-300"
                   placeholder={t("sucursales.direccionPlaceholder")}
                 />
               </div>
@@ -326,7 +326,7 @@ const reactivarSucursal = async (sucursal) => {
                   pattern="[0-9]*"
                   onInvalid={(e) =>
                     e.target.setCustomValidity("Por favor, ingresa solo números.")}
-                  className="font-sans w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-rose-800"
+                  className="font-sans w-full border border-gray-300 dark:border-[var(--dark-border)] rounded-lg px-4 py-2 focus:outline-none dark:bg-[var(--dark-bg)] dark:text-[var(--dark-text)] focus:border-rose-800 dark:focus:border-rose-300"
                   placeholder={t("sucursales.telefonoPlaceholder")}
                 />
               </div>
@@ -342,7 +342,7 @@ const reactivarSucursal = async (sucursal) => {
                   name="gerente_id"
                   value={formulario.gerente_id}
                   onChange={manejarCambio}
-                  className="font-sans w-full border border-gray-300 rounded-lg px-4 py-2 focus:outline-none focus:border-rose-800"
+                  className="font-sans w-full border border-gray-300 dark:border-[var(--dark-border)] rounded-lg px-4 py-2 focus:outline-none dark:bg-[var(--dark-bg)] dark:text-[var(--dark-text)] focus:border-rose-800 dark:focus:border-rose-300"
                   placeholder={t("sucursales.gerentePlaceholder")}
                 />
               </div>
@@ -351,7 +351,7 @@ const reactivarSucursal = async (sucursal) => {
               <div className="md:col-span-2 flex justify-end">
                 <button
                   type="submit"
-                  className="font-sans bg-rose-800 hover:bg-rose-900 text-white px-6 py-3 rounded-lg transition-colors"
+                  className="font-sans bg-rose-800 dark:bg-rose-700 hover:bg-rose-900 dark:hover:bg-rose-600 text-white px-6 py-3 rounded-lg transition-colors"
                 >
                   {sucursalEditando
                         ? t("sucursales.guardarCambios")
@@ -363,9 +363,9 @@ const reactivarSucursal = async (sucursal) => {
         )}
 
         {/* Lista */}
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="bg-white dark:bg-[var(--dark-surface)] rounded-xl shadow-sm overflow-hidden">
          <div className="p-6 border-b flex flex-wrap items-center justify-between gap-4">
-  <h2 className="text-xl font-semibold text-[#875d69]">
+  <h2 className="text-xl font-semibold text-[#875d69] dark:text-rose-300">
     {t("sucursales.lista")}
   </h2>
 
@@ -376,7 +376,7 @@ const reactivarSucursal = async (sucursal) => {
       className={`flex items-center gap-2 px-6 py-3 rounded-full transition-colors ${
         filtroEstado === "activa"
           ? "bg-[#875d69] text-white"
-          : "bg-[#e1a0a5] text-[#875d69]"
+          : "bg-[#e1a0a5] dark:bg-[var(--dark-border)] text-[#875d69] dark:text-rose-300"
       }`}
     >
       <svg
@@ -403,7 +403,7 @@ const reactivarSucursal = async (sucursal) => {
       className={`flex items-center gap-2 px-6 py-3 rounded-full transition-colors ${
         filtroEstado === "inactiva"
           ? "bg-[#875d69] text-white"
-          : "bg-[#e1a0a5] text-[#875d69]"
+          : "bg-[#e1a0a5] dark:bg-[var(--dark-border)] text-[#875d69] dark:text-rose-300"
       }`}
     >
       <svg
@@ -428,13 +428,13 @@ const reactivarSucursal = async (sucursal) => {
 </div>
 
           {cargando ? (
-            <div className="p-8 text-center text-gray-500">
+            <div className="p-8 text-center text-gray-500 dark:text-[var(--dark-muted)]">
               {t("sucursales.cargando")}
             </div>
           ) : sucursales.filter(
               (sucursal) => sucursal.estado === filtroEstado
             ).length === 0 ? (
-            <div className="p-8 text-center text-gray-500">
+            <div className="p-8 text-center text-gray-500 dark:text-[var(--dark-muted)]">
               {filtroEstado === "activa"
                 ? "No hay sucursales activas."
                 : "No hay sucursales inactivas."}
@@ -442,7 +442,7 @@ const reactivarSucursal = async (sucursal) => {
           ) : (
             <div className="overflow-x-auto">
               <table className="font-sans w-full">
-                <thead className="bg-[#f9eeb4]">
+                <thead className="bg-[#f9eeb4] dark:bg-[var(--dark-border)]">
                   <tr>
                     <th className="text-left px-6 py-4">
                       {t("sucursales.id")}
@@ -480,7 +480,7 @@ const reactivarSucursal = async (sucursal) => {
                   .map((sucursal) => (
                     <tr
                       key={sucursal.id}
-                      className="border-b hover:bg-gray-50"
+                      className="border-b hover:bg-gray-50 dark:hover:bg-white/5"
                     >
                       <td className="px-6 py-4">
                         {sucursal.id}

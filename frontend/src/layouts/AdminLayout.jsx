@@ -12,7 +12,7 @@ const adminNavItems = [
 
 export default function AdminLayout() {
   return (
-    <div className="min-h-screen flex bg-[#fdf6e9]">
+    <div className="min-h-screen flex bg-[#fdf6e9] dark:bg-[var(--dark-bg)]">
       <Sidebar items={adminNavItems} />
       <div className="flex-1 min-w-0">
         <Outlet />
