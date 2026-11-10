@@ -618,7 +618,7 @@ function Cajeros() {
                 </div>
               </div>
 
-              <form className="space-y-5" onSubmit={manejarGuardar} noValidate>
+              <form className="space-y-5" onSubmit={manejarGuardar}>
                 {/* Nombre */}
                 <div>
                   <label className="font-sans block text-sm font-medium text-[#875d69] mb-2">
