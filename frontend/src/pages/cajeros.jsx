@@ -237,7 +237,7 @@ function Cajeros() {
 });
 
   return (
-    <div className="min-h-screen bg-[#fdf6e3] p-8">
+    <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-8">
       {/* Modal de confirmación de eliminación */}
       {cajeroAEliminar && (
         <div className="miko-confirm-overlay">
@@ -292,11 +292,11 @@ function Cajeros() {
         {/* Encabezado */}
         <div className="flex items-center justify-between mb-8">
           <div>
-            <h1 className="font-sans text-3xl font-bold text-[#875d69]">
+            <h1 className="font-sans text-3xl font-bold text-[#875d69] dark:text-rose-300">
               {t("cajeros.titulo", "Cajeros")}
             </h1>
 
-            <p className="font-sans text-gray-600 mt-1">
+            <p className="font-sans text-gray-600 dark:text-[var(--dark-muted)] mt-1">
               {t("cajeros.descripcion", "Administra los cajeros de Miko")}
             </p>
           </div>
@@ -305,7 +305,7 @@ function Cajeros() {
             <button
               type="button"
               onClick={abrirNuevoCajero}
-              className="font-sans bg-rose-800 hover:bg-rose-900 text-white px-5 py-3 rounded-lg transition-colors"
+              className="font-sans bg-rose-800 dark:bg-rose-700 hover:bg-rose-900 dark:hover:bg-rose-600 text-white px-5 py-3 rounded-lg transition-colors"
             >
               + {t("cajeros.nuevo", "Nuevo cajero")}
             </button>
@@ -314,13 +314,13 @@ function Cajeros() {
 
         {/* Mensaje de error */}
         {error && (
-          <div className="bg-red-100 border border-red-300 text-red-700 px-4 py-3 rounded-xl mb-6">
+          <div className="bg-red-100 dark:bg-red-950/40 border border-red-300 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-xl mb-6">
             {error}
           </div>
         )}
 
         {/* Barra superior */}
-        <div className="bg-white rounded-2xl shadow-sm p-4 mb-6">
+        <div className="bg-white dark:bg-[var(--dark-surface)] rounded-2xl shadow-sm p-4 mb-6">
           <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
             <div className="flex flex-wrap gap-3 w-full lg:w-auto">
               {/* Pestaña Activos */}
@@ -330,7 +330,7 @@ function Cajeros() {
                 className={`font-sans px-5 py-3 rounded-full transition-colors ${
                   !mostrarInactivos
                     ? "bg-[#875d69] text-white"
-                    : "bg-[#E8B4B8] text-[#875d69] hover:bg-[#dda0a5]"
+                    : "bg-[#E8B4B8] dark:bg-[var(--dark-border)] text-[#875d69] dark:text-rose-300 hover:bg-[#dda0a5] dark:hover:bg-rose-900/50"
                 }`}
               >
                 <span className="flex items-center gap-2">
@@ -346,7 +346,7 @@ function Cajeros() {
                 className={`font-sans px-5 py-3 rounded-full transition-colors ${
                   mostrarInactivos
                     ? "bg-[#875d69] text-white"
-                    : "bg-[#E8B4B8] text-[#875d69] hover:bg-[#dda0a5]"
+                    : "bg-[#E8B4B8] dark:bg-[var(--dark-border)] text-[#875d69] dark:text-rose-300 hover:bg-[#dda0a5] dark:hover:bg-rose-900/50"
                 }`}
               >
                 <span className="flex items-center gap-2">
@@ -363,7 +363,7 @@ function Cajeros() {
                 value={buscar}
                 onChange={(e) => setBuscar(e.target.value)}
                 placeholder={t("cajeros.buscar", "Buscar cajero...")}
-                className="font-sans w-full rounded-full border-2 border-[#ead8d8] bg-[#fffaf2] px-5 py-3 text-[#875d69] focus:outline-none focus:border-[#cda4b4]"
+                className="font-sans w-full rounded-full border-2 border-[#ead8d8] dark:border-[var(--dark-border)] bg-[#fffaf2] dark:bg-[var(--dark-bg)] px-5 py-3 text-[#875d69] dark:text-rose-300 focus:outline-none focus:border-[#cda4b4] dark:focus:border-rose-300"
               />
             </div>
           </div>
@@ -371,12 +371,12 @@ function Cajeros() {
 
         {/* Mensaje de feedback si existe */}
         {mensaje && (
-          <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded-xl mb-6 flex justify-between items-center">
+          <div className="bg-green-100 dark:bg-green-950/40 border border-green-400 dark:border-green-800 text-green-700 dark:text-green-300 px-4 py-3 rounded-xl mb-6 flex justify-between items-center">
             <span>{mensaje}</span>
             <button
               type="button"
               onClick={() => setMensaje("")}
-              className="text-green-700 hover:text-green-900 font-bold ml-2"
+              className="text-green-700 dark:text-green-300 hover:text-green-900 dark:hover:text-green-200 font-bold ml-2"
             >
               ×
             </button>
@@ -384,12 +384,12 @@ function Cajeros() {
         )}
 
         {error && (
-          <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-xl mb-6 flex justify-between items-center">
+          <div className="bg-red-100 dark:bg-red-950/40 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-xl mb-6 flex justify-between items-center">
             <span>{error}</span>
             <button
               type="button"
               onClick={() => setError("")}
-              className="text-red-700 hover:text-red-900 font-bold ml-2"
+              className="text-red-700 dark:text-red-300 hover:text-red-900 dark:hover:text-red-200 font-bold ml-2"
             >
               ×
             </button>
@@ -398,14 +398,14 @@ function Cajeros() {
 
         {/* Lista de cajeros */}
         {cargando ? (
-          <div className="bg-white rounded-2xl shadow-sm p-10 text-center">
-            <p className="font-sans text-gray-500">
+          <div className="bg-white dark:bg-[var(--dark-surface)] rounded-2xl shadow-sm p-10 text-center">
+            <p className="font-sans text-gray-500 dark:text-[var(--dark-muted)]">
               {t("cajeros.cargando", "Cargando cajeros...")}
             </p>
           </div>
         ) : cajerosFiltrados.length === 0 ? (
-          <div className="bg-white rounded-2xl shadow-sm p-10 text-center">
-            <p className="font-sans text-gray-500">
+          <div className="bg-white dark:bg-[var(--dark-surface)] rounded-2xl shadow-sm p-10 text-center">
+            <p className="font-sans text-gray-500 dark:text-[var(--dark-muted)]">
               {t("cajeros.sinResultados", "No se encontraron cajeros")}
             </p>
           </div>
@@ -414,13 +414,13 @@ function Cajeros() {
             {cajerosFiltrados.map((cajero) => (
               <div
                 key={cajero.id}
-                className="bg-white rounded-3xl shadow-sm border border-[#f0dfdc] overflow-hidden hover:shadow-md transition-shadow"
+                className="bg-white dark:bg-[var(--dark-surface)] rounded-3xl shadow-sm border border-[#f0dfdc] dark:border-[var(--dark-border)] overflow-hidden hover:shadow-md transition-shadow"
               >
                 <div className="p-6">
                   <div className="flex items-start justify-between">
                     <div className="flex items-center gap-4">
                       {/* Avatar */}
-                      <div className="w-20 h-20 rounded-full bg-[#f6d5ca] flex items-center justify-center text-[#875d69] text-xl font-semibold">
+                      <div className="w-20 h-20 rounded-full bg-[#f6d5ca] dark:bg-[var(--dark-border)] flex items-center justify-center text-[#875d69] dark:text-rose-300 text-xl font-semibold">
                         {cajero.nombre
                           ?.split(" ")
                           .map((nombre) => nombre[0])
@@ -431,7 +431,7 @@ function Cajeros() {
 
                       <div>
                         <div className="flex items-center gap-3">
-                          <h2 className="text-xl font-semibold text-[#875d69]">
+                          <h2 className="text-xl font-semibold text-[#875d69] dark:text-rose-300">
                             {cajero.nombre}
                           </h2>
                           <span
@@ -451,22 +451,22 @@ function Cajeros() {
                           />
 
                           {cajero.aviso_pendiente && (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-amber-100 text-amber-800 border border-amber-300">
+                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
                               <Mail size={12} />
                               {t("cajeros.avisoPendiente", "Aviso pendiente")}
                             </span>
                           )}
                         </div>
 
-                        <p className="font-sans text-sm text-gray-600 mt-1">
+                        <p className="font-sans text-sm text-gray-600 dark:text-[var(--dark-muted)] mt-1">
                           ✉ {cajero.email}
                         </p>
 
-                        <p className="font-sans text-sm text-gray-600 mt-1">
+                        <p className="font-sans text-sm text-gray-600 dark:text-[var(--dark-muted)] mt-1">
                           # {cajero.id}
                         </p>
                         {!esGerente && (
-                          <p className="font-sans text-xs text-[#875d69] mt-1 font-medium">
+                          <p className="font-sans text-xs text-[#875d69] dark:text-rose-300 mt-1 font-medium">
                             🏪 {obtenerNombreSucursal(cajero.sucursal_id)}
                           </p>
                         )}
@@ -474,11 +474,11 @@ function Cajeros() {
                     </div>
                   </div>
 
-                  <div className="border-t border-[#eee1dd] my-5" />
+                  <div className="border-t border-[#eee1dd] dark:border-[var(--dark-border)] my-5" />
                 </div>
 
                 {/* Acciones */}
-                <div className="bg-[#fffaf2] px-6 py-4 flex justify-end">
+                <div className="bg-[#fffaf2] dark:bg-[var(--dark-bg)] px-6 py-4 flex justify-end">
                   <div className="flex gap-2">
                     {cajero.activo ? (
                       <>
@@ -488,7 +488,7 @@ function Cajeros() {
                         type="button"
                         onClick={() => manejarReenviarAviso(cajero.id)}
                         disabled={reenviandoId === cajero.id}
-                        className="font-sans flex items-center gap-1.5 rounded-xl border border-[#cda4b4] bg-[#fff0f2] hover:bg-[#fde4e8] px-3 py-2 text-xs font-medium text-[#875d69] transition-colors disabled:opacity-50"
+                        className="font-sans flex items-center gap-1.5 rounded-xl border border-[#cda4b4] dark:border-[var(--dark-border)] bg-[#fff0f2] dark:bg-[var(--dark-border)] hover:bg-[#fde4e8] dark:hover:bg-rose-900/50 px-3 py-2 text-xs font-medium text-[#875d69] dark:text-rose-300 transition-colors disabled:opacity-50"
                         title={t("cajeros.reenviarAviso", "Reenviar aviso")}
                         aria-label={t("cajeros.reenviarAviso", "Reenviar aviso")}
                       >
@@ -581,9 +581,9 @@ function Cajeros() {
         {/* Panel Formulario Nuevo / Editar Cajero */}
         {mostrarFormulario && (
           <div className="fixed inset-0 bg-black/30 flex justify-end z-50">
-            <div className="bg-[#fffaf2] w-full max-w-md shadow-2xl p-6 overflow-y-auto">
+            <div className="bg-[#fffaf2] dark:bg-[var(--dark-surface)] w-full max-w-md shadow-2xl p-6 overflow-y-auto">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="font-sans text-2xl font-bold text-[#875d69]">
+                <h2 className="font-sans text-2xl font-bold text-[#875d69] dark:text-rose-300">
                   {editandoCajero
                     ? t("cajeros.editar", "Editar cajero")
                     : t("cajeros.nuevo", "Nuevo cajero")}
@@ -591,24 +591,24 @@ function Cajeros() {
                 <button
                   type="button"
                   onClick={() => setMostrarFormulario(false)}
-                  className="font-sans text-2xl text-[#875d69] hover:text-rose-800"
+                  className="font-sans text-2xl text-[#875d69] dark:text-rose-300 hover:text-rose-800 dark:hover:text-rose-200"
                 >
                   ×
                 </button>
               </div>
 
-              <div className="bg-[#f9e5e4] rounded-2xl p-4 mb-6">
+              <div className="bg-[#f9e5e4] dark:bg-[var(--dark-bg)] rounded-2xl p-4 mb-6">
                 <div className="flex gap-3 items-center">
-                  <div className="w-12 h-12 rounded-xl bg-[#f4d0d0] flex items-center justify-center text-xl">
+                  <div className="w-12 h-12 rounded-xl bg-[#f4d0d0] dark:bg-[var(--dark-border)] flex items-center justify-center text-xl">
                     👤
                   </div>
                   <div>
-                    <h3 className="font-sans font-semibold text-[#875d69]">
+                    <h3 className="font-sans font-semibold text-[#875d69] dark:text-rose-300">
                       {editandoCajero
                         ? t("cajeros.editarDetalles", "Edita la información del cajero")
                         : t("cajeros.agregaNuevo", "Agrega un nuevo cajero")}
                     </h3>
-                    <p className="font-sans text-xs text-gray-600 mt-1">
+                    <p className="font-sans text-xs text-gray-600 dark:text-[var(--dark-muted)] mt-1">
                       {t(
                         "cajeros.descripcionFormulario",
                         "Completa la información para registrar un cajero."
@@ -621,7 +621,7 @@ function Cajeros() {
               <form className="space-y-5" onSubmit={manejarGuardar}>
                 {/* Nombre */}
                 <div>
-                  <label className="font-sans block text-sm font-medium text-[#875d69] mb-2">
+                  <label className="font-sans block text-sm font-medium text-[#875d69] dark:text-rose-300 mb-2">
                     {t("cajeros.nombreCompleto", "Nombre completo")} *
                   </label>
                   <input
@@ -631,13 +631,13 @@ function Cajeros() {
                     onChange={manejarCambio}
                     placeholder={t("cajeros.nombrePlaceholder", "Ej. Carlos López")}
                     required
-                    className="font-sans w-full border-2 border-[#ead8d8] rounded-xl px-4 py-3 bg-white focus:outline-none focus:border-[#cda4b4]"
+                    className="font-sans w-full border-2 border-[#ead8d8] dark:border-[var(--dark-border)] rounded-xl px-4 py-3 bg-white dark:bg-[var(--dark-bg)] focus:outline-none focus:border-[#cda4b4] dark:focus:border-rose-300"
                   />
                 </div>
 
                 {/* Correo */}
                 <div>
-                  <label className="font-sans block text-sm font-medium text-[#875d69] mb-2">
+                  <label className="font-sans block text-sm font-medium text-[#875d69] dark:text-rose-300 mb-2">
                     {t("cajeros.correo", "Correo electrónico")} *
                   </label>
                   <input
@@ -647,14 +647,14 @@ function Cajeros() {
                     onChange={manejarCambio}
                     placeholder={t("cajeros.correoPlaceholder", "Ej. carlos@miko.com")}
                     required
-                    className="font-sans w-full border-2 border-[#ead8d8] rounded-xl px-4 py-3 bg-white focus:outline-none focus:border-[#cda4b4]"
+                    className="font-sans w-full border-2 border-[#ead8d8] dark:border-[var(--dark-border)] rounded-xl px-4 py-3 bg-white dark:bg-[var(--dark-bg)] focus:outline-none focus:border-[#cda4b4] dark:focus:border-rose-300"
                   />
                 </div>
 
                 {/* Contraseña (Solo al crear) */}
                 {!editandoCajero && (
                   <div>
-                    <label className="font-sans block text-sm font-medium text-[#875d69] mb-2">
+                    <label className="font-sans block text-sm font-medium text-[#875d69] dark:text-rose-300 mb-2">
                       {t("cajeros.password", "Contraseña")} *
                     </label>
                     <input
@@ -664,7 +664,7 @@ function Cajeros() {
                       onChange={manejarCambio}
                       placeholder={t("cajeros.passwordPlaceholder", "Ingresa una contraseña")}
                       required
-                      className="font-sans w-full border-2 border-[#ead8d8] rounded-xl px-4 py-3 bg-white focus:outline-none focus:border-[#cda4b4]"
+                      className="font-sans w-full border-2 border-[#ead8d8] dark:border-[var(--dark-border)] rounded-xl px-4 py-3 bg-white dark:bg-[var(--dark-bg)] focus:outline-none focus:border-[#cda4b4] dark:focus:border-rose-300"
                     />
                   </div>
                 )}
@@ -672,14 +672,14 @@ function Cajeros() {
                 {/* Sucursal asignada (solo admin: el gerente trabaja en su sucursal) */}
                 {!esGerente && (
                 <div>
-                  <label className="font-sans block text-sm font-medium text-[#875d69] mb-2">
+                  <label className="font-sans block text-sm font-medium text-[#875d69] dark:text-rose-300 mb-2">
                     {t("cajeros.sucursalAsignada", "Sucursal asignada")}
                   </label>
                   <select
                     name="sucursal_id"
                     value={formulario.sucursal_id}
                     onChange={manejarCambio}
-                    className="font-sans w-full border-2 border-[#ead8d8] rounded-xl px-4 py-3 bg-white focus:outline-none focus:border-[#cda4b4]"
+                    className="font-sans w-full border-2 border-[#ead8d8] dark:border-[var(--dark-border)] rounded-xl px-4 py-3 bg-white dark:bg-[var(--dark-bg)] focus:outline-none focus:border-[#cda4b4] dark:focus:border-rose-300"
                   >
                     <option value="">
                       -- {t("cajeros.seleccionaSucursal", "Sin sucursal asignada")} --
@@ -698,14 +698,14 @@ function Cajeros() {
                   <button
                     type="button"
                     onClick={() => setMostrarFormulario(false)}
-                    className="font-sans flex-1 border-2 border-[#ead8d8] bg-white text-[#875d69] py-3 rounded-xl hover:bg-[#fff4ed] transition-colors"
+                    className="font-sans flex-1 border-2 border-[#ead8d8] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-surface)] text-[#875d69] dark:text-rose-300 py-3 rounded-xl hover:bg-[#fff4ed] dark:hover:bg-white/5 transition-colors"
                   >
                     {t("cajeros.cancelar", "Cancelar")}
                   </button>
 
                   <button
                     type="submit"
-                    className="font-sans flex-1 bg-rose-800 hover:bg-rose-900 text-white py-3 rounded-xl transition-colors"
+                    className="font-sans flex-1 bg-rose-800 dark:bg-rose-700 hover:bg-rose-900 dark:hover:bg-rose-600 text-white py-3 rounded-xl transition-colors"
                   >
                     {editandoCajero
                       ? t("cajeros.guardar", "Guardar")
