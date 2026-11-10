@@ -234,23 +234,17 @@ def registrar_venta(
     return _construir_venta_out(nueva_venta)
 
 
-@router.get("", response_model=list[VentaOut])
-def listar_ventas(
-    sucursal_id: int | None = None,
-    fecha_inicio: date | None = None,
-    fecha_fin: date | None = None,
-    usuario_id: int | None = None,
-    limit: int = 100,
-    offset: int = 0,
-    db: Session = Depends(get_db),
-    usuario_actual: Usuario = Depends(
-        requiere_rol("admin_general", "gerente_sede", "cajero")
-    ),
+def _consulta_ventas(
+    db: Session,
+    usuario_actual: Usuario,
+    sucursal_id: int | None,
+    fecha_inicio: date | None,
+    fecha_fin: date | None,
+    usuario_id: int | None,
 ):
     """
-    Lista las ventas registradas.
-    Permite filtrar por sucursal, rango de fechas y usuario.
-    Administradores pueden ver todas; gerentes y cajeros ven automáticamente su sucursal.
+    Consulta base de ventas con las restricciones por rol y los filtros opcionales.
+    La usan el listado y el conteo, para que siempre coincidan.
     """
     rol_nombre = usuario_actual.rol.nombre
     query = db.query(Venta)
@@ -275,6 +269,30 @@ def listar_ventas(
         inicio_utc, _ = rango_del_dia_en_utc(inicio)
         _, fin_utc = rango_del_dia_en_utc(fin)
         query = query.filter(Venta.fecha >= inicio_utc, Venta.fecha <= fin_utc)
+    return query
+
+
+@router.get("", response_model=list[VentaOut])
+def listar_ventas(
+    sucursal_id: int | None = None,
+    fecha_inicio: date | None = None,
+    fecha_fin: date | None = None,
+    usuario_id: int | None = None,
+    limit: int = 100,
+    offset: int = 0,
+    db: Session = Depends(get_db),
+    usuario_actual: Usuario = Depends(
+        requiere_rol("admin_general", "gerente_sede", "cajero")
+    ),
+):
+    """
+    Lista las ventas registradas.
+    Permite filtrar por sucursal, rango de fechas y usuario.
+    Administradores pueden ver todas; gerentes y cajeros ven automáticamente su sucursal.
+    """
+    query = _consulta_ventas(
+        db, usuario_actual, sucursal_id, fecha_inicio, fecha_fin, usuario_id
+    )
 
     ventas = (
         query.options(
@@ -290,6 +308,27 @@ def listar_ventas(
     )
 
     return [_construir_venta_out(v) for v in ventas]
+
+
+@router.get("/conteo")
+def contar_ventas_listado(
+    sucursal_id: int | None = None,
+    fecha_inicio: date | None = None,
+    fecha_fin: date | None = None,
+    usuario_id: int | None = None,
+    db: Session = Depends(get_db),
+    usuario_actual: Usuario = Depends(
+        requiere_rol("admin_general", "gerente_sede", "cajero")
+    ),
+):
+    """
+    Total de ventas que cumplen los mismos filtros que GET /ventas.
+    Sirve para calcular cuántas páginas tiene el listado.
+    """
+    query = _consulta_ventas(
+        db, usuario_actual, sucursal_id, fecha_inicio, fecha_fin, usuario_id
+    )
+    return {"total": query.count()}
 
 
 @router.get("/mis-ventas", response_model=list[VentaOut])
