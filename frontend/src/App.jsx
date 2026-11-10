@@ -27,6 +27,7 @@ import VentasGerente from "./pages/VentasGerente";
 import Productos from "./pages/Productos";
 import AvisoPrivacidad from "./pages/AvisoPrivacidad";
 import PuntoDeVentaCajero from "./pages/PuntoDeVentaCajero";
+import MisVentasCajero from "./pages/MisVentasCajero";
 import ConfirmarEmail from "./pages/ConfirmarEmail";
 
 function Login() {
@@ -229,7 +230,7 @@ export default function App() {
               <Route path="/cajero" element={<CajeroLayout />}>
                 <Route index element={<DashboardCajero />} />
                 <Route path="pos" element={<PuntoDeVentaCajero />} />
-                <Route path="ventas" element={<EnConstruccion titleKey="sidebar.mySales" />} />
+                <Route path="ventas" element={<MisVentasCajero />} />
                 <Route path="configuracion" element={<Configuracion />} />
               </Route>
             </Route>
