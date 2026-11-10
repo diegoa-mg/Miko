@@ -27,6 +27,8 @@ import VentasGerente from "./pages/VentasGerente";
 import Productos from "./pages/Productos";
 import AvisoPrivacidad from "./pages/AvisoPrivacidad";
 import PuntoDeVentaCajero from "./pages/PuntoDeVentaCajero";
+import RecuperarPassword from "./pages/RecuperarPassword";
+import RestablecerPassword from "./pages/RestablecerPassword";
 import MisVentasCajero from "./pages/MisVentasCajero";
 import ConfirmarEmail from "./pages/ConfirmarEmail";
 
@@ -137,9 +139,13 @@ function Login() {
               <input type="checkbox" />
               {t("login.remember")}
             </label>
-            <a href="#" className="text-rose-400 hover:underline dark:text-rose-300">
-              {t("login.forgotPassword")}
-            </a>
+            <button
+            type="button"
+            onClick={() => navigate("/olvide-password")}
+            className="text-rose-400 hover:underline dark:text-rose-300"
+          >
+            {t("login.forgotPassword")}
+          </button>
           </div>
 
           {avisoSesion && (
@@ -198,8 +204,11 @@ export default function App() {
         <Routes>
           <Route path="/" element={<Navigate to="/login" replace />} />
           <Route path="/login" element={<Login />} />
+          <Route path="/olvide-password" element={<RecuperarPassword />} />
+          <Route path="/restablecer-password" element={<RestablecerPassword />} />
           <Route path="/aviso-privacidad" element={<AvisoPrivacidad />} />
           <Route path="/confirmar-email" element={<ConfirmarEmail />} />
+
 
           <Route element={<ProtectedRoute />}>
             <Route element={<RoleRoute allowedRoles={["admin_general"]} />}>

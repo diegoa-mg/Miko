@@ -609,6 +609,36 @@
     "botonAceptar": "Acepto el aviso de privacidad",
     "procesando": "Procesando..."
   },
+  "recuperarPassword": {
+  "titulo": "Recuperar contraseña",
+  "descripcion": "Ingresa tu correo electrónico y te enviaremos un enlace para restablecer tu contraseña.",
+  "correo": "Correo electrónico",
+  "placeholderCorreo": "correo@ejemplo.com",
+  "enviar": "Enviar enlace",
+  "enviando": "Enviando...",
+  "volver": "Volver al inicio de sesión",
+  "error": "No fue posible procesar la solicitud. Inténtalo nuevamente.",
+  "exito": "Si el correo está registrado, recibirás un enlace para restablecer tu contraseña."
+},
+"restablecerPassword": {
+  "titulo": "Restablecer contraseña",
+  "nueva": "Nueva contraseña",
+  "confirmar": "Confirmar contraseña",
+  "requisitos": "La contraseña debe tener mínimo 8 caracteres, una mayúscula, una minúscula, un número y un carácter especial.",
+  "guardar": "Restablecer contraseña",
+  "guardando": "Guardando...",
+  "volver": "Volver al inicio de sesión",
+  "minimo": "Debe tener al menos 8 caracteres.",
+  "mayuscula": "Debe incluir una mayúscula.",
+  "minuscula": "Debe incluir una minúscula.",
+  "numero": "Debe incluir un número.",
+  "especial": "Debe incluir un carácter especial.",
+  "limite": "La contraseña no puede superar los 72 bytes.",
+  "noCoinciden": "Las contraseñas no coinciden.",
+  "enlaceInvalido": "El enlace no es válido.",
+  "error": "No fue posible restablecer la contraseña.",
+  "exito": "Tu contraseña se restableció correctamente."
+},
   "confirmarEmail": {
     "titulo": "Verificación de Correo Electrónico",
     "tokenFaltante": "El enlace de confirmación no es válido.",
