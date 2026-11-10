@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { obtenerVentas } from "../api/ventas";
+import { obtenerVentas, contarVentas } from "../api/ventas";
+import Paginacion from "../components/Paginacion";
 import { obtenerSucursales } from "../api/sucursales";
 
 
@@ -21,7 +22,7 @@ const sucursalesInactivas = sucursales.filter(
   const [fechaSeleccionada, setFechaSeleccionada] = useState("");
   const [paginaActual, setPaginaActual] = useState(1);
   const [cargando, setCargando] = useState(true);
-  const [haySiguiente, setHaySiguiente] = useState(false);
+  const [totalVentas, setTotalVentas] = useState(0);
   const [errorCarga, setErrorCarga] = useState("");
 
   const ventasPorPagina = 15;
@@ -56,7 +57,7 @@ const sucursalesInactivas = sucursales.filter(
       setCargando(true);
       setErrorCarga("");
       setVentas([]);
-      setHaySiguiente(false);
+      setTotalVentas(0);
 
       if (tipoSucursal !== "todas" && sucursalSeleccionada === "") {
       setCargando(false);
@@ -64,27 +65,30 @@ const sucursalesInactivas = sucursales.filter(
 }
 
       try {
-        const datosVentas = await obtenerVentas(
-          sucursalSeleccionada === "" ? null : Number(sucursalSeleccionada),
-          {
-            // Se solicita un registro extra para saber si existe otra página.
-            limit: ventasPorPagina + 1,
+        const sucursalId =
+          sucursalSeleccionada === "" ? null : Number(sucursalSeleccionada);
+        const fechaInicio = fechaSeleccionada || null;
+        const fechaFin = fechaSeleccionada || null;
+
+        const [datosVentas, total] = await Promise.all([
+          obtenerVentas(sucursalId, {
+            limit: ventasPorPagina,
             offset: (paginaActual - 1) * ventasPorPagina,
-            fechaInicio: fechaSeleccionada || null,
-            fechaFin: fechaSeleccionada || null,
-          }
-        );
+            fechaInicio,
+            fechaFin,
+          }),
+          contarVentas(sucursalId, { fechaInicio, fechaFin }),
+        ]);
 
         if (cancelado) return;
 
-        const lista = Array.isArray(datosVentas) ? datosVentas : [];
-        setHaySiguiente(lista.length > ventasPorPagina);
-        setVentas(lista.slice(0, ventasPorPagina));
+        setTotalVentas(total);
+        setVentas(Array.isArray(datosVentas) ? datosVentas : []);
       } catch (error) {
         console.error("Error al cargar ventas:", error);
         if (!cancelado) {
           setVentas([]);
-          setHaySiguiente(false);
+          setTotalVentas(0);
           setErrorCarga(t("ventas.errorCarga"));
         }
       } finally {
@@ -105,6 +109,8 @@ const sucursalesInactivas = sucursales.filter(
     ),
     [ventas]
   );
+
+  const totalPaginas = Math.max(1, Math.ceil(totalVentas / ventasPorPagina));
 
   const formatearPrecio = (precio) =>
   Number(precio || 0).toLocaleString(
@@ -518,45 +524,16 @@ const traducirMetodoPago = (metodo) => {
         )}
 
         {/* PAGINACIÓN */}
-{!cargando && !errorCarga && ventas.length > 0 && (
-  <div className="flex flex-col items-center gap-4 border-t border-[#ead8d8] dark:border-[var(--dark-border)] bg-[#fffaf8] dark:bg-[var(--dark-bg)] px-5 py-4">
-    <div className="flex flex-wrap items-center justify-center gap-2">
-
-      {/* ANTERIOR */}
-      <button
-        type="button"
-        onClick={() => setPaginaActual((pagina) => Math.max(1, pagina - 1))}
-        disabled={paginaActual === 1}
-        className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#ead8d8] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-surface)] text-[#8b5e6b] dark:text-[var(--dark-muted)] transition hover:bg-[#fae4df] dark:hover:bg-[var(--dark-border)] disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        <span className="material-icons text-xl">
-          chevron_left
-        </span>
-      </button>
-
-      {/* PÁGINA ACTUAL */}
-      <span
-        aria-current="page"
-        className="flex h-10 min-w-10 items-center justify-center rounded-xl border border-[#d06b7d] dark:border-rose-700 bg-[#d06b7d] dark:bg-rose-700 px-3 text-sm font-semibold text-white"
-      >
-        {paginaActual}
-      </span>
-
-      {/* SIGUIENTE */}
-      <button
-        type="button"
-        onClick={() => setPaginaActual((pagina) => pagina + 1)}
-        disabled={!haySiguiente || cargando}
-        className="flex h-10 w-10 items-center justify-center rounded-xl border border-[#ead8d8] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-surface)] text-[#8b5e6b] dark:text-[var(--dark-muted)] transition hover:bg-[#fae4df] dark:hover:bg-[var(--dark-border)] disabled:cursor-not-allowed disabled:opacity-40"
-      >
-        <span className="material-icons text-xl">
-          chevron_right
-        </span>
-      </button>
-
-    </div>
-  </div>
-)}
+        {!cargando && !errorCarga && ventas.length > 0 && (
+          <Paginacion
+            paginaActual={paginaActual}
+            totalPaginas={totalPaginas}
+            onCambiar={setPaginaActual}
+            deshabilitado={cargando}
+            etiquetaAnterior={t("ventas.paginacion.anterior")}
+            etiquetaSiguiente={t("ventas.paginacion.siguiente")}
+          />
+        )}
 
       </section>
 

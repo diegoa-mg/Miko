@@ -190,10 +190,6 @@ function EnConstruccion({ titleKey }) {
   return <h1 className="text-2xl font-bold p-6">{t(titleKey)}</h1>;
 }
 
-function PuntoDeVenta() {
-  return <h1 className="text-2xl font-bold p-6">Punto de Venta (POS)</h1>;
-}
-
 export default function App() {
   return (
     <ThemeProvider>
@@ -244,9 +240,6 @@ export default function App() {
               </Route>
             </Route>
 
-            <Route element={<RoleRoute allowedRoles={["admin_general", "gerente_sede"]} />}>
-              <Route path="/pos/*" element={<PuntoDeVenta />} />
-            </Route>
           </Route>
 
           <Route path="/no-autorizado" element={<p>No tienes acceso a esta sección</p>} />
