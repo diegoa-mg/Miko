@@ -638,7 +638,7 @@
   "enlaceInvalido": "The link is invalid.",
   "error": "Unable to reset the password.",
   "exito": "Your password has been reset successfully."
-}
+},
   "confirmarEmail": {
     "titulo": "Email Address Verification",
     "tokenFaltante": "The confirmation link is not valid.",
