@@ -186,14 +186,14 @@ function InventarioGerente() {
     ).format(valor);
 
   return (
-    <div className="min-h-screen bg-[#fdf6e3] p-4 sm:p-6 lg:p-8">
+    <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-4 sm:p-6 lg:p-8">
       <div className="mx-auto max-w-7xl">
         {/* Encabezado */}
         <header className="mb-7">
-          <h1 className="font-sans text-2xl font-bold text-[#875d69] sm:text-3xl">
+          <h1 className="font-sans text-2xl font-bold text-[#875d69] dark:text-rose-300 sm:text-3xl">
             {tr("titulo", "Inventario")}
           </h1>
-          <p className="mt-2 font-sans text-sm text-[#203a5f] sm:text-base">
+          <p className="mt-2 font-sans text-sm text-[#203a5f] dark:text-[var(--dark-muted)] sm:text-base">
             {tr(
               "descripcion",
               "Consulta y ajusta las existencias de tu sucursal."
@@ -205,7 +205,7 @@ function InventarioGerente() {
         {errorAccion && (
           <div
             role="alert"
-            className="mb-5 flex items-start justify-between gap-3 rounded-xl border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700"
+            className="mb-5 flex items-start justify-between gap-3 rounded-xl border border-red-200 dark:border-red-900 bg-red-50 dark:bg-red-950/40 px-4 py-3 text-sm text-red-700 dark:text-red-300"
           >
             <p>{errorAccion}</p>
             <button
@@ -221,18 +221,18 @@ function InventarioGerente() {
 
         {/* Cargando */}
         {cargando ? (
-          <div className="rounded-2xl bg-white p-10 text-center shadow-sm">
-            <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-4 border-[#ead8d8] border-t-[#875d69]" />
-            <p className="text-sm text-[#203a5f]">
+          <div className="rounded-2xl bg-white dark:bg-[var(--dark-surface)] p-10 text-center shadow-sm">
+            <div className="mx-auto mb-3 h-8 w-8 animate-spin rounded-full border-4 border-[#ead8d8] dark:border-[var(--dark-border)] border-t-[#875d69] dark:border-t-rose-300" />
+            <p className="text-sm text-[#203a5f] dark:text-[var(--dark-muted)]">
               {tr("cargando", "Cargando inventario...")}
             </p>
           </div>
         ) : error ? (
           <div
             role="alert"
-            className="rounded-2xl border border-red-200 bg-white p-6 text-center shadow-sm"
+            className="rounded-2xl border border-red-200 dark:border-red-900 bg-white dark:bg-[var(--dark-surface)] p-6 text-center shadow-sm"
           >
-            <p className="mb-4 text-sm text-red-600">{error}</p>
+            <p className="mb-4 text-sm text-red-600 dark:text-red-400">{error}</p>
             <button
               type="button"
               onClick={() => window.location.reload()}
@@ -242,14 +242,14 @@ function InventarioGerente() {
             </button>
           </div>
         ) : inventario.length === 0 ? (
-          <div className="rounded-2xl border border-[#ead8d8] bg-white px-6 py-12 text-center shadow-sm">
-            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#fff1f3] text-2xl text-[#875d69]">
+          <div className="rounded-2xl border border-[#ead8d8] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-surface)] px-6 py-12 text-center shadow-sm">
+            <div className="mx-auto mb-4 flex h-14 w-14 items-center justify-center rounded-full bg-[#fff1f3] dark:bg-[var(--dark-border)] text-2xl text-[#875d69] dark:text-rose-300">
               <span className="material-icons">inventory_2</span>
             </div>
-            <h2 className="mb-2 text-lg font-semibold text-[#5f3c46]">
+            <h2 className="mb-2 text-lg font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
               {tr("sinExistencias", "Sin productos registrados")}
             </h2>
-            <p className="mx-auto max-w-md text-sm text-[#203a5f]">
+            <p className="mx-auto max-w-md text-sm text-[#203a5f] dark:text-[var(--dark-muted)]">
               {tr(
                 "sinExistenciasDetalle",
                 "No hay productos registrados en el inventario de tu sucursal."
@@ -259,13 +259,13 @@ function InventarioGerente() {
         ) : (
           <>
             {/* Resumen y búsqueda */}
-            <section className="mb-5 rounded-2xl bg-white p-4 shadow-sm sm:p-5">
+            <section className="mb-5 rounded-2xl bg-white dark:bg-[var(--dark-surface)] p-4 shadow-sm sm:p-5">
               <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
                 <div>
-                  <p className="font-semibold text-[#5f3c46]">
+                  <p className="font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
                     {tr("resumen", "Resumen del inventario")}
                   </p>
-                  <p className="mt-1 text-sm text-[#203a5f]">
+                  <p className="mt-1 text-sm text-[#203a5f] dark:text-[var(--dark-muted)]">
                     {tr("totalProductos", "Productos registrados: {{count}}", {
                       count: numero(inventario.length),
                     })}
@@ -275,7 +275,7 @@ function InventarioGerente() {
                 <div className="w-full sm:max-w-sm">
                   <label
                     htmlFor="buscar-inventario-gerente"
-                    className="mb-1.5 block text-sm font-medium text-[#5f3c46]"
+                    className="mb-1.5 block text-sm font-medium text-[#5f3c46] dark:text-[var(--dark-text)]"
                   >
                     {tr("etiquetaBuscar", "Buscar producto")}
                   </label>
@@ -285,7 +285,7 @@ function InventarioGerente() {
                     value={buscar}
                     onChange={(e) => cambiarBusqueda(e.target.value)}
                     placeholder={tr("buscar", "Buscar por producto o categoría...")}
-                    className="w-full rounded-xl border border-[#ead8d8] bg-[#fffaf2] px-4 py-3 text-sm text-[#5f3c46] outline-none transition placeholder:text-[#a1818a] focus:border-[#875d69] focus:ring-2 focus:ring-[#ead8d8]"
+                    className="w-full rounded-xl border border-[#ead8d8] dark:border-[var(--dark-border)] bg-[#fffaf2] dark:bg-[var(--dark-bg)] px-4 py-3 text-sm text-[#5f3c46] dark:text-[var(--dark-text)] outline-none transition placeholder:text-[#a1818a] dark:placeholder:text-[var(--dark-muted)] focus:border-[#875d69] dark:focus:border-rose-300 focus:ring-2 focus:ring-[#ead8d8] dark:focus:ring-[var(--dark-border)]"
                   />
                 </div>
               </div>
@@ -293,14 +293,14 @@ function InventarioGerente() {
 
             {/* Sin resultados */}
             {inventarioFiltrado.length === 0 ? (
-              <div className="rounded-2xl bg-white p-10 text-center shadow-sm">
-                <p className="font-medium text-[#5f3c46]">
+              <div className="rounded-2xl bg-white dark:bg-[var(--dark-surface)] p-10 text-center shadow-sm">
+                <p className="font-medium text-[#5f3c46] dark:text-[var(--dark-text)]">
                   {tr("sinResultados", "No se encontraron productos.")}
                 </p>
                 <button
                   type="button"
                   onClick={() => cambiarBusqueda("")}
-                  className="mt-3 text-sm font-semibold text-[#875d69] underline underline-offset-4"
+                  className="mt-3 text-sm font-semibold text-[#875d69] dark:text-rose-300 underline underline-offset-4"
                 >
                   {tr("limpiarBusqueda", "Limpiar búsqueda")}
                 </button>
@@ -308,20 +308,20 @@ function InventarioGerente() {
             ) : (
               <>
                 {/* Tabla */}
-                <div className="overflow-x-auto rounded-2xl border border-[#ead8d8] bg-white shadow-sm">
+                <div className="overflow-x-auto rounded-2xl border border-[#ead8d8] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-surface)] shadow-sm">
                   <table className="w-full min-w-[760px]">
                     <thead>
-                      <tr className="border-b border-[#ead8d8] bg-[#fff8f8]">
-                        <th className="p-4 text-left text-sm font-semibold text-[#5f3c46]">
+                      <tr className="border-b border-[#ead8d8] dark:border-[var(--dark-border)] bg-[#fff8f8] dark:bg-[var(--dark-bg)]">
+                        <th className="p-4 text-left text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
                           {tr("producto", "Producto")}
                         </th>
-                        <th className="p-4 text-left text-sm font-semibold text-[#5f3c46]">
+                        <th className="p-4 text-left text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
                           {tr("categoria", "Categoría")}
                         </th>
-                        <th className="p-4 text-center text-sm font-semibold text-[#5f3c46]">
+                        <th className="p-4 text-center text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
                           {tr("existencia", "Existencia")}
                         </th>
-                        <th className="p-4 text-center text-sm font-semibold text-[#5f3c46]">
+                        <th className="p-4 text-center text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
                           {tr("ajustar", "Ajustar existencias")}
                         </th>
                       </tr>
@@ -334,18 +334,18 @@ function InventarioGerente() {
                         return (
                           <tr
                             key={`${fila.sucursal_id}-${fila.producto_id}`}
-                            className="border-b border-[#f0e3e3] last:border-b-0 transition-colors hover:bg-[#fffaf7]"
+                            className="border-b border-[#f0e3e3] dark:border-[var(--dark-border)] last:border-b-0 transition-colors hover:bg-[#fffaf7] dark:hover:bg-white/5"
                           >
-                            <td className="p-4 font-semibold text-[#4f3b40]">
+                            <td className="p-4 font-semibold text-[#4f3b40] dark:text-[var(--dark-text)]">
                               {fila.producto_nombre}
                             </td>
 
-                            <td className="p-4 text-sm text-[#8c6773]">
+                            <td className="p-4 text-sm text-[#8c6773] dark:text-[var(--dark-muted)]">
                               {fila.categoria_nombre}
                             </td>
 
                             <td className="p-4 text-center">
-                              <span className="inline-flex min-w-12 justify-center rounded-full bg-[#f9eeb4] px-3 py-1.5 font-semibold text-[#70565e]">
+                              <span className="inline-flex min-w-12 justify-center rounded-full bg-[#f9eeb4] dark:bg-yellow-900/30 px-3 py-1.5 font-semibold text-[#70565e] dark:text-[var(--dark-text)]">
                                 {numero(fila.existencia)}
                               </span>
                             </td>
@@ -368,14 +368,14 @@ function InventarioGerente() {
                                     "Cantidad"
                                   )}
                                   disabled={ocupado}
-                                  className="w-20 rounded-lg border border-[#ead8d8] bg-white px-2 py-2 text-center text-sm text-[#875d69] outline-none focus:border-[#875d69] focus:ring-2 focus:ring-[#ead8d8] disabled:opacity-50"
+                                  className="w-20 rounded-lg border border-[#ead8d8] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-bg)] px-2 py-2 text-center text-sm text-[#875d69] dark:text-rose-300 outline-none focus:border-[#875d69] dark:focus:border-rose-300 focus:ring-2 focus:ring-[#ead8d8] dark:focus:ring-[var(--dark-border)] disabled:opacity-50"
                                 />
 
                                 <button
                                   type="button"
                                   disabled={ocupado}
                                   onClick={() => ajustar(fila, -1)}
-                                  className="rounded-lg border border-[#ead8d8] bg-white px-3 py-2 text-sm font-semibold text-[#875d69] transition hover:bg-[#fff1f3] disabled:cursor-not-allowed disabled:opacity-50"
+                                  className="rounded-lg border border-[#ead8d8] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-surface)] px-3 py-2 text-sm font-semibold text-[#875d69] dark:text-rose-300 transition hover:bg-[#fff1f3] dark:hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-50"
                                 >
                                   {ocupado
                                     ? "..."
@@ -402,7 +402,7 @@ function InventarioGerente() {
                 </div>
 
                 {/* Paginación */}
-                <div className="mt-5 flex flex-col items-center justify-center gap-3 rounded-2xl bg-white p-4 shadow-sm">
+                <div className="mt-5 flex flex-col items-center justify-center gap-3 rounded-2xl bg-white dark:bg-[var(--dark-surface)] p-4 shadow-sm">
                   
 <div className="flex items-center justify-center gap-3">
   {/* Página anterior */}
@@ -411,7 +411,7 @@ function InventarioGerente() {
     disabled={paginaActual === 1}
     onClick={() => cambiarPagina(paginaActual - 1)}
     aria-label={tr("anterior", "Anterior")}
-    className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#f0d6dc] bg-white text-[#875d69] transition hover:bg-[#fff1f3] disabled:cursor-not-allowed disabled:opacity-40"
+    className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#f0d6dc] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-surface)] text-[#875d69] dark:text-rose-300 transition hover:bg-[#fff1f3] dark:hover:bg-white/5 disabled:cursor-not-allowed disabled:opacity-40"
   >
     <svg
       xmlns="http://www.w3.org/2000/svg"
@@ -444,7 +444,7 @@ function InventarioGerente() {
       elementos.push(
         <span
           key={`puntos-${pagina}`}
-          className="flex h-9 w-8 items-center justify-center text-[#8b5e6b]"
+          className="flex h-9 w-8 items-center justify-center text-[#8b5e6b] dark:text-[var(--dark-muted)]"
         >
           …
         </span>
@@ -459,8 +459,8 @@ function InventarioGerente() {
         aria-current={paginaActual === pagina ? "page" : undefined}
         className={`h-9 min-w-9 rounded-xl border px-3 text-sm font-semibold transition ${
           paginaActual === pagina
-            ? "border-[#d06b7d] bg-[#d06b7d] text-white"
-            : "border-[#ead8d8] bg-white text-[#8b5e6b] hover:bg-[#fae4df]"
+            ? "border-[#d06b7d] dark:border-rose-700 bg-[#d06b7d] dark:bg-rose-700 text-white"
+            : "border-[#ead8d8] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-surface)] text-[#8b5e6b] dark:text-[var(--dark-muted)] hover:bg-[#fae4df] dark:hover:bg-[var(--dark-border)]"
         }`}
       >
         {pagina}
@@ -477,7 +477,7 @@ function InventarioGerente() {
                     disabled={paginaActual >= totalPaginas}
                     onClick={() => cambiarPagina(paginaActual + 1)}
                     aria-label={tr("siguiente", "Siguiente")}
-                   className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#ead8d8] bg-white text-[#8b5e6b] transition hover:bg-[#fae4df] disabled:cursor-not-allowed disabled:opacity-40"
+                   className="flex h-9 w-9 items-center justify-center rounded-xl border border-[#ead8d8] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-surface)] text-[#8b5e6b] dark:text-[var(--dark-muted)] transition hover:bg-[#fae4df] dark:hover:bg-[var(--dark-border)] disabled:cursor-not-allowed disabled:opacity-40"
                   >
                     <svg
                       xmlns="http://www.w3.org/2000/svg"
