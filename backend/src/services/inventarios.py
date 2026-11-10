@@ -13,7 +13,8 @@ def llenar_inventario_out(inventario: Inventario) -> InventarioOut:
         categoria_nombre=inventario.categoria_nombre,
         sucursal_id=inventario.sucursal_id,
         sucursal_nombre=inventario.sucursal_nombre,
-        existencia=inventario.existencia
+        existencia=inventario.existencia,
+        precio=inventario.precio
     )  
 
 # Arma (sin ejecutar) la consulta base del inventario de todas las sucursales, para que cada endpoint le agregue sus filtros
@@ -29,6 +30,7 @@ def consulta_inventario(db: Session) -> Query:
             Sucursal.id.label("sucursal_id"),
             Sucursal.nombre.label("sucursal_nombre"),
             Inventario.existencia.label("existencia"),
+            Producto.precio.label("precio"),
         )
         # Por cada fila de inventario, busca el producto cuyo id sea igual al producto_id de esa fila
         .join(Producto, Producto.id == Inventario.producto_id)

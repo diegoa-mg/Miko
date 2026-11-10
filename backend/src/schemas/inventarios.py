@@ -1,3 +1,4 @@
+from decimal import Decimal
 from pydantic import BaseModel, ConfigDict, field_validator
 
 # Esquemas para inventarios
@@ -8,6 +9,7 @@ class InventarioOut(BaseModel):
     sucursal_id: int
     sucursal_nombre: str
     existencia: int
+    precio: Decimal
 
     model_config = ConfigDict(from_attributes=True)
 
