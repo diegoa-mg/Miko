@@ -655,5 +655,9 @@
     "instruccion": "Por favor ingresa utilizando el enlace que enviamos a tu correo.",
     "irLogin": "Ir al inicio de sesión",
     "errorGenerico": "Ocurrió un error al procesar la confirmación."
+  },
+  "errores": {
+    "correoInvalido": "Ingresa un correo electrónico válido.",
+    "campoRequerido": "Completa todos los campos obligatorios."
   }
 }

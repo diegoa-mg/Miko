@@ -20,6 +20,7 @@ import {
   reactivarProducto,
   obtenerCategorias,
 } from "../api/productos";
+import { extraerMensajeError } from "../api/errores";
 
 export default function Productos() {
   const { t } = useTranslation();
@@ -52,16 +53,12 @@ export default function Productos() {
   const [confirmacion, setConfirmacion] = useState(null);
 
   const mensajeError = (err) => {
-    const detail = err?.response?.data?.detail;
-
-    if (typeof detail === "string") return detail;
-    if (Array.isArray(detail)) {
-      return detail.map((item) => item.msg).join(", ");
-    }
-
-    return t("productos.errorGeneral", {
-      defaultValue: "Ocurrió un error. Inténtalo de nuevo.",
-    });
+    return (
+      extraerMensajeError(err, t) ||
+      t("productos.errorGeneral", {
+        defaultValue: "Ocurrió un error. Inténtalo de nuevo.",
+      })
+    );
   };
 
   const cargarCategorias = useCallback(async () => {

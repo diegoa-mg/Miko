@@ -21,6 +21,7 @@ import {
 
 import { obtenerSucursales } from "../api/sucursales";
 import { useAuth } from "../context/AuthContext";
+import { extraerMensajeError } from "../api/errores";
 
 function IconoCajero({ size = 24, className = "" }) {
   return (
@@ -157,7 +158,7 @@ function Cajeros() {
     } catch (err) {
       console.error("Error al guardar cajero:", err);
       setError(
-        err.response?.data?.detail ||
+        extraerMensajeError(err, t) ||
           t("cajeros.errorGuardar", "No se pudo guardar el cajero.")
       );
     }
@@ -187,7 +188,7 @@ function Cajeros() {
     } catch (err) {
       console.error("Error al reactivar cajero:", err);
       setError(
-        err.response?.data?.detail ||
+        extraerMensajeError(err, t) ||
           t("cajeros.errorReactivar", "No se pudo reactivar el cajero.")
       );
     }
@@ -206,7 +207,7 @@ function Cajeros() {
     } catch (err) {
       console.error("Error al reenviar aviso a cajero:", err);
       setError(
-        err.response?.data?.detail ||
+        extraerMensajeError(err, t) ||
           t("cajeros.errorReenviarAviso", "No se pudo reenviar el aviso de privacidad.")
       );
     } finally {

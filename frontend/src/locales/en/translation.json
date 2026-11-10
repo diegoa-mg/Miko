@@ -655,5 +655,9 @@
     "instruccion": "Please access using the link we sent to your email address.",
     "irLogin": "Go to login",
     "errorGenerico": "An error occurred while confirming your email address."
+  },
+  "errores": {
+    "correoInvalido": "Enter a valid email address.",
+    "campoRequerido": "Please fill in all required fields."
   }
 }

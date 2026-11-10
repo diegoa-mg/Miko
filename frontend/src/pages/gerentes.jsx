@@ -15,6 +15,7 @@ import {
   obtenerSucursales,
   actualizarSucursal,
 } from "../api/sucursales";
+import { extraerMensajeError } from "../api/errores";
 
 function Gerentes() {
   const { t } = useTranslation();
@@ -129,10 +130,7 @@ const manejarGuardar = async (e) => {
   } catch (err) {
     console.error("Error al guardar gerente:", err);
     console.error("Respuesta backend:", err.response?.data);
-    const detalle = err.response?.data?.detail;
-    setError(
-      typeof detalle === "string" ? detalle : "No se pudo guardar el gerente."
-    );
+    setError(extraerMensajeError(err, t) || "No se pudo guardar el gerente.");
   }
 };
 
@@ -179,7 +177,7 @@ const manejarReenviarAviso = async (id) => {
   } catch (err) {
     console.error("Error al reenviar aviso a gerente:", err);
     setError(
-      err.response?.data?.detail ||
+      extraerMensajeError(err, t) ||
         t("gerentes.errorReenviarAviso", "No se pudo reenviar el aviso de privacidad.")
     );
   } finally {
