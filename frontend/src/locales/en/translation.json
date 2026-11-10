@@ -565,5 +565,35 @@
     "verDocumentoCompleto": "View full policy in PDF",
     "botonAceptar": "Accept privacy policy",
     "procesando": "Processing..."
-  }
+  },
+  "recuperarPassword": {
+  "titulo": "Recover password",
+  "descripcion": "Enter your email address and we will send you a link to reset your password.",
+  "correo": "Email address",
+  "placeholderCorreo": "email@example.com",
+  "enviar": "Send link",
+  "enviando": "Sending...",
+  "volver": "Back to login",
+  "exito": "If the email is registered, you will receive a link to reset your password.",
+  "error": "Unable to process the request. Please try again."
+},
+"restablecerPassword": {
+  "titulo": "Reset password",
+  "nueva": "New password",
+  "confirmar": "Confirm password",
+  "requisitos": "The password must have at least 8 characters, one uppercase letter, one lowercase letter, one number, and one special character.",
+  "guardar": "Reset password",
+  "guardando": "Saving...",
+  "volver": "Back to login",
+  "minimo": "It must have at least 8 characters.",
+  "mayuscula": "It must include an uppercase letter.",
+  "minuscula": "It must include a lowercase letter.",
+  "numero": "It must include a number.",
+  "especial": "It must include a special character.",
+  "limite": "The password cannot exceed 72 bytes.",
+  "noCoinciden": "The passwords do not match.",
+  "enlaceInvalido": "The link is invalid.",
+  "error": "Unable to reset the password.",
+  "exito": "Your password has been reset successfully."
+}
 }
