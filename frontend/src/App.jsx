@@ -212,7 +212,6 @@ export default function App() {
                 <Route index element={<Dashboard />} />
                 <Route path="sucursales" element={<Sucursales />} />
                 <Route path="gerentes" element={<Gerentes />} />
-                <Route path="cajeros" element={<Cajeros />} />
                 <Route path="configuracion" element={<Configuracion />} />
                 <Route path="inventarios" element={<Inventarios />} />
                 <Route path="ventas" element={<Ventas />} />
