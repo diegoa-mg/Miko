@@ -1,3 +1,4 @@
+
 import { useState, useRef, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useTranslation } from "react-i18next";
@@ -9,6 +10,7 @@ import {
   cerrarSesionesApi,
 } from "../api/cuenta";
 import CropFotoModal from "../components/CropFotoModal";
+import ConfirmarCerrarSesion from "../components/ConfirmarCerrarSesion";
 import { extraerMensajeError } from "../api/errores";
 
 // Extrae el mensaje de error del backend (en 422 "detail" es un arreglo, no un texto)
@@ -44,6 +46,7 @@ export default function Configuracion() {
   const [mostrarPasswordActual, setMostrarPasswordActual] = useState(false);
   const [mostrarPasswordNueva, setMostrarPasswordNueva] = useState(false);
   const [mostrarConfirmacionSesiones, setMostrarConfirmacionSesiones] = useState(false);
+  const [mostrarConfirmacionLogout, setMostrarConfirmacionLogout] = useState(false);
   const [cerrandoSesiones, setCerrandoSesiones] = useState(false);
   const [errorCerrarSesiones, setErrorCerrarSesiones] = useState("");
 
@@ -60,28 +63,31 @@ export default function Configuracion() {
     }
   }, [user]);
 
+  // Cerrar la sesión actual
   const handleLogout = () => {
-    logout();
-    navigate("/login");
-  };
-
-  const handleCerrarTodasSesiones = async () => {
-  setCerrandoSesiones(true);
-  setErrorCerrarSesiones("");
-
-  try {
-    await cerrarSesionesApi();
-
+    setMostrarConfirmacionLogout(false);
     logout();
     navigate("/login", { replace: true });
-  } catch (err) {
-    setErrorCerrarSesiones(
-      getError(err, t("perfil.errorCerrarSesiones"), t)
-    );
-  } finally {
-    setCerrandoSesiones(false);
-  }
-};
+  };
+
+  // Cerrar sesión en todos los dispositivos
+  const handleCerrarTodasSesiones = async () => {
+    setCerrandoSesiones(true);
+    setErrorCerrarSesiones("");
+
+    try {
+      await cerrarSesionesApi();
+
+      logout();
+      navigate("/login", { replace: true });
+    } catch (err) {
+      setErrorCerrarSesiones(
+        getError(err, t("perfil.errorCerrarSesiones"), t)
+      );
+    } finally {
+      setCerrandoSesiones(false);
+    }
+  };
 
   // Al elegir la imagen: validar y abrir el recortador (todavía no se sube)
   const handleFotoChange = (e) => {
@@ -437,7 +443,7 @@ export default function Configuracion() {
               <div>
                 <button
                   type="button"
-                  onClick={handleLogout}
+                  onClick={() => setMostrarConfirmacionLogout(true)}
                   className="font-sans w-full flex items-center justify-center gap-2 py-3 rounded-xl border-2 border-red-200 dark:border-red-900 text-red-600 dark:text-red-400 text-sm font-semibold hover:bg-red-50 dark:hover:bg-red-950/40 transition-colors"
                 >
                   <span className="material-icons text-base">logout</span>
@@ -473,57 +479,69 @@ export default function Configuracion() {
         />
       )}
 
+      {/* Confirmación para cerrar la sesión actual */}
+      <ConfirmarCerrarSesion
+        abierto={mostrarConfirmacionLogout}
+        onCancelar={() => setMostrarConfirmacionLogout(false)}
+        onConfirmar={handleLogout}
+        titulo={t("perfil.confirmarCerrarSesionTitulo")}
+        descripcion={t("perfil.confirmarCerrarSesion")}
+        textoCancelar={t("perfil.cancelar")}
+        textoConfirmar={t("perfil.aceptar")}
+        textoCargando={t("perfil.cerrandoSesion")}
+      />
+
       {/* Modal para cerrar todas las sesiones */}
-        {mostrarConfirmacionSesiones && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
-            <div className="w-full max-w-md rounded-2xl bg-white dark:bg-[var(--dark-surface)] p-6 shadow-xl">
+      {mostrarConfirmacionSesiones && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4">
+          <div className="w-full max-w-md rounded-2xl bg-white dark:bg-[var(--dark-surface)] p-6 shadow-xl">
 
-              <div className="flex flex-col items-center text-center">
-                <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#ead8d8] dark:bg-[var(--dark-border)]">
-                  <span className="material-icons text-3xl text-[#875d69] dark:text-rose-300">
-                    devices
-                  </span>
-                </div>
+            <div className="flex flex-col items-center text-center">
+              <div className="mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-[#ead8d8] dark:bg-[var(--dark-border)]">
+                <span className="material-icons text-3xl text-[#875d69] dark:text-rose-300">
+                  devices
+                </span>
+              </div>
 
-                <h3 className="font-sans text-lg font-bold text-[#875d69] dark:text-rose-300">
-                  {t("perfil.confirmarCerrarSesionesTitulo")}
-                </h3>
+              <h3 className="font-sans text-lg font-bold text-[#875d69] dark:text-rose-300">
+                {t("perfil.confirmarCerrarSesionesTitulo")}
+              </h3>
 
-                <p className="mt-3 font-sans text-sm text-gray-600 dark:text-[var(--dark-muted)]">
-                  {t("perfil.confirmarCerrarSesiones")}
+              <p className="mt-3 font-sans text-sm text-gray-600 dark:text-[var(--dark-muted)]">
+                {t("perfil.confirmarCerrarSesiones")}
+              </p>
+
+              {errorCerrarSesiones && (
+                <p className="mt-4 text-sm font-medium text-red-600 dark:text-red-400">
+                  {errorCerrarSesiones}
                 </p>
+              )}
+            </div>
 
-                {errorCerrarSesiones && (
-                  <p className="mt-4 text-sm font-medium text-red-600 dark:text-red-400">
-                    {errorCerrarSesiones}
-                  </p>
-                )}
-              </div>
+            <div className="mt-6 flex gap-3">
+              <button
+                type="button"
+                disabled={cerrandoSesiones}
+                onClick={() => setMostrarConfirmacionSesiones(false)}
+                className="flex-1 rounded-xl border border-[#cda4b4] dark:border-[var(--dark-border)] py-3 font-sans text-sm font-semibold text-[#875d69] dark:text-rose-300 hover:bg-[#fdf6e3] dark:hover:bg-white/5 disabled:opacity-50"
+              >
+                {t("perfil.cancelar")}
+              </button>
 
-              <div className="mt-6 flex gap-3">
-                <button
-                  type="button"
-                  disabled={cerrandoSesiones}
-                  onClick={() => setMostrarConfirmacionSesiones(false)}
-                  className="flex-1 rounded-xl border border-[#cda4b4] dark:border-[var(--dark-border)] py-3 font-sans text-sm font-semibold text-[#875d69] dark:text-rose-300 hover:bg-[#fdf6e3] dark:hover:bg-white/5 disabled:opacity-50"
-                >
-                  {t("perfil.cancelar")}
-                </button>
-
-                <button
-                  type="button"
-                  disabled={cerrandoSesiones}
-                  onClick={handleCerrarTodasSesiones}
-                  className="flex-1 rounded-xl bg-[#875d69] py-3 font-sans text-sm font-semibold text-white hover:bg-[#704956] disabled:opacity-50"
-                >
-                  {cerrandoSesiones
-                    ? t("perfil.cerrandoSesiones")
-                    : t("perfil.aceptar")}
-                </button>
-              </div>
+              <button
+                type="button"
+                disabled={cerrandoSesiones}
+                onClick={handleCerrarTodasSesiones}
+                className="flex-1 rounded-xl bg-[#875d69] py-3 font-sans text-sm font-semibold text-white hover:bg-[#704956] disabled:opacity-50"
+              >
+                {cerrandoSesiones
+                  ? t("perfil.cerrandoSesiones")
+                  : t("perfil.aceptar")}
+              </button>
             </div>
           </div>
-        )}
+        </div>
+      )}
     </div>
   );
 }

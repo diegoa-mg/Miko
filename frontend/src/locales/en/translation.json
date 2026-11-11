@@ -538,7 +538,10 @@
     "passwordActualPlaceholder": "Enter your current password",
     "passwordActualRequerida": "You must enter your current password to change it",
     "passwordActualAviso": "Enter your current password to change it",
-    "aceptar": "Accept"
+    "aceptar": "Accept",
+    "confirmarCerrarSesionTitulo": "Log out?",
+    "confirmarCerrarSesion": "Are you sure you want to log out? You will need to sign in again.",
+    "cerrandoSesion": "Logging out..."
   },
   "common": {
     "notFound": "Page not found",

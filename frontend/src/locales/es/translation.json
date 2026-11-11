@@ -538,7 +538,10 @@
     "passwordActualPlaceholder": "Ingresa tu contraseña actual",
     "passwordActualRequerida": "Debes escribir tu contraseña actual para cambiarla",
     "passwordActualAviso": "Ingresa tu contraseña actual para cambiarla",
-    "aceptar": "Aceptar"
+    "aceptar": "Aceptar",
+    "confirmarCerrarSesionTitulo": "¿Cerrar sesión?",
+    "confirmarCerrarSesion": "¿Estás segura de que deseas cerrar sesión? Tendrás que iniciar sesión nuevamente.",
+    "cerrandoSesion": "Cerrando sesión..."
   },
   "common": {
     "notFound": "Página no encontrada",
