@@ -142,10 +142,10 @@ function VentasGerente() {
           </div>
 
           <div>
-            <h1 className="text-4xl font-bold text-[#8b5e6b] dark:text-[var(--dark-muted)]">
+            <h1 className="text-4xl font-bold text-[#8b5e6b] dark:text-rose-300">
               {t("ventas.titulo")}
             </h1>
-            <p className="mt-1 text-lg text-[#5f4a50] dark:text-[var(--dark-text)]">
+            <p className="mt-1 text-lg text-[#5f4a50] dark:text-[var(--dark-muted)]">
               {t("ventas.descripcion")}
             </p>
           </div>

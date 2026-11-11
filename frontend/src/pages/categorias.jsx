@@ -156,7 +156,7 @@ export default function Categorias() {
           <button
             type="button"
             onClick={abrirCrear}
-            className="flex items-center gap-2 px-5 py-2.5 bg-[#875d69] hover:bg-[#724d58] text-white text-sm font-semibold rounded-xl transition-colors"
+            className="flex items-center gap-2 px-5 py-2.5 bg-rose-800 dark:bg-rose-700 hover:bg-rose-900 dark:hover:bg-rose-600 text-white text-sm font-semibold rounded-xl transition-colors"
           >
             <span className="material-icons text-lg">add</span>
             {t("categorias.nueva")}
