@@ -55,9 +55,6 @@ function Gerentes() {
       obtenerSucursales(),
     ]);
 
-    console.log("GERENTES: ", gerentesData);
-    console.log("SUCURSALES JSON NUEVO:", JSON.stringify(sucursalesData, null, 2));
-
     setGerentes(gerentesData);
     setSucursales(sucursalesData);
   } catch (err) {
@@ -688,13 +685,6 @@ const manejarReenviarAviso = async (id) => {
 
                   <button
                     type="submit"
-                    onClick={() =>
-                      console.log(
-                        editandoGerente
-                          ? "🔥 CLICK EN GUARDAR CAMBIOS"
-                          : "🔥 CLICK EN CREAR GERENTE"
-                      )
-                    }
                     className="font-sans flex-1 bg-rose-800 dark:bg-rose-700 hover:bg-rose-900 dark:hover:bg-rose-600 text-white py-3 rounded-xl transition-colors"
                   >
                     {editandoGerente

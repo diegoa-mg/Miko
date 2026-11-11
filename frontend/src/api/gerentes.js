@@ -1,8 +1,6 @@
 import api from "./axios";
 
 export const obtenerGerentes = async (incluirInactivos = false) => {
-  console.log("OBTENIENDO GERENTES...");
-
   const { data } = await api.get("/gerentes", {
     params: {
       incluir_inactivos: incluirInactivos,
