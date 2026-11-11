@@ -221,7 +221,10 @@
     "ventaRegistradaCambio": "Sale registered. Change to give: {{cambio}}",
     "metodoPago": "Payment method",
     "efectivoExacto": "Exact",
-    "errorMetodosPago": "Could not load the payment methods. Reload the page."
+    "errorMetodosPago": "Could not load the payment methods. Reload the page.",
+    "registrandoVenta": "Registering sale...",
+    "generandoTicket": "Generating ticket...",
+    "esperaUnMomento": "One moment, please."
   },
   "ticketVenta": {
     "titulo": "Sale summary",
@@ -244,7 +247,8 @@
     "nuevaVenta": "New sale",
     "cargando": "Loading ticket...",
     "errorCarga": "Could not load the ticket.",
-    "errorPdf": "Could not open the ticket PDF. Please try again."
+    "errorPdf": "Could not open the ticket PDF. Please try again.",
+    "reintentar": "Retry"
   },
   "misVentas": {
     "titulo": "My sales",

@@ -221,7 +221,10 @@
     "ventaRegistradaCambio": "Venta registrada. Cambio a entregar: {{cambio}}",
     "metodoPago": "Método de pago",
     "efectivoExacto": "Exacto",
-    "errorMetodosPago": "No se pudieron cargar los métodos de pago. Recarga la página."
+    "errorMetodosPago": "No se pudieron cargar los métodos de pago. Recarga la página.",
+    "registrandoVenta": "Registrando venta...",
+    "generandoTicket": "Generando ticket...",
+    "esperaUnMomento": "Un momento, por favor."
   },
   "ticketVenta": {
     "titulo": "Resumen de la venta",
@@ -244,7 +247,8 @@
     "nuevaVenta": "Nueva venta",
     "cargando": "Cargando ticket...",
     "errorCarga": "No se pudo cargar el ticket.",
-    "errorPdf": "No se pudo abrir el ticket en PDF. Inténtalo de nuevo."
+    "errorPdf": "No se pudo abrir el ticket en PDF. Inténtalo de nuevo.",
+    "reintentar": "Reintentar"
   },
   "misVentas": {
     "titulo": "Mis ventas",

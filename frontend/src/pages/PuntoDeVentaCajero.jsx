@@ -4,6 +4,8 @@ import { Minus, Plus, X } from "lucide-react";
 import api from "../api/axios";
 import { obtenerMetodosPago, registrarVenta } from "../api/ventasCajero";
 import CobroModal from "../components/CobroModal";
+import ProcesandoCobro from "../components/ProcesandoCobro";
+import TicketVentaModal from "../components/TicketVentaModal";
 
 /**
  * Pantalla de venta del Cajero (/cajero/pos)
@@ -13,6 +15,9 @@ import CobroModal from "../components/CobroModal";
  */
 
 // ---- Helpers ---------------------------------------------------------------
+
+// Tiempo mínimo que se ve "Generando ticket..." para que no parpadee si el ticket llega muy rápido
+const MIN_MS_TICKET = 600;
 
 // precio llega como Decimal (string): Number(...) lo convierte
 const getStock = (p) => Number(p.existencia ?? 0);
@@ -44,6 +49,12 @@ export default function PuntoDeVentaCajero() {
   const [cobroAbierto, setCobroAbierto] = useState(false);
   const [metodosPago, setMetodosPago] = useState([]);
 
+  // Después de cobrar: pantalla de espera ("registrando" -> "ticket") y ticket de la venta
+  const [fasePago, setFasePago] = useState(null); // null | "registrando" | "ticket"
+  const [ticketVenta, setTicketVenta] = useState(null); // { id, cambio }
+  const inicioTicketRef = useRef(0);
+  const faseTimer = useRef(null);
+
   // Código de barras
   const [codigo, setCodigo] = useState("");
   const [buscandoCodigo, setBuscandoCodigo] = useState(false);
@@ -59,7 +70,13 @@ export default function PuntoDeVentaCajero() {
     avisoTimer.current = setTimeout(() => setAviso(null), ms);
   }, []);
 
-  useEffect(() => () => clearTimeout(avisoTimer.current), []);
+  useEffect(
+    () => () => {
+      clearTimeout(avisoTimer.current);
+      clearTimeout(faseTimer.current);
+    },
+    []
+  );
 
   // ---- Carga de datos -------------------------------------------------------
 
@@ -240,30 +257,51 @@ export default function PuntoDeVentaCajero() {
   // Si falla (por ejemplo, stock insuficiente), relanza el error: el modal lo
   // muestra sin cerrarse y aquí se refrescan las existencias.
   const confirmarCobro = async ({ metodoPagoId, efectivoRecibido }) => {
+    setFasePago("registrando");
     let venta;
     try {
       venta = await registrarVenta(carrito, metodoPagoId);
     } catch (err) {
+      setFasePago(null);
       cargarProductos();
       throw err;
     }
 
     setCobroAbierto(false);
     setCarrito([]);
-    await cargarProductos(); // las existencias ya vienen descontadas
+    cargarProductos(); // las existencias ya vienen descontadas
+
+    // Sin id no se puede pedir el ticket: se avisa como antes
+    if (venta?.id == null) {
+      setFasePago(null);
+      mostrarAviso("ok", t("pos.ventaRegistrada"), 6000);
+      codigoRef.current?.focus();
+      return;
+    }
 
     // El cambio se calcula con el total oficial que devolvió el backend
-    const totalVenta = Number(venta?.total ?? total);
+    const totalVenta = Number(venta.total ?? total);
     const cambio =
       efectivoRecibido != null ? Math.round((efectivoRecibido - totalVenta) * 100) / 100 : 0;
 
-    if (cambio > 0) {
-      mostrarAviso("ok", t("pos.ventaRegistradaCambio", { cambio: money.format(cambio) }), 10000);
-    } else {
-      mostrarAviso("ok", t("pos.ventaRegistrada"), 6000);
-    }
-    codigoRef.current?.focus();
+    // El ticket se carga dentro de TicketVentaModal; la pantalla de espera
+    // lo tapa hasta que avisa que terminó (onListo).
+    inicioTicketRef.current = Date.now();
+    setFasePago("ticket");
+    setTicketVenta({ id: venta.id, cambio });
   };
+
+  const ticketListo = useCallback(() => {
+    const falta = Math.max(0, MIN_MS_TICKET - (Date.now() - inicioTicketRef.current));
+    clearTimeout(faseTimer.current);
+    faseTimer.current = setTimeout(() => setFasePago(null), falta);
+  }, []);
+
+  const cerrarTicket = useCallback(() => {
+    if (fasePago) return; // mientras carga no se puede cerrar con Esc
+    setTicketVenta(null);
+    codigoRef.current?.focus(); // listo para la siguiente venta
+  }, [fasePago]);
 
   // ---- Render ---------------------------------------------------------------
 
@@ -283,6 +321,17 @@ export default function PuntoDeVentaCajero() {
         onClose={() => setCobroAbierto(false)}
         onConfirm={confirmarCobro}
       />
+
+      <TicketVentaModal
+        ventaId={ticketVenta?.id ?? null}
+        cambio={ticketVenta?.cambio ?? 0}
+        recienRegistrada
+        textoCerrar={t("ticketVenta.nuevaVenta")}
+        onListo={ticketListo}
+        onClose={cerrarTicket}
+      />
+
+      <ProcesandoCobro fase={fasePago} />
 
       <a
         href="#carrito-venta"
