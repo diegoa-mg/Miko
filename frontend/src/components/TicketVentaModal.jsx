@@ -88,16 +88,16 @@ export default function TicketVentaModal({
         role="dialog"
         aria-modal="true"
         aria-labelledby="ticket-titulo"
-        className="flex max-h-[90vh] w-full max-w-lg flex-col rounded-xl bg-white p-6 shadow-xl"
+        className="flex max-h-[90vh] w-full max-w-lg flex-col rounded-xl bg-white dark:bg-[var(--dark-surface)] dark:border dark:border-[var(--dark-border)] p-6 shadow-xl"
       >
         <div className="mb-4 flex items-start justify-between">
           <div className="flex items-center gap-2">
-            {recienRegistrada && <CheckCircle2 size={24} className="text-green-600" />}
+            {recienRegistrada && <CheckCircle2 size={24} className="text-green-600 dark:text-green-400" />}
             <div>
-              <h2 id="ticket-titulo" className="font-sans text-xl font-bold text-[#875d69]">
+              <h2 id="ticket-titulo" className="font-sans text-xl font-bold text-[#875d69] dark:text-rose-300">
                 {recienRegistrada ? t("ticketVenta.ventaRegistrada") : t("ticketVenta.titulo")}
               </h2>
-              <p className="text-sm text-gray-500">
+              <p className="text-sm text-gray-500 dark:text-[var(--dark-muted)]">
                 {t("ticketVenta.venta")} #{ventaId}
               </p>
             </div>
@@ -106,17 +106,17 @@ export default function TicketVentaModal({
             type="button"
             onClick={onClose}
             aria-label={t("ticketVenta.cerrar")}
-            className="text-gray-400 hover:text-gray-600"
+            className="text-gray-400 dark:text-[var(--dark-muted)] hover:text-gray-600 dark:hover:text-white"
           >
             <X size={20} />
           </button>
         </div>
 
         <div className="min-h-0 flex-1 overflow-y-auto">
-          {cargando && <p className="py-6 text-center text-sm text-gray-500">{t("ticketVenta.cargando")}</p>}
+          {cargando && <p className="py-6 text-center text-sm text-gray-500 dark:text-[var(--dark-muted)]">{t("ticketVenta.cargando")}</p>}
 
           {error && !cargando && (
-            <p role="alert" className="rounded-lg border border-red-300 bg-red-50 px-4 py-2 text-sm text-red-700">
+            <p role="alert" className="rounded-lg border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/40 px-4 py-2 text-sm text-red-700 dark:text-red-300">
               {error}
             </p>
           )}
@@ -124,22 +124,22 @@ export default function TicketVentaModal({
           {ticket && (
             <>
               <dl className="mb-4 grid grid-cols-[auto_1fr] gap-x-4 gap-y-1 text-sm">
-                <dt className="text-gray-500">{t("ticketVenta.sucursal")}</dt>
-                <dd className="text-right font-medium text-gray-800">{ticket.sucursal}</dd>
+                <dt className="text-gray-500 dark:text-[var(--dark-muted)]">{t("ticketVenta.sucursal")}</dt>
+                <dd className="text-right font-medium text-gray-800 dark:text-[var(--dark-text)]">{ticket.sucursal}</dd>
                 {ticket.direccion_sucursal && (
                   <>
-                    <dt className="text-gray-500">{t("ticketVenta.direccion")}</dt>
-                    <dd className="text-right text-gray-800">{ticket.direccion_sucursal}</dd>
+                    <dt className="text-gray-500 dark:text-[var(--dark-muted)]">{t("ticketVenta.direccion")}</dt>
+                    <dd className="text-right text-gray-800 dark:text-[var(--dark-text)]">{ticket.direccion_sucursal}</dd>
                   </>
                 )}
-                <dt className="text-gray-500">{t("ticketVenta.cajero")}</dt>
-                <dd className="text-right text-gray-800">{ticket.cajero}</dd>
-                <dt className="text-gray-500">{t("ticketVenta.fecha")}</dt>
-                <dd className="text-right text-gray-800">
+                <dt className="text-gray-500 dark:text-[var(--dark-muted)]">{t("ticketVenta.cajero")}</dt>
+                <dd className="text-right text-gray-800 dark:text-[var(--dark-text)]">{ticket.cajero}</dd>
+                <dt className="text-gray-500 dark:text-[var(--dark-muted)]">{t("ticketVenta.fecha")}</dt>
+                <dd className="text-right text-gray-800 dark:text-[var(--dark-text)]">
                   {formatearFechaNegocio(ticket.fecha, i18n.language, zona)}
                 </dd>
-                <dt className="text-gray-500">{t("ticketVenta.metodoPago")}</dt>
-                <dd className="text-right text-gray-800">
+                <dt className="text-gray-500 dark:text-[var(--dark-muted)]">{t("ticketVenta.metodoPago")}</dt>
+                <dd className="text-right text-gray-800 dark:text-[var(--dark-text)]">
                   {t(`ventas.metodosPago.${ticket.metodo_pago}`, ticket.metodo_pago)}
                 </dd>
               </dl>
@@ -147,20 +147,20 @@ export default function TicketVentaModal({
               <div className="overflow-x-auto">
                 <table className="w-full text-sm">
                   <thead>
-                    <tr className="border-b text-left text-xs uppercase text-gray-500">
+                    <tr className="border-b text-left text-xs uppercase text-gray-500 dark:text-[var(--dark-muted)]">
                       <th className="py-2 pr-2 font-medium">{t("ticketVenta.producto")}</th>
                       <th className="px-2 py-2 text-center font-medium">{t("ticketVenta.cantidad")}</th>
                       <th className="px-2 py-2 text-right font-medium">{t("ticketVenta.precio")}</th>
                       <th className="py-2 pl-2 text-right font-medium">{t("ticketVenta.subtotal")}</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-100">
+                  <tbody className="divide-y divide-gray-100 dark:divide-[var(--dark-border)]">
                     {productos.map((p, i) => (
                       <tr key={`${p.nombre}-${i}`}>
-                        <td className="py-2 pr-2 text-gray-800">{p.nombre}</td>
-                        <td className="px-2 py-2 text-center text-gray-800">{p.cantidad}</td>
-                        <td className="px-2 py-2 text-right text-gray-600">{money.format(Number(p.precio_unitario))}</td>
-                        <td className="py-2 pl-2 text-right font-medium text-gray-800">{money.format(Number(p.subtotal))}</td>
+                        <td className="py-2 pr-2 text-gray-800 dark:text-[var(--dark-text)]">{p.nombre}</td>
+                        <td className="px-2 py-2 text-center text-gray-800 dark:text-[var(--dark-text)]">{p.cantidad}</td>
+                        <td className="px-2 py-2 text-right text-gray-600 dark:text-[var(--dark-muted)]">{money.format(Number(p.precio_unitario))}</td>
+                        <td className="py-2 pl-2 text-right font-medium text-gray-800 dark:text-[var(--dark-text)]">{money.format(Number(p.subtotal))}</td>
                       </tr>
                     ))}
                   </tbody>
@@ -168,12 +168,12 @@ export default function TicketVentaModal({
               </div>
 
               <div className="mt-4 border-t pt-4">
-                <div className="flex justify-between text-xl font-semibold text-gray-800">
+                <div className="flex justify-between text-xl font-semibold text-gray-800 dark:text-[var(--dark-text)]">
                   <span>{t("ticketVenta.total")}</span>
                   <span>{money.format(Number(ticket.total))}</span>
                 </div>
                 {cambio > 0 && (
-                  <div className="mt-3 flex justify-between rounded-lg bg-green-50 px-4 py-3 text-lg font-bold text-green-700">
+                  <div className="mt-3 flex justify-between rounded-lg bg-green-50 dark:bg-green-950/40 px-4 py-3 text-lg font-bold text-green-700 dark:text-green-300">
                     <span>{t("ticketVenta.cambio")}</span>
                     <span>{money.format(cambio)}</span>
                   </div>
@@ -184,7 +184,7 @@ export default function TicketVentaModal({
         </div>
 
         {errorPdf && (
-          <p role="alert" className="mt-3 rounded-lg border border-red-300 bg-red-50 px-4 py-2 text-sm text-red-700">
+          <p role="alert" className="mt-3 rounded-lg border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/40 px-4 py-2 text-sm text-red-700 dark:text-red-300">
             {errorPdf}
           </p>
         )}
@@ -194,7 +194,7 @@ export default function TicketVentaModal({
             type="button"
             onClick={() => ejecutarPdf(abrirTicketPdf)}
             disabled={ocupado || !ticket}
-            className="flex items-center justify-center gap-2 rounded-lg border-2 border-[#e6bdc7] py-2 text-sm font-medium text-[#875d69] hover:bg-[#f4d0d0] disabled:opacity-50"
+            className="flex items-center justify-center gap-2 rounded-lg border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] py-2 text-sm font-medium text-[#875d69] dark:text-rose-300 hover:bg-[#f4d0d0] dark:hover:bg-[var(--dark-border)] disabled:opacity-50"
           >
             <Printer size={16} />
             {t("ticketVenta.imprimir")}
@@ -203,7 +203,7 @@ export default function TicketVentaModal({
             type="button"
             onClick={() => ejecutarPdf(descargarTicketPdf)}
             disabled={ocupado || !ticket}
-            className="flex items-center justify-center gap-2 rounded-lg border-2 border-[#e6bdc7] py-2 text-sm font-medium text-[#875d69] hover:bg-[#f4d0d0] disabled:opacity-50"
+            className="flex items-center justify-center gap-2 rounded-lg border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] py-2 text-sm font-medium text-[#875d69] dark:text-rose-300 hover:bg-[#f4d0d0] dark:hover:bg-[var(--dark-border)] disabled:opacity-50"
           >
             <Download size={16} />
             {t("ticketVenta.descargar")}
@@ -212,7 +212,7 @@ export default function TicketVentaModal({
         <button
           type="button"
           onClick={onClose}
-          className="mt-3 w-full rounded-lg bg-rose-800 py-2 font-medium text-white transition-colors hover:bg-rose-900"
+          className="mt-3 w-full rounded-lg bg-rose-800 dark:bg-rose-700 py-2 font-medium text-white transition-colors hover:bg-rose-900 dark:hover:bg-rose-600"
         >
           {textoCerrar ?? t("ticketVenta.cerrar")}
         </button>
