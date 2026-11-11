@@ -8,6 +8,7 @@ export const obtenerVentas = async (
     offset = 0,
     fechaInicio = null,
     fechaFin = null,
+    metodoPago = null,
   } = {}
 ) => {
   const params = {
@@ -27,16 +28,21 @@ export const obtenerVentas = async (
     params.fecha_fin = fechaFin;
   }
 
+  if (metodoPago) {
+    params.metodo_pago = metodoPago;
+  }
+
   const { data } = await api.get("/ventas", { params });
 
   return Array.isArray(data) ? data : [];
 };
 
-// GET /ventas/conteo -> total de ventas con los mismos filtros que obtenerVentas.
-// Sirve para saber cuántas páginas hay.
+// GET /ventas/conteo -> { total, montoTotal } de TODAS las ventas que cumplen los
+// mismos filtros que obtenerVentas (sin paginar). Sirve para saber cuántas páginas
+// hay y para las tarjetas de resumen.
 export const contarVentas = async (
   sucursalId = null,
-  { fechaInicio = null, fechaFin = null } = {}
+  { fechaInicio = null, fechaFin = null, metodoPago = null } = {}
 ) => {
   const params = {};
 
@@ -52,7 +58,14 @@ export const contarVentas = async (
     params.fecha_fin = fechaFin;
   }
 
+  if (metodoPago) {
+    params.metodo_pago = metodoPago;
+  }
+
   const { data } = await api.get("/ventas/conteo", { params });
 
-  return Number(data?.total) || 0;
+  return {
+    total: Number(data?.total) || 0,
+    montoTotal: Number(data?.monto_total) || 0,
+  };
 };
