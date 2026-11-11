@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { obtenerVentas, contarVentas } from "../api/ventas";
 import Paginacion from "../components/Paginacion";
@@ -9,6 +9,7 @@ function VentasGerente() {
   const [ventas, setVentas] = useState([]);
   const [paginaActual, setPaginaActual] = useState(1);
   const [totalVentas, setTotalVentas] = useState(0);
+  const [montoTotal, setMontoTotal] = useState(0);
   const [cargando, setCargando] = useState(true);
   const [errorCarga, setErrorCarga] = useState(false);
   const [intentoCarga, setIntentoCarga] = useState(0);
@@ -27,26 +28,30 @@ function VentasGerente() {
       try {
         const fechaInicio = fechaSeleccionada || null;
         const fechaFin = fechaSeleccionada || null;
+        const metodoPago = metodoPagoSeleccionado || null;
 
-        const [datosVentas, total] = await Promise.all([
+        const [datosVentas, resumen] = await Promise.all([
           obtenerVentas(null, {
             limit: ventasPorPagina,
             offset: (paginaActual - 1) * ventasPorPagina,
             fechaInicio,
             fechaFin,
+            metodoPago,
           }),
-          contarVentas(null, { fechaInicio, fechaFin }),
+          contarVentas(null, { fechaInicio, fechaFin, metodoPago }),
         ]);
 
         if (cancelado) return;
 
-        setTotalVentas(total);
+        setTotalVentas(resumen.total);
+        setMontoTotal(resumen.montoTotal);
         setVentas(Array.isArray(datosVentas) ? datosVentas : []);
       } catch (error) {
         if (!cancelado) {
           console.error("Error al cargar ventas del gerente:", error);
           setVentas([]);
           setTotalVentas(0);
+          setMontoTotal(0);
           setErrorCarga(true);
         }
       } finally {
@@ -59,28 +64,7 @@ function VentasGerente() {
     return () => {
       cancelado = true;
     };
-  }, [paginaActual, fechaSeleccionada, intentoCarga]);
-
-  const ventasFiltradas = useMemo(() => {
-    if (metodoPagoSeleccionado === "") return ventas;
-
-    return ventas.filter((venta) => {
-      const metodo = String(venta.metodo_pago_nombre ?? "")
-        .trim()
-        .toLowerCase();
-
-      return metodo === metodoPagoSeleccionado;
-    });
-  }, [ventas, metodoPagoSeleccionado]);
-
-  const totalVendido = useMemo(
-    () =>
-      ventasFiltradas.reduce(
-        (acumulado, venta) => acumulado + (Number(venta.total) || 0),
-        0
-      ),
-    [ventasFiltradas]
-  );
+  }, [paginaActual, fechaSeleccionada, metodoPagoSeleccionado, intentoCarga]);
 
   const formatearPrecio = (precio) =>
     Number(precio || 0).toLocaleString(
@@ -126,6 +110,7 @@ function VentasGerente() {
 
   const cambiarMetodoPago = (valor) => {
     setMetodoPagoSeleccionado(valor);
+    setPaginaActual(1);
   };
 
   const totalPaginas = Math.max(1, Math.ceil(totalVentas / ventasPorPagina));
@@ -236,7 +221,7 @@ function VentasGerente() {
                 {t("ventas.ventasRegistradas")}
               </p>
               <p className="text-2xl font-bold text-[#5f3c46] dark:text-[var(--dark-text)]">
-                {cargando ? "—" : ventasFiltradas.length}
+                {cargando ? "—" : totalVentas}
               </p>
             </div>
           </div>
@@ -254,7 +239,7 @@ function VentasGerente() {
                 {t("ventas.totalVendido")}
               </p>
               <p className="text-2xl font-bold text-[#5f3c46] dark:text-[var(--dark-text)]">
-                {cargando ? "—" : formatearPrecio(totalVendido)}
+                {cargando ? "—" : formatearPrecio(montoTotal)}
               </p>
             </div>
           </div>
@@ -302,7 +287,7 @@ function VentasGerente() {
               {t("ventas.reintentar", "Reintentar")}
             </button>
           </div>
-        ) : ventasFiltradas.length > 0 ? (
+        ) : ventas.length > 0 ? (
           <div className="overflow-x-auto">
             <table className="w-full">
               <thead>
@@ -329,7 +314,7 @@ function VentasGerente() {
               </thead>
 
               <tbody>
-                {ventasFiltradas.map((venta) => {
+                {ventas.map((venta) => {
                   const estilosPago = {
                     Efectivo: "bg-[#e4f3e6] dark:bg-green-900/40 text-[#42784b] dark:text-green-300",
                     Tarjeta: "bg-[#e4edf9] dark:bg-blue-900/40 text-[#456b9a] dark:text-blue-300",

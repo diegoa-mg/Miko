@@ -21,6 +21,7 @@ from src.models import (
 )
 from src.schemas import DetalleVentaCreate, VentaCreate
 from src.routers.ventas import (
+    contar_ventas_listado,
     eliminar_venta,
     listar_metodos_pago,
     listar_ventas,
@@ -167,6 +168,77 @@ def run_tests():
         ventas_list = listar_ventas(sucursal_id=sucursal.id, db=db, usuario_actual=usuario)
         assert any(v.id == venta_id for v in ventas_list)
         print(f"✓ listar_ventas OK (venta ID {venta_id} presente)")
+
+        # 5.1 Test contar_ventas_listado: el conteo y el monto cubren TODAS las ventas
+        # que cumplen los filtros, no solo una página
+        conteo = contar_ventas_listado(sucursal_id=sucursal.id, db=db, usuario_actual=usuario)
+        todas = listar_ventas(sucursal_id=sucursal.id, limit=100000, db=db, usuario_actual=usuario)
+        suma_todas = sum((v.total for v in todas), Decimal("0"))
+        assert conteo["total"] == len(todas), (conteo["total"], len(todas))
+        assert Decimal(str(conteo["monto_total"])) == suma_todas, (conteo["monto_total"], suma_todas)
+        print(f"✓ contar_ventas_listado OK ({conteo['total']} ventas, monto ${conteo['monto_total']})")
+
+        # 5.2 Con una página más chica que el total, el conteo sigue siendo el real
+        pagina = listar_ventas(sucursal_id=sucursal.id, limit=1, db=db, usuario_actual=usuario)
+        assert len(pagina) == 1
+        assert conteo["total"] >= len(pagina)
+        print("✓ El conteo no depende del limit de la página")
+
+        # 5.3 Filtro por método de pago (listado y conteo deben coincidir)
+        nombre_pago = metodo_pago.nombre.value
+        filtradas = listar_ventas(
+            sucursal_id=sucursal.id, metodo_pago=nombre_pago, limit=100000,
+            db=db, usuario_actual=usuario,
+        )
+        conteo_filtrado = contar_ventas_listado(
+            sucursal_id=sucursal.id, metodo_pago=nombre_pago, db=db, usuario_actual=usuario,
+        )
+        assert any(v.id == venta_id for v in filtradas)
+        assert all(v.metodo_pago_nombre == nombre_pago for v in filtradas)
+        assert conteo_filtrado["total"] == len(filtradas)
+        assert Decimal(str(conteo_filtrado["monto_total"])) == sum((v.total for v in filtradas), Decimal("0"))
+        # Mayúsculas y minúsculas no importan
+        conteo_mayus = contar_ventas_listado(
+            sucursal_id=sucursal.id, metodo_pago=nombre_pago.upper(), db=db, usuario_actual=usuario,
+        )
+        assert conteo_mayus["total"] == conteo_filtrado["total"]
+        # Un método inexistente no devuelve ventas
+        conteo_nada = contar_ventas_listado(
+            sucursal_id=sucursal.id, metodo_pago="no_existe", db=db, usuario_actual=usuario,
+        )
+        assert conteo_nada["total"] == 0 and Decimal(str(conteo_nada["monto_total"])) == 0
+        print(f"✓ Filtro por método de pago OK ('{nombre_pago}': {conteo_filtrado['total']} ventas)")
+
+        # 5.4 Con otro método de pago, el conteo cambia solo para ese método
+        otro_metodo = db.query(MetodoPago).filter(MetodoPago.id != metodo_pago.id).first()
+        if otro_metodo:
+            nombre_otro = otro_metodo.nombre.value
+            antes_otro = contar_ventas_listado(
+                sucursal_id=sucursal.id, metodo_pago=nombre_otro, db=db, usuario_actual=usuario,
+            )
+            venta_otro = registrar_venta(
+                venta_in=VentaCreate(
+                    sucursal_id=sucursal.id,
+                    metodo_pago_id=otro_metodo.id,
+                    detalles=[DetalleVentaCreate(producto_id=producto.id, cantidad=1)],
+                ),
+                db=db,
+                usuario_actual=usuario,
+            )
+            despues_otro = contar_ventas_listado(
+                sucursal_id=sucursal.id, metodo_pago=nombre_otro, db=db, usuario_actual=usuario,
+            )
+            despues_original = contar_ventas_listado(
+                sucursal_id=sucursal.id, metodo_pago=nombre_pago, db=db, usuario_actual=usuario,
+            )
+            assert despues_otro["total"] == antes_otro["total"] + 1
+            assert Decimal(str(despues_otro["monto_total"])) == Decimal(str(antes_otro["monto_total"])) + venta_otro.total
+            assert despues_original["total"] == conteo_filtrado["total"]  # el otro método no lo afecta
+            # Se anula la venta de prueba para no alterar el inventario de los pasos siguientes
+            eliminar_venta(venta_id=venta_otro.id, db=db, usuario_actual=usuario)
+            print(f"✓ El conteo cambia solo para el método '{nombre_otro}'")
+        else:
+            print("- Solo existe un método de pago; se omite la comparación entre métodos")
 
         # 6. Test obtener_venta
         venta_res = obtener_venta(venta_id=venta_id, db=db, usuario_actual=usuario)

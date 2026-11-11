@@ -3,7 +3,7 @@ from decimal import Decimal
 from typing import Optional
 
 from fastapi import APIRouter, Depends, HTTPException, Query, Response, status
-from sqlalchemy import func
+from sqlalchemy import String, cast, func
 from sqlalchemy.orm import Session, joinedload, selectinload
 
 from src.database import get_db
@@ -241,6 +241,7 @@ def _consulta_ventas(
     fecha_inicio: date | None,
     fecha_fin: date | None,
     usuario_id: int | None,
+    metodo_pago: str | None = None,
 ):
     """
     Consulta base de ventas con las restricciones por rol y los filtros opcionales.
@@ -269,6 +270,13 @@ def _consulta_ventas(
         inicio_utc, _ = rango_del_dia_en_utc(inicio)
         _, fin_utc = rango_del_dia_en_utc(fin)
         query = query.filter(Venta.fecha >= inicio_utc, Venta.fecha <= fin_utc)
+
+    if metodo_pago:
+        # `nombre` es un ENUM de PostgreSQL: lower() no acepta enums, por eso se
+        # convierte a texto antes de compararlo.
+        query = query.join(MetodoPago, Venta.metodo_pago_id == MetodoPago.id).filter(
+            func.lower(cast(MetodoPago.nombre, String)) == metodo_pago.lower()
+        )
     return query
 
 
@@ -278,6 +286,7 @@ def listar_ventas(
     fecha_inicio: date | None = None,
     fecha_fin: date | None = None,
     usuario_id: int | None = None,
+    metodo_pago: str | None = None,
     limit: int = 100,
     offset: int = 0,
     db: Session = Depends(get_db),
@@ -287,11 +296,11 @@ def listar_ventas(
 ):
     """
     Lista las ventas registradas.
-    Permite filtrar por sucursal, rango de fechas y usuario.
+    Permite filtrar por sucursal, rango de fechas, usuario y método de pago.
     Administradores pueden ver todas; gerentes y cajeros ven automáticamente su sucursal.
     """
     query = _consulta_ventas(
-        db, usuario_actual, sucursal_id, fecha_inicio, fecha_fin, usuario_id
+        db, usuario_actual, sucursal_id, fecha_inicio, fecha_fin, usuario_id, metodo_pago
     )
 
     ventas = (
@@ -316,19 +325,25 @@ def contar_ventas_listado(
     fecha_inicio: date | None = None,
     fecha_fin: date | None = None,
     usuario_id: int | None = None,
+    metodo_pago: str | None = None,
     db: Session = Depends(get_db),
     usuario_actual: Usuario = Depends(
         requiere_rol("admin_general", "gerente_sede", "cajero")
     ),
 ):
     """
-    Total de ventas que cumplen los mismos filtros que GET /ventas.
-    Sirve para calcular cuántas páginas tiene el listado.
+    Total de ventas y monto vendido de todas las ventas que cumplen los mismos
+    filtros que GET /ventas (sin paginar).
+    Sirve para calcular cuántas páginas tiene el listado y para las tarjetas de resumen.
     """
     query = _consulta_ventas(
-        db, usuario_actual, sucursal_id, fecha_inicio, fecha_fin, usuario_id
+        db, usuario_actual, sucursal_id, fecha_inicio, fecha_fin, usuario_id, metodo_pago
     )
-    return {"total": query.count()}
+    total, monto_total = query.with_entities(
+        func.count(Venta.id),
+        func.coalesce(func.sum(Venta.total), 0),
+    ).one()
+    return {"total": total, "monto_total": monto_total}
 
 
 @router.get("/mis-ventas", response_model=list[VentaOut])

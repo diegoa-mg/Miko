@@ -1,4 +1,4 @@
-import { useEffect, useMemo, useState } from "react";
+import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { obtenerVentas, contarVentas } from "../api/ventas";
 import Paginacion from "../components/Paginacion";
@@ -23,6 +23,7 @@ const sucursalesInactivas = sucursales.filter(
   const [paginaActual, setPaginaActual] = useState(1);
   const [cargando, setCargando] = useState(true);
   const [totalVentas, setTotalVentas] = useState(0);
+  const [montoTotal, setMontoTotal] = useState(0);
   const [errorCarga, setErrorCarga] = useState("");
 
   const ventasPorPagina = 15;
@@ -58,6 +59,7 @@ const sucursalesInactivas = sucursales.filter(
       setErrorCarga("");
       setVentas([]);
       setTotalVentas(0);
+      setMontoTotal(0);
 
       if (tipoSucursal !== "todas" && sucursalSeleccionada === "") {
       setCargando(false);
@@ -70,7 +72,7 @@ const sucursalesInactivas = sucursales.filter(
         const fechaInicio = fechaSeleccionada || null;
         const fechaFin = fechaSeleccionada || null;
 
-        const [datosVentas, total] = await Promise.all([
+        const [datosVentas, resumen] = await Promise.all([
           obtenerVentas(sucursalId, {
             limit: ventasPorPagina,
             offset: (paginaActual - 1) * ventasPorPagina,
@@ -82,13 +84,15 @@ const sucursalesInactivas = sucursales.filter(
 
         if (cancelado) return;
 
-        setTotalVentas(total);
+        setTotalVentas(resumen.total);
+        setMontoTotal(resumen.montoTotal);
         setVentas(Array.isArray(datosVentas) ? datosVentas : []);
       } catch (error) {
         console.error("Error al cargar ventas:", error);
         if (!cancelado) {
           setVentas([]);
           setTotalVentas(0);
+          setMontoTotal(0);
           setErrorCarga(t("ventas.errorCarga"));
         }
       } finally {
@@ -101,14 +105,6 @@ const sucursalesInactivas = sucursales.filter(
       cancelado = true;
     };
   }, [tipoSucursal, sucursalSeleccionada, fechaSeleccionada, paginaActual]);
-
-  const totalVendido = useMemo(
-    () => ventas.reduce(
-      (acumulado, venta) => acumulado + (Number(venta.total) || 0),
-      0
-    ),
-    [ventas]
-  );
 
   const totalPaginas = Math.max(1, Math.ceil(totalVentas / ventasPorPagina));
 
@@ -305,7 +301,7 @@ const traducirMetodoPago = (metodo) => {
               </p>
 
               <p className="text-2xl font-bold text-[#5f3c46] dark:text-[var(--dark-text)]">
-                {ventas.length}
+                {totalVentas}
               </p>
             </div>
 
@@ -330,7 +326,7 @@ const traducirMetodoPago = (metodo) => {
               </p>
 
               <p className="text-2xl font-bold text-[#5f3c46] dark:text-[var(--dark-text)]">
-                {formatearPrecio(totalVendido)}
+                {formatearPrecio(montoTotal)}
               </p>
             </div>
 
