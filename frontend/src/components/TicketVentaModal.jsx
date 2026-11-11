@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
 import { CheckCircle2, Download, Printer, X } from "lucide-react";
 import {
@@ -13,12 +13,16 @@ import { crearFormatoMoneda, formatearFechaNegocio } from "../api/formatoVentas"
  * Resumen de una venta con los datos de GET /ventas/{id}/ticket y botones
  * para imprimir / descargar el PDF. Se usa al terminar un cobro (con cambio)
  * y en el detalle de Mis ventas.
+ *
+ * onListo (opcional): se llama cuando termina de cargar el ticket (bien o con error),
+ * para que la pantalla que lo abrió pueda quitar su pantalla de espera.
  */
 export default function TicketVentaModal({
   ventaId,
   cambio = null,
   recienRegistrada = false,
   textoCerrar,
+  onListo,
   onClose,
 }) {
   const { t, i18n } = useTranslation();
@@ -30,6 +34,12 @@ export default function TicketVentaModal({
   const [error, setError] = useState("");
   const [ocupado, setOcupado] = useState(false); // pidiendo el PDF
   const [errorPdf, setErrorPdf] = useState("");
+  const [intento, setIntento] = useState(0); // sube al pulsar "Reintentar"
+  const onListoRef = useRef(onListo);
+
+  useEffect(() => {
+    onListoRef.current = onListo;
+  });
 
   useEffect(() => {
     if (ventaId == null) return;
@@ -49,11 +59,15 @@ export default function TicketVentaModal({
         const detalle = err?.response?.data?.detail;
         setError(typeof detalle === "string" ? detalle : t("ticketVenta.errorCarga"));
       })
-      .finally(() => activo && setCargando(false));
+      .finally(() => {
+        if (!activo) return;
+        setCargando(false);
+        onListoRef.current?.();
+      });
     return () => {
       activo = false;
     };
-  }, [ventaId, t]);
+  }, [ventaId, t, intento]);
 
   // Esc cierra
   useEffect(() => {
@@ -116,9 +130,12 @@ export default function TicketVentaModal({
           {cargando && <p className="py-6 text-center text-sm text-gray-500 dark:text-[var(--dark-muted)]">{t("ticketVenta.cargando")}</p>}
 
           {error && !cargando && (
-            <p role="alert" className="rounded-lg border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/40 px-4 py-2 text-sm text-red-700 dark:text-red-300">
-              {error}
-            </p>
+            <div role="alert" className="rounded-lg border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/40 px-4 py-2 text-sm text-red-700 dark:text-red-300">
+              <p>{error}</p>
+              <button type="button" onClick={() => setIntento((n) => n + 1)} className="mt-1 font-medium underline">
+                {t("ticketVenta.reintentar")}
+              </button>
+            </div>
           )}
 
           {ticket && (
