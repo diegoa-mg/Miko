@@ -12,6 +12,8 @@ export default function RestablecerPassword() {
 
   const [password, setPassword] = useState("");
   const [confirmarPassword, setConfirmarPassword] = useState("");
+  const [mostrarPassword, setMostrarPassword] = useState(false);
+  const [mostrarConfirmar, setMostrarConfirmar] = useState(false);
   const [mensaje, setMensaje] = useState("");
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
@@ -90,26 +92,52 @@ export default function RestablecerPassword() {
               <label className="block text-sm font-medium mb-2">
                 {t("restablecerPassword.nueva")}
               </label>
-              <input
-                type="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-                className="w-full rounded-full bg-[#f9eeb4] border-2 border-[#e6bdc7] text-[#8c6773] px-4 py-3 focus:outline-none focus:border-[#875d69] dark:bg-[var(--dark-bg)] dark:border-[var(--dark-border)] dark:text-[var(--dark-text)]"
-              />
+              <div className="relative">
+                <input
+                  type={mostrarPassword ? "text" : "password"}
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  required
+                  className="w-full rounded-full bg-[#f9eeb4] border-2 border-[#e6bdc7] text-[#8c6773] pl-4 pr-12 py-3 focus:outline-none focus:border-[#875d69] dark:bg-[var(--dark-bg)] dark:border-[var(--dark-border)] dark:text-[var(--dark-text)]"
+                />
+                <button
+                  type="button"
+                  onClick={() => setMostrarPassword((prev) => !prev)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#cda4b4] hover:text-[#875d69] dark:text-[var(--dark-muted)] dark:hover:text-rose-300 transition-colors focus:outline-none"
+                  title={mostrarPassword ? t("perfil.ocultarPassword") : t("perfil.verPassword")}
+                  aria-label={mostrarPassword ? t("perfil.ocultarPassword") : t("perfil.verPassword")}
+                >
+                  <span className="material-icons text-xl">
+                    {mostrarPassword ? "visibility_off" : "visibility"}
+                  </span>
+                </button>
+              </div>
             </div>
 
             <div>
               <label className="block text-sm font-medium mb-2">
                 {t("restablecerPassword.confirmar")}
               </label>
-              <input
-                type="password"
-                value={confirmarPassword}
-                onChange={(e) => setConfirmarPassword(e.target.value)}
-                required
-                className="w-full rounded-full bg-[#f9eeb4] border-2 border-[#e6bdc7] text-[#8c6773] px-4 py-3 focus:outline-none focus:border-[#875d69] dark:bg-[var(--dark-bg)] dark:border-[var(--dark-border)] dark:text-[var(--dark-text)]"
-              />
+              <div className="relative">
+                <input
+                  type={mostrarConfirmar ? "text" : "password"}
+                  value={confirmarPassword}
+                  onChange={(e) => setConfirmarPassword(e.target.value)}
+                  required
+                  className="w-full rounded-full bg-[#f9eeb4] border-2 border-[#e6bdc7] text-[#8c6773] pl-4 pr-12 py-3 focus:outline-none focus:border-[#875d69] dark:bg-[var(--dark-bg)] dark:border-[var(--dark-border)] dark:text-[var(--dark-text)]"
+                />
+                <button
+                  type="button"
+                  onClick={() => setMostrarConfirmar((prev) => !prev)}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 text-[#cda4b4] hover:text-[#875d69] dark:text-[var(--dark-muted)] dark:hover:text-rose-300 transition-colors focus:outline-none"
+                  title={mostrarConfirmar ? t("perfil.ocultarPassword") : t("perfil.verPassword")}
+                  aria-label={mostrarConfirmar ? t("perfil.ocultarPassword") : t("perfil.verPassword")}
+                >
+                  <span className="material-icons text-xl">
+                    {mostrarConfirmar ? "visibility_off" : "visibility"}
+                  </span>
+                </button>
+              </div>
             </div>
 
             <p className="text-xs text-gray-500">

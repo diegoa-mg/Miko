@@ -3,12 +3,15 @@ import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { solicitarRestablecimiento } from "../api/auth";
 import logoMiko from "../assets/logo_claro.png";
+import logoOscuro from "../assets/logo_oscuro.png";
+import { useTheme } from "../context/ThemeContext";
 import { useTranslation } from "react-i18next";
 
 export default function RecuperarPassword() {
 
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const { isDark } = useTheme();
 
   const [email, setEmail] = useState("");
   const [mensaje, setMensaje] = useState("");
@@ -39,7 +42,7 @@ export default function RecuperarPassword() {
       <div className="w-full max-w-md p-8 rounded-2xl bg-white/80 shadow-xl dark:bg-[var(--dark-surface)]">
 
         <div className="flex flex-col items-center mb-6">
-          <img src={logoMiko} alt="Miko" className="h-20 mb-3" />
+          <img src={isDark ? logoOscuro : logoMiko} alt="Miko" className="h-20 mb-3" />
           <h1 className="text-2xl font-sans text-[#875d69] dark:text-rose-300">
             {t("recuperarPassword.titulo")}
             </h1>
