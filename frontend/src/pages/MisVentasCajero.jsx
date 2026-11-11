@@ -113,9 +113,9 @@ export default function MisVentasCajero() {
   };
 
   const inputFecha =
-    "rounded-full bg-white border-2 border-[#e6bdc7] text-[#8c6773] px-4 py-2 focus:outline-none focus:border-[#875d69]";
+    "rounded-full bg-white dark:bg-[var(--dark-bg)] border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] text-[#8c6773] dark:text-[var(--dark-text)] px-4 py-2 focus:outline-none focus:border-[#875d69] dark:focus:border-rose-300";
   const botonRango =
-    "rounded-full border-2 border-[#e6bdc7] px-4 py-2 text-sm font-medium text-[#875d69] hover:bg-[#f4d0d0] transition-colors";
+    "rounded-full border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] px-4 py-2 text-sm font-medium text-[#875d69] dark:text-rose-300 hover:bg-[#f4d0d0] dark:hover:bg-[var(--dark-border)] transition-colors";
   const botonRangoActivo =
     "rounded-full border-2 border-[#d06b7d] dark:border-rose-700 bg-[#d06b7d] dark:bg-rose-700 px-4 py-2 text-sm font-medium text-white transition-colors";
 
@@ -138,10 +138,10 @@ export default function MisVentasCajero() {
           </div>
 
           <div>
-            <h1 className="text-4xl font-bold text-[#8b5e6b] dark:text-[var(--dark-muted)]">
+            <h1 className="text-4xl font-bold text-[#8b5e6b] dark:text-rose-300">
               {t("misVentas.titulo")}
             </h1>
-            <p className="mt-1 text-lg text-[#5f4a50] dark:text-[var(--dark-text)]">
+            <p className="mt-1 text-lg text-[#5f4a50] dark:text-[var(--dark-muted)]">
               {t("misVentas.descripcion")}
             </p>
           </div>
@@ -149,10 +149,10 @@ export default function MisVentasCajero() {
       </div>
 
       {/* Filtro por rango de fechas */}
-      <div className="bg-white rounded-xl shadow p-5 mb-6">
+      <div className="bg-white dark:bg-[var(--dark-surface)] rounded-xl shadow p-5 mb-6">
         <div className="flex flex-wrap items-end gap-4">
           <div>
-            <label htmlFor="mv-desde" className="mb-1 block text-sm font-medium text-gray-700">
+            <label htmlFor="mv-desde" className="mb-1 block text-sm font-medium text-gray-700 dark:text-[var(--dark-text)]">
               {t("misVentas.desde")}
             </label>
             <input
@@ -165,7 +165,7 @@ export default function MisVentasCajero() {
             />
           </div>
           <div>
-            <label htmlFor="mv-hasta" className="mb-1 block text-sm font-medium text-gray-700">
+            <label htmlFor="mv-hasta" className="mb-1 block text-sm font-medium text-gray-700 dark:text-[var(--dark-text)]">
               {t("misVentas.hasta")}
             </label>
             <input
@@ -205,7 +205,7 @@ export default function MisVentasCajero() {
           </div>
         </div>
         {rangoInvalido && (
-          <p role="alert" className="mt-3 text-sm text-red-600">
+          <p role="alert" className="mt-3 text-sm text-red-600 dark:text-red-400">
             {t("misVentas.rangoInvalido")}
           </p>
         )}
@@ -269,7 +269,7 @@ export default function MisVentasCajero() {
         {errorPdf && (
           <p
             role="alert"
-            className="mx-5 mt-4 rounded-lg border border-red-300 bg-red-50 px-4 py-2 text-sm text-red-700"
+            className="mx-5 mt-4 rounded-lg border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/40 px-4 py-2 text-sm text-red-700 dark:text-red-300"
           >
             {errorPdf}
           </p>

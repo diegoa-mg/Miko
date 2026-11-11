@@ -268,11 +268,11 @@ export default function PuntoDeVentaCajero() {
   // ---- Render ---------------------------------------------------------------
 
   return (
-    <div className="min-h-screen bg-[#fdf6e3] p-4 sm:p-8">
+    <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-4 sm:p-8">
     <div className="max-w-7xl mx-auto">
       <div className="mb-6">
-        <h1 className="font-sans text-2xl sm:text-3xl font-bold text-[#875d69]">{t("pos.titulo")}</h1>
-        <p className="font-sans text-gray-600 mt-1">{t("pos.descripcion")}</p>
+        <h1 className="font-sans text-2xl sm:text-3xl font-bold text-[#875d69] dark:text-rose-300">{t("pos.titulo")}</h1>
+        <p className="font-sans text-gray-600 dark:text-[var(--dark-muted)] mt-1">{t("pos.descripcion")}</p>
       </div>
 
       <CobroModal
@@ -286,7 +286,7 @@ export default function PuntoDeVentaCajero() {
 
       <a
         href="#carrito-venta"
-        className="mb-4 inline-flex items-center gap-2 rounded-full bg-rose-800 px-4 py-2 text-sm font-medium text-white xl:hidden"
+        className="mb-4 inline-flex items-center gap-2 rounded-full bg-rose-800 dark:bg-rose-700 px-4 py-2 text-sm font-medium text-white xl:hidden"
       >
         {t("pos.verCarrito", { count: piezas })}
       </a>
@@ -297,8 +297,8 @@ export default function PuntoDeVentaCajero() {
           aria-live="polite"
           className={`mb-4 rounded-md border px-4 py-2 text-sm ${
             aviso.tipo === "error"
-              ? "border-red-300 bg-red-50 text-red-700"
-              : "border-green-300 bg-green-50 text-green-700"
+              ? "border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300"
+              : "border-green-300 dark:border-green-800 bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300"
           }`}
         >
           {aviso.texto}
@@ -311,7 +311,7 @@ export default function PuntoDeVentaCajero() {
           {/* Lector de código de barras */}
           <form onSubmit={enviarCodigo} className="mb-3 flex gap-2">
             <div className="relative flex-1">
-              <span className="material-icons pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xl text-[#cda4b4]">
+              <span className="material-icons pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xl text-[#cda4b4] dark:text-[var(--dark-muted)]">
                 qr_code_scanner
               </span>
               <input
@@ -321,7 +321,7 @@ export default function PuntoDeVentaCajero() {
                 placeholder={t("pos.codigoPlaceholder")}
                 aria-label={t("pos.codigoLabel")}
                 autoComplete="off"
-                className={`w-full rounded-full bg-white border-2 border-[#e6bdc7] text-[#4a2f38] placeholder:text-[#b08a98] pl-12 pr-5 py-2 focus:outline-none focus:border-[#875d69] focus:ring-2 focus:ring-rose-200 ${
+                className={`w-full rounded-full bg-white dark:bg-[var(--dark-bg)] border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] text-[#4a2f38] dark:text-[var(--dark-text)] placeholder:text-[#b08a98] dark:placeholder:text-[var(--dark-muted)] pl-12 pr-5 py-2 focus:outline-none focus:border-[#875d69] dark:focus:border-rose-300 focus:ring-2 focus:ring-rose-200 dark:focus:ring-[var(--dark-border)] ${
                   codigo ? "font-mono" : ""
                 }`}
               />
@@ -329,7 +329,7 @@ export default function PuntoDeVentaCajero() {
             <button
               type="submit"
               disabled={buscandoCodigo || !codigo.trim()}
-              className="rounded-full bg-rose-800 hover:bg-rose-900 text-white px-5 py-2 text-sm font-medium transition-colors disabled:opacity-50"
+              className="rounded-full bg-rose-800 dark:bg-rose-700 hover:bg-rose-900 dark:hover:bg-rose-600 text-white px-5 py-2 text-sm font-medium transition-colors disabled:opacity-50"
             >
               {buscandoCodigo ? t("pos.buscandoCodigo") : t("pos.agregarCodigo")}
             </button>
@@ -342,13 +342,13 @@ export default function PuntoDeVentaCajero() {
               onChange={(e) => setBuscar(e.target.value)}
               placeholder={t("pos.buscar")}
               aria-label={t("pos.buscar")}
-              className="min-w-0 flex-1 rounded-full bg-white border-2 border-[#e6bdc7] text-[#8c6773] px-5 py-2 focus:outline-none focus:border-[#875d69]"
+              className="min-w-0 flex-1 rounded-full bg-white dark:bg-[var(--dark-bg)] border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] text-[#8c6773] dark:text-[var(--dark-text)] px-5 py-2 focus:outline-none focus:border-[#875d69] dark:focus:border-rose-300"
             />
             <select
               value={categoriaId}
               onChange={(e) => setCategoriaId(e.target.value)}
               aria-label={t("pos.categoria")}
-              className="rounded-full bg-white border-2 border-[#e6bdc7] text-[#8c6773] px-4 py-2 sm:w-60 sm:shrink-0 focus:outline-none focus:border-[#875d69]"
+              className="rounded-full bg-white dark:bg-[var(--dark-bg)] border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] text-[#8c6773] dark:text-[var(--dark-text)] px-4 py-2 sm:w-60 sm:shrink-0 focus:outline-none focus:border-[#875d69] dark:focus:border-rose-300"
             >
               <option value="">{t("pos.todasCategorias")}</option>
               {categoriasFiltro.map((c) => (
@@ -359,10 +359,10 @@ export default function PuntoDeVentaCajero() {
             </select>
           </div>
 
-          {cargando && <p className="text-sm text-gray-500">{t("pos.cargando")}</p>}
+          {cargando && <p className="text-sm text-gray-500 dark:text-[var(--dark-muted)]">{t("pos.cargando")}</p>}
 
           {errorCarga && !cargando && (
-            <div className="rounded-md border border-red-300 bg-red-50 p-4 text-sm text-red-700">
+            <div className="rounded-md border border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/40 p-4 text-sm text-red-700 dark:text-red-300">
               {t("pos.errorCarga")}{" "}
               <button onClick={cargarProductos} className="font-medium underline">
                 {t("pos.reintentar")}
@@ -371,7 +371,7 @@ export default function PuntoDeVentaCajero() {
           )}
 
           {!cargando && !errorCarga && productos.length === 0 && (
-            <p className="text-sm text-gray-500">{t("pos.sinResultados")}</p>
+            <p className="text-sm text-gray-500 dark:text-[var(--dark-muted)]">{t("pos.sinResultados")}</p>
           )}
 
           {!errorCarga && productos.length > 0 && (
@@ -382,16 +382,16 @@ export default function PuntoDeVentaCajero() {
                 const agotado = stock <= 0;
                 const limite = enCarrito >= stock;
                 return (
-                  <li key={p.id} className="flex flex-col justify-between bg-white rounded-xl shadow p-4">
+                  <li key={p.id} className="flex flex-col justify-between bg-white dark:bg-[var(--dark-surface)] rounded-xl shadow p-4">
                     <div>
                       <p className="font-medium leading-tight">{p.nombre}</p>
                       {p.codigo && (
-                        <p className="mt-0.5 font-mono text-xs text-gray-500">{p.codigo}</p>
+                        <p className="mt-0.5 font-mono text-xs text-gray-500 dark:text-[var(--dark-muted)]">{p.codigo}</p>
                       )}
-                      <p className="mt-2 text-lg font-semibold text-gray-800">{money.format(getPrice(p))}</p>
+                      <p className="mt-2 text-lg font-semibold text-gray-800 dark:text-[var(--dark-text)]">{money.format(getPrice(p))}</p>
                       <p
                         className={`text-xs ${
-                          agotado ? "font-medium text-red-600" : "text-gray-500"
+                          agotado ? "font-medium text-red-600 dark:text-red-400" : "text-gray-500 dark:text-[var(--dark-muted)]"
                         }`}
                       >
                         {agotado
@@ -402,7 +402,7 @@ export default function PuntoDeVentaCajero() {
                     <button
                       onClick={() => agregarAlCarrito(p)}
                       disabled={agotado || limite}
-                      className="mt-3 rounded-lg bg-rose-800 hover:bg-rose-900 px-3 py-2 text-sm font-medium text-white transition-colors disabled:cursor-not-allowed disabled:opacity-40"
+                      className="mt-3 rounded-lg bg-rose-800 dark:bg-rose-700 hover:bg-rose-900 dark:hover:bg-rose-600 px-3 py-2 text-sm font-medium text-white transition-colors disabled:cursor-not-allowed disabled:opacity-40"
                     >
                       {t("pos.agregar")}
                     </button>
@@ -414,18 +414,18 @@ export default function PuntoDeVentaCajero() {
         </section>
 
         {/* ===================== CARRITO ===================== */}
-        <aside id="carrito-venta" className="bg-white rounded-xl shadow p-5 xl:sticky xl:top-4 xl:max-h-[calc(100vh-2rem)] flex flex-col">
+        <aside id="carrito-venta" className="bg-white dark:bg-[var(--dark-surface)] rounded-xl shadow p-5 xl:sticky xl:top-4 xl:max-h-[calc(100vh-2rem)] flex flex-col">
           <div className="mb-3 flex items-center justify-between">
-            <h2 className="font-sans text-lg font-semibold text-[#875d69]">{t("pos.carrito")} ({piezas})</h2>
+            <h2 className="font-sans text-lg font-semibold text-[#875d69] dark:text-rose-300">{t("pos.carrito")} ({piezas})</h2>
             {carrito.length > 0 && (
-              <button onClick={vaciar} className="text-sm text-red-600 underline">
+              <button onClick={vaciar} className="text-sm text-red-600 dark:text-red-400 underline">
                 {t("pos.vaciar")}
               </button>
             )}
           </div>
 
           {carrito.length === 0 ? (
-            <p className="py-8 text-center text-sm text-gray-500">{t("pos.carritoVacio")}</p>
+            <p className="py-8 text-center text-sm text-gray-500 dark:text-[var(--dark-muted)]">{t("pos.carritoVacio")}</p>
           ) : (
             <ul className="divide-y overflow-y-auto min-h-0 flex-1">
               {carrito.map((l) => {
@@ -435,7 +435,7 @@ export default function PuntoDeVentaCajero() {
                     <div className="flex items-start justify-between gap-2">
                       <div>
                         <p className="font-medium leading-tight">{l.producto.nombre}</p>
-                        <p className="text-xs text-gray-500">
+                        <p className="text-xs text-gray-500 dark:text-[var(--dark-muted)]">
                           {money.format(getPrice(l.producto))} {t("pos.cadaUna")} · {t("pos.existencia")}: {stock}
                         </p>
                       </div>
@@ -443,7 +443,7 @@ export default function PuntoDeVentaCajero() {
                         onClick={() => quitar(l.producto.id)}
                         aria-label={t("pos.quitar")}
                         title={t("pos.quitar")}
-                        className="flex shrink-0 items-center gap-1 rounded-full border border-red-300 px-2 py-1 text-xs text-red-600 hover:bg-red-50"
+                        className="flex shrink-0 items-center gap-1 rounded-full border border-red-300 dark:border-red-800 px-2 py-1 text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40"
                       >
                         <X size={14} />
                         {t("pos.quitarCorto")}
@@ -456,7 +456,7 @@ export default function PuntoDeVentaCajero() {
                           onClick={() => restar(l.producto.id)}
                           disabled={Number(l.cantidad) <= 1}
                           aria-label={t("pos.restar")}
-                          className="h-8 w-8 rounded-full border-2 border-[#e6bdc7] text-[#875d69] hover:bg-[#f4d0d0] disabled:opacity-40"
+                          className="h-8 w-8 rounded-full border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] text-[#875d69] dark:text-rose-300 hover:bg-[#f4d0d0] dark:hover:bg-[var(--dark-border)] disabled:opacity-40"
                         >
                           <Minus size={14} className="mx-auto" />
                         </button>
@@ -468,20 +468,20 @@ export default function PuntoDeVentaCajero() {
                           onChange={(e) => cambiarCantidad(l.producto.id, e.target.value)}
                           onBlur={() => normalizarCantidad(l.producto.id)}
                           aria-label={t("pos.cantidad")}
-                          className="h-8 w-14 rounded-lg border-2 border-[#e6bdc7] text-center focus:outline-none focus:border-[#875d69] [appearance:textfield] [-moz-appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          className="h-8 w-14 rounded-lg border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] text-center focus:outline-none dark:bg-[var(--dark-bg)] dark:text-[var(--dark-text)] focus:border-[#875d69] dark:focus:border-rose-300 [appearance:textfield] [-moz-appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         />
                         <button
                           onClick={() => sumar(l.producto.id)}
                           disabled={Number(l.cantidad) >= stock}
                           aria-label={t("pos.sumar")}
-                          className="h-8 w-8 rounded-full border-2 border-[#e6bdc7] text-[#875d69] hover:bg-[#f4d0d0] disabled:opacity-40"
+                          className="h-8 w-8 rounded-full border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] text-[#875d69] dark:text-rose-300 hover:bg-[#f4d0d0] dark:hover:bg-[var(--dark-border)] disabled:opacity-40"
                         >
                           <Plus size={14} className="mx-auto" />
                         </button>
                       </div>
                       <div className="text-right">
-                        <p className="text-xs text-gray-500">{t("pos.subtotal")}</p>
-                        <p className="font-semibold text-gray-800">{money.format(subtotalLinea(l))}</p>
+                        <p className="text-xs text-gray-500 dark:text-[var(--dark-muted)]">{t("pos.subtotal")}</p>
+                        <p className="font-semibold text-gray-800 dark:text-[var(--dark-text)]">{money.format(subtotalLinea(l))}</p>
                       </div>
                     </div>
                   </li>
@@ -491,7 +491,7 @@ export default function PuntoDeVentaCajero() {
           )}
 
           <div className="mt-4 shrink-0 border-t pt-4">
-            <div className="flex justify-between text-sm text-gray-500">
+            <div className="flex justify-between text-sm text-gray-500 dark:text-[var(--dark-muted)]">
               <span>{t("pos.piezas")}</span>
               <span>{piezas}</span>
             </div>
@@ -502,7 +502,7 @@ export default function PuntoDeVentaCajero() {
             <button
               onClick={() => setCobroAbierto(true)}
               disabled={!carritoValido}
-              className="mt-4 w-full rounded-lg bg-rose-800 py-3 text-lg font-semibold text-white transition-colors hover:bg-rose-900 disabled:cursor-not-allowed disabled:opacity-40"
+              className="mt-4 w-full rounded-lg bg-rose-800 dark:bg-rose-700 py-3 text-lg font-semibold text-white transition-colors hover:bg-rose-900 dark:hover:bg-rose-600 disabled:cursor-not-allowed disabled:opacity-40"
             >
               {t("pos.cobrar")}
             </button>
