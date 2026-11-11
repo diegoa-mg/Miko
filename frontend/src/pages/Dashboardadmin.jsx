@@ -74,11 +74,14 @@ function SeccionPersonas({
                 <p className="font-medium text-gray-800 dark:text-[var(--dark-text)] break-words">
                   {persona.nombre}
                 </p>
-                <p className="text-xs text-gray-400 dark:text-[var(--dark-muted)]">
-                  {t("dashboard.id")}: {persona.id}
+                <p
+                  className="text-xs text-gray-400 dark:text-[var(--dark-muted)]"
+                  title={t("dashboard.id")}
+                >
+                  # {persona.id}
                 </p>
                 <p className="text-sm text-gray-500 dark:text-[var(--dark-muted)] break-words">
-                  {persona.email}
+                  ✉ {persona.email}
                 </p>
               </div>
               <p className="text-sm text-gray-500 dark:text-[var(--dark-muted)] text-right max-w-[40%] break-words">

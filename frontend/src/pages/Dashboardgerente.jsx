@@ -252,11 +252,14 @@ export default function DashboardGerente() {
                     <p className="font-medium text-gray-800 dark:text-[var(--dark-text)] break-words">
                       {cajero.nombre}
                     </p>
-                    <p className="text-xs text-gray-400 dark:text-[var(--dark-muted)]">
-                      {t("dashboard.id")}: {cajero.id}
+                    <p
+                      className="text-xs text-gray-400 dark:text-[var(--dark-muted)]"
+                      title={t("dashboard.id")}
+                    >
+                      # {cajero.id}
                     </p>
                     <p className="text-sm text-gray-500 dark:text-[var(--dark-muted)] break-words">
-                      {cajero.email}
+                      ✉ {cajero.email}
                     </p>
                   </li>
                 ))}
