@@ -4,6 +4,7 @@ import { useTranslation } from "react-i18next";
 import iconoMiko from "../assets/icono.png";
 import logoOscuro from "../assets/logo_oscuro.png";
 import { useAuth } from "../context/AuthContext";
+import ConfirmarCerrarSesion from "../components/ConfirmarCerrarSesion";
 
 export default function Sidebar({
   items,
@@ -12,18 +13,20 @@ export default function Sidebar({
 }) {
   const [open, setOpen] = useState(true);
   const [menuOpen, setMenuOpen] = useState(false);
+  const [confirmarLogout, setConfirmarLogout] = useState(false);
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
   const handleLogout = async () => {
-    setMenuOpen(false);
-    try {
-      await logout();
-    } finally {
-      navigate("/login", { replace: true });
-    }
-  };
+  setConfirmarLogout(false);
+
+  try {
+    await logout();
+  } finally {
+    navigate("/login", { replace: true });
+  }
+};
 
   const renderLink = (item) => (
     <NavLink
@@ -157,8 +160,11 @@ export default function Sidebar({
 
             <button
               type="button"
-              onClick={handleLogout}
-              className="w-full flex items-center gap-2 px-4 py-3 text-sm text-left text-sm hover:bg-gray-100 dark:hover:bg-[var(--dark-border)] transition-colors"
+              onClick={() => {
+                setMenuOpen(false);
+                setConfirmarLogout(true);
+              }}
+              className="w-full flex items-center gap-2 px-4 py-3 text-sm text-left hover:bg-gray-100 dark:hover:bg-[var(--dark-border)] transition-colors"
             >
               <span className="material-icons text-lg">logout</span>
               {t("sidebar.logout")}
@@ -202,6 +208,17 @@ export default function Sidebar({
           </button>
         </div>
       )}
+
+      <ConfirmarCerrarSesion
+        abierto={confirmarLogout}
+        onCancelar={() => setConfirmarLogout(false)}
+        onConfirmar={handleLogout}
+        titulo={t("perfil.confirmarCerrarSesionTitulo")}
+        descripcion={t("perfil.confirmarCerrarSesion")}
+        textoCancelar={t("perfil.cancelar")}
+        textoConfirmar={t("perfil.aceptar")}
+        textoCargando={t("perfil.cerrandoSesion")}
+      />
     </aside>
   );
 }
