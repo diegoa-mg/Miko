@@ -6,6 +6,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import ProtectedRoute from "./routes/protectedRoute";
 import RoleRoute from "./routes/roleRoute";
 import logoMiko from "./assets/logo_claro.png";
+import logoOscuro from "./assets/logo_oscuro.png";
 import Sucursales from "./pages/sucursales";
 import Gerentes from "./pages/gerentes";
 import Cajeros from "./pages/cajeros";
@@ -22,7 +23,7 @@ import CajeroLayout from "./layouts/CajeroLayout";
 import Configuracion from "./pages/Configuracion";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 import ThemeToggle from "./components/ThemeToggle";
-import { ThemeProvider } from "./context/ThemeContext";
+import { ThemeProvider, useTheme } from "./context/ThemeContext";
 import VentasGerente from "./pages/VentasGerente";
 import Productos from "./pages/Productos";
 import AvisoPrivacidad from "./pages/AvisoPrivacidad";
@@ -33,6 +34,7 @@ import MisVentasCajero from "./pages/MisVentasCajero";
 import ConfirmarEmail from "./pages/ConfirmarEmail";
 
 function Login() {
+  const { isDark } = useTheme();
   const { login } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
@@ -94,7 +96,7 @@ function Login() {
 
       <div className="p-10 w-full max-w-sm">
         <div className="flex flex-col items-center mb-6">
-          <img src={logoMiko} alt="Miko" className="h-20 mb-4" />
+          <img src={isDark ? logoOscuro : logoMiko} alt="Miko" className="h-20 mb-4" />
           <span className="font-logo font-light text-rose-400 dark:text-rose-300">
             {t("login.subtitle")}
           </span>

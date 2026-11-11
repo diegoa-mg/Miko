@@ -257,9 +257,15 @@ export default function DashboardAdmin() {
                         {alerta.sucursal_nombre}
                       </p>
                     </div>
-                    <p className="text-sm text-yellow-700 dark:text-yellow-400 font-semibold shrink-0">
-                      {t("dashboard.stock")}: {alerta.existencia}
-                    </p>
+                    {Number(alerta.existencia) === 0 ? (
+                      <p className="text-sm text-red-600 dark:text-red-400 font-semibold shrink-0">
+                        {t("dashboard.soldOut")}
+                      </p>
+                    ) : (
+                      <p className="text-sm text-yellow-700 dark:text-yellow-400 font-semibold shrink-0">
+                        {t("dashboard.stock")}: {alerta.existencia}
+                      </p>
+                    )}
                   </li>
                 ))}
               </ul>

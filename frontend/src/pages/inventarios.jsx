@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { obtenerInventarios } from "../api/inventarios";
 import { obtenerSucursales } from "../api/sucursales";
 import { useTranslation } from "react-i18next";
+import { crearFormatoMoneda } from "../api/formatoVentas";
 
 function Inventarios() {
   const [inventarios, setInventarios] = useState([]);
@@ -11,7 +12,8 @@ function Inventarios() {
   const [paginaActual, setPaginaActual] = useState(1);
   const [cargando, setCargando] = useState(true);
   const [error, setError] = useState("");
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
+  const formatoMoneda = crearFormatoMoneda(i18n.language);
 
   const productosPorPagina = 15;
 
@@ -218,6 +220,10 @@ className="w-full h-10 rounded-xl border-2 border-[#e6bdc7] dark:border-[var(--d
                     </th>
 
                     <th className="p-4 text-left text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
+                      {t("inventarios.price")}
+                    </th>
+
+                    <th className="p-4 text-left text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
                       {t("inventarios.branch")}
                     </th>
 
@@ -241,6 +247,10 @@ className="w-full h-10 rounded-xl border-2 border-[#e6bdc7] dark:border-[var(--d
 
                       <td className="p-4 text-[#8c6773] dark:text-[var(--dark-muted)]">
                         {inventario.categoria_nombre}
+                      </td>
+
+                      <td className="p-4 text-[#8c6773] dark:text-[var(--dark-muted)]">
+                        {formatoMoneda.format(Number(inventario.precio) || 0)}
                       </td>
 
                       <td className="p-4 text-[#8c6773] dark:text-[var(--dark-muted)]">

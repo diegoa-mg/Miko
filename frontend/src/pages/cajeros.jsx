@@ -6,7 +6,6 @@ import {
   UsersRound,
   UserRoundX,
   RotateCcw,
-  Mail,
   Send,
 } from "lucide-react";
 
@@ -22,6 +21,7 @@ import {
 import { obtenerSucursales } from "../api/sucursales";
 import { useAuth } from "../context/AuthContext";
 import { extraerMensajeError } from "../api/errores";
+import EtiquetaAvisoPendiente from "../components/EtiquetaAvisoPendiente";
 
 function IconoCajero({ size = 24, className = "" }) {
   return (
@@ -425,13 +425,13 @@ function Cajeros() {
                           .toUpperCase()}
                       </div>
 
-                      <div>
-                        <div className="flex items-center gap-3">
+                      <div className="min-w-0">
+                        <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
                           <h2 className="text-xl font-semibold text-[#875d69] dark:text-rose-300">
                             {cajero.nombre}
                           </h2>
                           <span
-                            className={`w-8 h-2 rounded-full ${
+                            className={`w-8 h-2 shrink-0 rounded-full ${
                               cajero.activo ? "bg-green-300" : "bg-red-300"
                             }`}
                             title={
@@ -447,10 +447,7 @@ function Cajeros() {
                           />
 
                           {cajero.aviso_pendiente && (
-                            <span className="inline-flex items-center gap-1 px-2.5 py-0.5 text-xs font-semibold rounded-full bg-amber-100 dark:bg-amber-950/40 text-amber-800 dark:text-amber-300 border border-amber-300 dark:border-amber-700">
-                              <Mail size={12} />
-                              {t("cajeros.avisoPendiente", "Aviso pendiente")}
-                            </span>
+                            <EtiquetaAvisoPendiente texto={t("cajeros.avisoPendiente", "Aviso pendiente")} />
                           )}
                         </div>
 
