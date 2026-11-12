@@ -248,6 +248,7 @@ Miko/
     ├── tailwind.config.js
     ├── postcss.config.js
     ├── index.html
+    ├── public/                 # favicon.png (ícono de la pestaña del navegador)
     ├── .env.example            # plantilla de variables de entorno (frontend)
     └── src/
         ├── main.jsx
