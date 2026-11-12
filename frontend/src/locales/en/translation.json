@@ -649,7 +649,12 @@
     "noCoinciden": "The passwords do not match.",
     "enlaceInvalido": "The link is invalid.",
     "error": "Unable to reset the password.",
-    "exito": "Your password has been reset successfully."
+    "exito": "Your password has been reset successfully.",
+    "sinConexion": "Unable to connect to the server. Please check your internet connection.",
+    "enlaceExpirado": "The link has expired or has already been used. Please request a new one.",
+    "errorValidacion": "The password does not meet the required criteria.",
+    "campoObligatorio": "Please fill in all required fields.",
+    "solicitarNuevoEnlace": "Request a new link"
   },
   "confirmarEmail": {
     "titulo": "Email Address Verification",

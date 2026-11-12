@@ -649,7 +649,12 @@
     "noCoinciden": "Las contraseñas no coinciden.",
     "enlaceInvalido": "El enlace no es válido.",
     "error": "No fue posible restablecer la contraseña.",
-    "exito": "Tu contraseña se restableció correctamente."
+    "exito": "Tu contraseña se restableció correctamente.",
+    "sinConexion": "No hay conexión con el servidor. Verifica tu conexión a internet.",
+    "enlaceExpirado": "El enlace ha expirado o ya fue utilizado. Solicita uno nuevo.",
+    "errorValidacion": "La contraseña no cumple con los requisitos solicitados.",
+    "campoObligatorio": "Por favor, completa todos los campos.",
+    "solicitarNuevoEnlace": "Solicitar un nuevo enlace"
   },
   "confirmarEmail": {
     "titulo": "Verificación de Correo Electrónico",
