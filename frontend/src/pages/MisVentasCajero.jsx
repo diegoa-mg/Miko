@@ -124,24 +124,24 @@ export default function MisVentasCajero() {
   const rangoActivo = (dias) =>
     Boolean(hoy) && hasta === hoy && desde === restarDias(hoy, dias);
   const botonAccion =
-    "flex items-center gap-1 rounded-full border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] px-3 py-1 text-xs font-semibold text-[#8b5e6b] dark:text-[var(--dark-muted)] transition hover:bg-[#fae4df] dark:hover:bg-[var(--dark-border)] disabled:opacity-50";
+    "min-h-[40px] inline-flex items-center justify-center gap-1.5 rounded-full border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] px-3.5 py-1.5 text-xs font-semibold text-[#8b5e6b] dark:text-[var(--dark-muted)] transition hover:bg-[#fae4df] dark:hover:bg-[var(--dark-border)] disabled:opacity-50";
 
   return (
-    <div className="min-h-screen bg-[#fdf6e9] dark:bg-[var(--dark-bg)] p-6">
+    <div className="min-h-screen bg-[#fdf6e9] dark:bg-[var(--dark-bg)] p-4 sm:p-6 lg:p-8">
       {/* ENCABEZADO */}
       <div className="mb-6">
-        <div className="flex items-center gap-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#fae4df] dark:bg-[var(--dark-border)]">
-            <span className="material-icons text-3xl text-[#d06b7d] dark:text-rose-300">
+        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
+          <div className="flex h-14 w-14 sm:h-16 sm:w-16 shrink-0 items-center justify-center rounded-2xl bg-[#fae4df] dark:bg-[var(--dark-border)]">
+            <span className="material-icons text-2xl sm:text-3xl text-[#d06b7d] dark:text-rose-300">
               trending_up
             </span>
           </div>
 
-          <div>
-            <h1 className="text-4xl font-bold text-[#8b5e6b] dark:text-rose-300">
+          <div className="min-w-0">
+            <h1 className="text-2xl sm:text-4xl font-bold text-[#8b5e6b] dark:text-rose-300 truncate sm:whitespace-normal">
               {t("misVentas.titulo")}
             </h1>
-            <p className="mt-1 text-lg text-[#5f4a50] dark:text-[var(--dark-muted)]">
+            <p className="mt-1 text-base sm:text-lg text-[#5f4a50] dark:text-[var(--dark-muted)]">
               {t("misVentas.descripcion")}
             </p>
           </div>
@@ -149,9 +149,9 @@ export default function MisVentasCajero() {
       </div>
 
       {/* Filtro por rango de fechas */}
-      <div className="bg-white dark:bg-[var(--dark-surface)] rounded-xl shadow p-5 mb-6">
-        <div className="flex flex-wrap items-end gap-4">
-          <div>
+      <div className="bg-white dark:bg-[var(--dark-surface)] rounded-xl shadow p-4 sm:p-5 mb-6">
+        <div className="flex flex-col sm:flex-row sm:flex-wrap sm:items-end gap-3 sm:gap-4">
+          <div className="w-full sm:w-auto">
             <label htmlFor="mv-desde" className="mb-1 block text-sm font-medium text-gray-700 dark:text-[var(--dark-text)]">
               {t("misVentas.desde")}
             </label>
@@ -161,10 +161,10 @@ export default function MisVentasCajero() {
               value={desde}
               max={hasta || undefined}
               onChange={(e) => setDesde(e.target.value)}
-              className={inputFecha}
+              className={`w-full sm:w-auto ${inputFecha}`}
             />
           </div>
-          <div>
+          <div className="w-full sm:w-auto">
             <label htmlFor="mv-hasta" className="mb-1 block text-sm font-medium text-gray-700 dark:text-[var(--dark-text)]">
               {t("misVentas.hasta")}
             </label>
@@ -174,15 +174,15 @@ export default function MisVentasCajero() {
               value={hasta}
               min={desde || undefined}
               onChange={(e) => setHasta(e.target.value)}
-              className={inputFecha}
+              className={`w-full sm:w-auto ${inputFecha}`}
             />
           </div>
-          <div className="flex flex-wrap gap-2">
+          <div className="flex flex-wrap gap-2 w-full sm:w-auto pt-1 sm:pt-0">
             <button
               type="button"
               onClick={() => aplicarRango(0)}
               aria-pressed={rangoActivo(0)}
-              className={rangoActivo(0) ? botonRangoActivo : botonRango}
+              className={`min-h-[40px] flex-1 sm:flex-initial ${rangoActivo(0) ? botonRangoActivo : botonRango}`}
             >
               {t("misVentas.hoy")}
             </button>
@@ -190,7 +190,7 @@ export default function MisVentasCajero() {
               type="button"
               onClick={() => aplicarRango(6)}
               aria-pressed={rangoActivo(6)}
-              className={rangoActivo(6) ? botonRangoActivo : botonRango}
+              className={`min-h-[40px] flex-1 sm:flex-initial ${rangoActivo(6) ? botonRangoActivo : botonRango}`}
             >
               {t("misVentas.ultimos7")}
             </button>
@@ -198,7 +198,7 @@ export default function MisVentasCajero() {
               type="button"
               onClick={() => aplicarRango(29)}
               aria-pressed={rangoActivo(29)}
-              className={rangoActivo(29) ? botonRangoActivo : botonRango}
+              className={`min-h-[40px] flex-1 sm:flex-initial ${rangoActivo(29) ? botonRangoActivo : botonRango}`}
             >
               {t("misVentas.ultimos30")}
             </button>
@@ -301,23 +301,23 @@ export default function MisVentasCajero() {
             </button>
           </div>
         ) : ventas.length > 0 ? (
-          <div className="overflow-x-auto">
+          <div className="overflow-x-auto -mx-1 sm:mx-0">
             <table className="w-full">
               <thead>
                 <tr className="border-b border-[#ead8d8] dark:border-[var(--dark-border)] bg-[#fffaf8] dark:bg-[var(--dark-bg)]">
-                  <th className="p-4 text-left text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
+                  <th className="p-3 sm:p-4 text-left text-xs sm:text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
                     {t("ventas.venta")}
                   </th>
-                  <th className="p-4 text-left text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
+                  <th className="p-3 sm:p-4 text-left text-xs sm:text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
                     {t("ventas.fecha")}
                   </th>
-                  <th className="p-4 text-left text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
+                  <th className="hidden md:table-cell p-3 sm:p-4 text-left text-xs sm:text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
                     {t("ventas.metodoPago")}
                   </th>
-                  <th className="p-4 text-center text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
+                  <th className="p-3 sm:p-4 text-right sm:text-center text-xs sm:text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
                     {t("ventas.total")}
                   </th>
-                  <th className="p-4 text-right text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
+                  <th className="p-3 sm:p-4 text-right text-xs sm:text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
                     {t("misVentas.acciones")}
                   </th>
                 </tr>
@@ -332,20 +332,20 @@ export default function MisVentasCajero() {
                       key={venta.id}
                       className="border-b border-[#f0e3e3] dark:border-[var(--dark-border)] last:border-b-0 transition-colors hover:bg-[#fff5f6] dark:hover:bg-white/5"
                     >
-                      <td className="p-4">
-                        <span className="inline-flex items-center gap-2 rounded-full bg-[#fae4df] dark:bg-[var(--dark-border)] px-3 py-1 text-sm font-semibold text-[#8b5e6b] dark:text-[var(--dark-muted)]">
-                          <span className="material-icons text-base text-[#d06b7d] dark:text-rose-300">
+                      <td className="p-3 sm:p-4">
+                        <span className="inline-flex items-center gap-1.5 sm:gap-2 rounded-full bg-[#fae4df] dark:bg-[var(--dark-border)] px-2.5 sm:px-3 py-1 text-xs sm:text-sm font-semibold text-[#8b5e6b] dark:text-[var(--dark-muted)]">
+                          <span className="material-icons text-sm sm:text-base text-[#d06b7d] dark:text-rose-300">
                             receipt
                           </span>
                           #{venta.id}
                         </span>
                       </td>
 
-                      <td className="whitespace-nowrap p-4 text-[#8c6773] dark:text-[var(--dark-muted)]">
+                      <td className="whitespace-nowrap p-3 sm:p-4 text-xs sm:text-sm text-[#8c6773] dark:text-[var(--dark-muted)]">
                         {formatearFechaNegocio(venta.fecha, i18n.language, zona)}
                       </td>
 
-                      <td className="p-4">
+                      <td className="hidden md:table-cell p-3 sm:p-4">
                         <span
                           className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-semibold ${
                             ESTILOS_PAGO[metodo] || ESTILO_PAGO_DEFECTO
@@ -358,8 +358,8 @@ export default function MisVentasCajero() {
                         </span>
                       </td>
 
-                      <td className="whitespace-nowrap p-4 text-right">
-                        <span className="font-bold text-[#c94f68] dark:text-rose-300">
+                      <td className="whitespace-nowrap p-3 sm:p-4 text-right">
+                        <span className="font-bold text-[#c94f68] dark:text-rose-300 text-sm sm:text-base">
                           {money.format(Number(venta.total))}
                         </span>
                       </td>

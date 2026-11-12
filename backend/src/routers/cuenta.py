@@ -1,3 +1,4 @@
+from datetime import datetime, timezone
 import jwt
 from fastapi import APIRouter, Depends, HTTPException, status, UploadFile
 from sqlalchemy.orm import Session
@@ -96,6 +97,7 @@ def editar_datos(
         activo=usuario_out.activo,
         foto_url=usuario_out.foto_url,
         aviso_pendiente=usuario_out.aviso_pendiente,
+        correo_verificado=usuario_out.correo_verificado,
         mensaje=mensaje,
         email_pendiente=email_pendiente,
     )
@@ -143,6 +145,7 @@ def confirmar_cambio_email(
         )
 
     usuario.email = nuevo_email
+    usuario.correo_verificado_en = datetime.now(timezone.utc).replace(tzinfo=None)
     db.commit()
     db.refresh(usuario)
 

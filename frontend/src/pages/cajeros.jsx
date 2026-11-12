@@ -240,7 +240,7 @@ function Cajeros() {
 });
 
   return (
-    <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-8">
+    <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-4 sm:p-6 lg:p-8">
       {/* Modal de confirmación de eliminación */}
       {cajeroAEliminar && (
         <div className="miko-confirm-overlay">
@@ -293,22 +293,22 @@ function Cajeros() {
       <div className="max-w-7xl mx-auto">
 
         {/* Encabezado */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 mb-6 sm:mb-8">
         <div className="flex items-center gap-4">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#fae4df] dark:bg-[var(--dark-border)]">
+          <div className="flex h-14 w-14 sm:h-16 sm:w-16 shrink-0 items-center justify-center rounded-2xl bg-[#fae4df] dark:bg-[var(--dark-border)]">
             <ContactRound
-              size={32}
+              size={28}
               strokeWidth={1.8}
-              className="text-[#d06b7d] dark:text-rose-300"
+              className="text-[#d06b7d] dark:text-rose-300 sm:w-8 sm:h-8"
             />
           </div>
 
-          <div>
-            <h1 className="font-sans text-3xl sm:text-4xl font-bold text-[#8b5e6b] dark:text-rose-300">
+          <div className="min-w-0">
+            <h1 className="font-sans text-2xl sm:text-4xl font-bold text-[#8b5e6b] dark:text-rose-300 truncate sm:whitespace-normal">
               {t("cajeros.titulo", "Cajeros")}
             </h1>
 
-            <p className="font-sans text-lg text-[#5f4a50] dark:text-[var(--dark-muted)] mt-1">
+            <p className="font-sans text-base sm:text-lg text-[#5f4a50] dark:text-[var(--dark-muted)] mt-1">
               {t("cajeros.descripcion", "Administra los cajeros de Miko")}
             </p>
           </div>
@@ -318,7 +318,7 @@ function Cajeros() {
           <button
             type="button"
             onClick={abrirNuevoCajero}
-            className="font-sans bg-rose-800 dark:bg-rose-700 hover:bg-rose-900 dark:hover:bg-rose-600 text-white px-5 py-3 rounded-lg transition-colors"
+            className="font-sans min-h-[44px] bg-rose-800 dark:bg-rose-700 hover:bg-rose-900 dark:hover:bg-rose-600 text-white px-5 py-2.5 rounded-xl transition-colors w-full sm:w-auto text-center font-medium"
           >
             + {t("cajeros.nuevo", "Nuevo cajero")}
           </button>
@@ -327,20 +327,20 @@ function Cajeros() {
 
         {/* Barra superior */}
         <div className="bg-white dark:bg-[var(--dark-surface)] rounded-2xl shadow-sm p-4 mb-6">
-          <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
-            <div className="flex flex-wrap gap-3 w-full lg:w-auto">
+          <div className="flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
+            <div className="flex flex-wrap gap-2 sm:gap-3 w-full lg:w-auto">
               {/* Pestaña Activos */}
               <button
                 type="button"
                 onClick={() => setMostrarInactivos(false)}
-                className={`font-sans px-5 py-3 rounded-full transition-colors ${
+                className={`font-sans min-h-[44px] flex-1 sm:flex-initial px-5 py-2.5 rounded-full transition-colors flex items-center justify-center ${
                   !mostrarInactivos
                     ? "bg-[#875d69] text-white"
                     : "bg-[#E8B4B8] dark:bg-[var(--dark-border)] text-[#875d69] dark:text-rose-300 hover:bg-[#dda0a5] dark:hover:bg-rose-900/50"
                 }`}
               >
                 <span className="flex items-center gap-2">
-                  <IconoCajero size={22} />
+                  <IconoCajero size={20} />
                   {t("cajeros.activos", "Activos")}
                 </span>
               </button>
@@ -349,7 +349,7 @@ function Cajeros() {
               <button
                 type="button"
                 onClick={() => setMostrarInactivos(true)}
-                className={`font-sans px-5 py-3 rounded-full transition-colors ${
+                className={`font-sans min-h-[44px] flex-1 sm:flex-initial px-5 py-2.5 rounded-full transition-colors flex items-center justify-center ${
                   mostrarInactivos
                     ? "bg-[#875d69] text-white"
                     : "bg-[#E8B4B8] dark:bg-[var(--dark-border)] text-[#875d69] dark:text-rose-300 hover:bg-[#dda0a5] dark:hover:bg-rose-900/50"
@@ -369,7 +369,7 @@ function Cajeros() {
                 value={buscar}
                 onChange={(e) => setBuscar(e.target.value)}
                 placeholder={t("cajeros.buscar", "Buscar cajero...")}
-                className="font-sans w-full rounded-full border-2 border-[#ead8d8] dark:border-[var(--dark-border)] bg-[#fffaf2] dark:bg-[var(--dark-bg)] px-5 py-3 text-[#875d69] dark:text-rose-300 focus:outline-none focus:border-[#cda4b4] dark:focus:border-rose-300"
+                className="font-sans min-h-[44px] w-full rounded-full border-2 border-[#ead8d8] dark:border-[var(--dark-border)] bg-[#fffaf2] dark:bg-[var(--dark-bg)] px-5 py-2.5 text-sm sm:text-base text-[#875d69] dark:text-rose-300 focus:outline-none focus:border-[#cda4b4] dark:focus:border-rose-300"
               />
             </div>
           </div>
@@ -584,9 +584,9 @@ function Cajeros() {
         {/* Panel Formulario Nuevo / Editar Cajero */}
         {mostrarFormulario && (
           <div className="fixed inset-0 bg-black/30 flex justify-end z-50">
-            <div className="bg-[#fffaf2] dark:bg-[var(--dark-surface)] w-full max-w-md shadow-2xl p-6 overflow-y-auto">
+            <div className="bg-[#fffaf2] dark:bg-[var(--dark-surface)] w-full sm:max-w-md h-full shadow-2xl p-4 sm:p-6 overflow-y-auto">
               <div className="flex items-center justify-between mb-6">
-                <h2 className="font-sans text-2xl font-bold text-[#875d69] dark:text-rose-300">
+                <h2 className="font-sans text-xl sm:text-2xl font-bold text-[#875d69] dark:text-rose-300">
                   {editandoCajero
                     ? t("cajeros.editar", "Editar cajero")
                     : t("cajeros.nuevo", "Nuevo cajero")}
@@ -597,7 +597,7 @@ function Cajeros() {
                     setError("");
                     setMostrarFormulario(false);
                   }}
-                  className="font-sans text-2xl text-[#875d69] dark:text-rose-300 hover:text-rose-800 dark:hover:text-rose-200"
+                  className="font-sans min-h-[40px] min-w-[40px] flex items-center justify-center text-2xl text-[#875d69] dark:text-rose-300 hover:text-rose-800 dark:hover:text-rose-200"
                 >
                   ×
                 </button>
