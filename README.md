@@ -23,41 +23,82 @@ Aplicación web que permite a una empresa con varias sucursales administrar de f
 ## 🚀 Funcionalidades implementadas
 
 **Infraestructura**<br>
-✅ Entorno de desarrollo completo con Docker (backend, frontend y base de datos aislados y comunicados entre sí)<br>
+✅ Entorno de desarrollo completo con Docker (backend, frontend, base de datos y servidor de correo de pruebas aislados y comunicados entre sí)<br>
 ✅ Modelo relacional completo con SQLAlchemy 2.0 y migraciones de Alembic (incluye datos iniciales de roles y métodos de pago)<br>
-✅ Interfaz en español e inglés con cambio de idioma
-
+✅ Interfaz en español e inglés con cambio de idioma<br>
+✅ Modo claro y modo oscuro<br>
+✅ Correo de pruebas con Mailpit en desarrollo (bandeja en `http://localhost:8025`, SMTP en el puerto `1025`) y envío real configurable con las variables `SMTP_*`
+ 
 **Autenticación y cuenta**<br>
 ✅ Inicio de sesión con JWT y control de acceso por rol (Administrador General, Gerente y Cajero)<br>
-✅ Edición de perfil, cambio de contraseña y foto de perfil
-
+✅ Recuperación de contraseña por correo con enlace de un solo uso<br>
+✅ Verificación de correo electrónico<br>
+✅ Aviso de privacidad<br>
+✅ Edición de perfil, cambio de contraseña y foto de perfil<br>
+✅ Cierre de sesión en todos los dispositivos (versión de token: al cambiar la contraseña o cerrar sesiones, los tokens anteriores dejan de funcionar)
+ 
 **Administrador General**<br>
 ✅ CRUD de sucursales y asignación de gerente<br>
 ✅ Gestión de gerentes: crear, editar, desactivar y reactivar<br>
 ✅ Gestión de categorías<br>
-✅ Consulta del inventario y de las ventas de todas las sucursales<br>
-✅ Dashboard con resumen general del sistema
-
+✅ Consulta del inventario (con precio) y de las ventas de todas las sucursales, con filtros y resumen del total real<br>
+✅ Dashboard con resumen general del sistema y alertas de bajo inventario
+ 
 **Gerente de sede**<br>
 ✅ Gestión de cajeros de su sucursal: crear, editar, desactivar y reactivar<br>
+✅ Gestión de productos con código de barras: crear, editar, desactivar y reactivar<br>
 ✅ Control de inventario de su sucursal y actualización de existencias<br>
-✅ Dashboard con ventas del día y alertas de bajo inventario<br>
-✅ API de productos: crear, consultar, editar, desactivar y reactivar
-
+✅ Historial de ventas de su sucursal<br>
+✅ Dashboard con ventas del día y alertas de bajo inventario
+ 
+**Cajero**<br>
+✅ Punto de Venta (POS): búsqueda de productos por nombre o categoría, lectura por código de barras y carrito<br>
+✅ Cobro con método de pago y cálculo del cambio<br>
+✅ Ticket de la venta en PDF (imprimir o descargar)<br>
+✅ Historial de sus ventas y dashboard con las ventas del día
+ 
 **Ventas**<br>
-✅ API de ventas: registro con método de pago, consulta y detalle
-
-🔜 Pendiente:
-- Pantalla del Punto de Venta (POS) para el cajero: buscar productos, armar la venta, cobrar y confirmar
-- Generación de ticket o comprobante de la venta (HU-29)
-- Pantalla de productos del gerente (el backend ya está listo, falta la interfaz)
-- Pantalla de historial de ventas del gerente (el backend ya está listo, falta la interfaz)
-- Capturas de la plataforma para este README
+✅ API de ventas: registro con método de pago, consulta, detalle y conteo con monto total
 
 ## 📸 Capturas de la plataforma
 
-<!-- 📸 Agregar aquí capturas conforme se implementen las pantallas -->
-_(Próximamente)_
+> Todas las pantallas están disponibles en modo claro y oscuro, y en español e inglés.
+ 
+### Acceso
+ 
+| Modo claro | Modo oscuro |
+|---|---|
+| <img src="docs/capturas/login_claro.webp" width="420" alt="Inicio de sesión en modo claro"> | <img src="docs/capturas/login_oscuro.webp" width="420" alt="Inicio de sesión en modo oscuro"> |
+ 
+### Administrador General
+ 
+| Dashboard | Ventas |
+|---|---|
+| <img src="docs/capturas/admin_dashboard_claro.webp" width="420" alt="Dashboard del administrador"> | <img src="docs/capturas/admin_ventas_clara.webp" width="420" alt="Ventas de todas las sucursales"> |
+ 
+| Inventario | Sucursales |
+|---|---|
+| <img src="docs/capturas/admin_inventario_claro.webp" width="420" alt="Inventario con precios"> | <img src="docs/capturas/admin_sucursales_claro.webp" width="420" alt="Gestión de sucursales"> |
+ 
+### Gerente de sede
+ 
+| Dashboard | Inventario |
+|---|---|
+| <img src="docs/capturas/gerente_dashboard_claro.webp" width="420" alt="Dashboard del gerente"> | <img src="docs/capturas/gerente_inventario_claro.webp" width="420" alt="Inventario de la sucursal"> |
+ 
+| Productos | Cajeros |
+|---|---|
+| <img src="docs/capturas/gerente_productos_claro.webp" width="420" alt="Gestión de productos"> | <img src="docs/capturas/gerente_cajeros_claro.webp" width="420" alt="Gestión de cajeros"> |
+ 
+### Cajero
+ 
+| Punto de venta (claro) | Punto de venta (oscuro) |
+|---|---|
+| <img src="docs/capturas/cajero_pos_claro.webp" width="420" alt="Punto de venta en modo claro"> | <img src="docs/capturas/cajero_pos_oscuro.webp" width="420" alt="Punto de venta en modo oscuro"> |
+ 
+| Mis ventas |
+|---|
+| <img src="docs/capturas/cajero_misventas_claro.webp" width="420" alt="Historial de ventas del cajero"> |
 
 ## 🛠️ Guía de instalación
 
@@ -128,13 +169,30 @@ Esto crea un usuario Administrador General para poder iniciar sesión:
 
 >⚠️ Estas credenciales son **solo para desarrollo local**. No uses este script en el servidor de producción.
 
-Verifica que los 3 contenedores estén `Up` con `docker compose ps`, y abre:
+Verifica que los 4 contenedores estén `Up` con `docker compose ps`, y abre:
 
 | Servicio | URL |
 |---|---|
 | Frontend | http://localhost:5173 |
 | Backend (API) | http://localhost:8000 |
 | Documentación de la API (Swagger) | http://localhost:8000/docs |
+| Mailpit (bandeja de correos de prueba) | http://localhost:8025 |
+
+### Correos en desarrollo (Mailpit)
+
+Miko envía correos (recuperación de contraseña, verificación de correo y aviso de privacidad). En desarrollo **no se envía nada a internet**: el contenedor de [Mailpit](https://mailpit.axllent.org/) captura todos los correos y los muestra en una bandeja local en http://localhost:8025. Así puedes probar los enlaces sin usar un correo real.
+
+No necesitas configurar nada: las variables `SMTP_*` ya traen valores por defecto que apuntan a Mailpit (servidor `mailpit`, puerto `1025`).
+
+| Variable | Valor en desarrollo | Para qué sirve |
+|---|---|---|
+| `SMTP_HOST` | `mailpit` | Servidor de correo |
+| `SMTP_PORT` | `1025` | Puerto SMTP |
+| `SMTP_USER` / `SMTP_PASSWORD` | vacíos | Solo se usan con un SMTP real |
+| `SMTP_FROM` | `no-reply@miko.com` | Remitente de los correos |
+| `FRONTEND_URL` | `http://localhost:5173` | Base de los enlaces que llevan los correos |
+
+>⚠️ Los correos que ves en Mailpit nunca llegan a una bandeja real y se pierden al reiniciar el contenedor. Para producción hay que cambiar los valores `SMTP_*` por los de un proveedor real y guardarlos solo en variables de entorno, nunca en el repositorio.
 
 >⚠️ No modifiques el `Dockerfile` del frontend sin saber por qué está así — usa una versión específica de Node y pnpm a propósito; cambiarlo rompe el build para todo el equipo.
 
@@ -142,10 +200,12 @@ Verifica que los 3 contenedores estén `Up` con `docker compose ps`, y abre:
 
 ```
 Miko/
-├── docker-compose.yml
+├── docker-compose.yml          # db, mailpit, backend y frontend
 ├── .env.example                # plantilla de variables de entorno (raíz)
 ├── .gitignore
 ├── README.md
+├── docs/
+│   └── capturas/               # capturas de pantalla del README (.webp)
 ├── backend/
 │   ├── Dockerfile
 │   ├── requirements.txt
@@ -153,6 +213,7 @@ Miko/
 │   ├── alembic/
 │   │   ├── env.py              # conecta Alembic con los modelos y la BD
 │   │   └── versions/           # migraciones (esquema + datos iniciales)
+│   ├── assets/                 # aviso_de_privacidad.pdf (se adjunta al correo)
 │   ├── scripts/                # datos de prueba y scripts de test manual
 │   └── src/
 │       ├── main.py             # punto de entrada de FastAPI
@@ -168,11 +229,15 @@ Miko/
 │       │   ├── inventarios.py
 │       │   └── ventas.py       # MetodoPago, Venta, DetalleVenta
 │       ├── schemas/            # esquemas Pydantic (entrada/salida de la API)
-│       ├── routers/            # endpoints: auth, cuenta, sucursales, gerentes,
-│       │                       # cajeros, categorias, productos, inventarios,
-│       │                       # ventas y dashboard
+│       ├── repositories/       # acceso a datos (usuarios)
+│       ├── routers/            # endpoints: auth, cuenta, aviso_privacidad,
+│       │                       # sucursales, gerentes, cajeros, categorias,
+│       │                       # productos, productos_cajero, inventarios,
+│       │                       # ventas, dashboard y dashboard_cajero
 │       └── services/           # lógica de negocio (usuarios, sucursales,
-│                               # productos, inventarios, ventas, fotos, fechas)
+│                               # productos, inventarios, ventas, fotos,
+│                               # fechas, correo, recuperacion_password,
+│                               # pdf_ticket)
 └── frontend/
     ├── Dockerfile
     ├── package.json
@@ -186,16 +251,20 @@ Miko/
     ├── .env.example            # plantilla de variables de entorno (frontend)
     └── src/
         ├── main.jsx
-        ├── App.jsx
+        ├── App.jsx             # rutas y pantalla de inicio de sesión
         ├── i18n.js
         ├── index.css
         ├── api/                # llamadas al backend (axios.js es la instancia base)
         ├── assets/             # logos e ícono
-        ├── components/         # Sidebar, LanguageSwitcher
-        ├── context/            # AuthContext (sesión del usuario)
-        ├── layouts/            # AdminLayout, GerenteLayout
+        ├── components/         # Sidebar, LanguageSwitcher, ThemeToggle,
+        │                       # CobroModal, TicketVentaModal, Paginacion, etc.
+        ├── context/            # AuthContext (sesión) y ThemeContext (modo oscuro)
+        ├── layouts/            # AdminLayout, GerenteLayout, CajeroLayout
         ├── pages/              # pantallas: dashboards, sucursales, gerentes,
-        │                       # cajeros, inventarios, ventas, configuración
+        │                       # cajeros, categorías, productos, inventarios,
+        │                       # ventas, punto de venta, configuración,
+        │                       # recuperar/restablecer contraseña, aviso de
+        │                       # privacidad y confirmación de correo
         ├── routes/             # ProtectedRoute y RoleRoute (acceso por rol)
         └── locales/
             ├── es/translation.json
