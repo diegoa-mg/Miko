@@ -38,6 +38,8 @@ def consulta_inventario(db: Session) -> Query:
         .join(Sucursal, Sucursal.id == Inventario.sucursal_id)
         # Une la categoria cuyo id sea igual a categoria_id de ese producto
         .join(Categoria, Categoria.id == Producto.categoria_id) # inventario no guarda la categoría; está en el producto (inventario → producto → categoría)
+        # Los productos inactivos no se muestran en el inventario
+        .filter(Producto.activo.is_(True))
     )
 
     return consulta
@@ -74,7 +76,11 @@ def calcular_alertas_inventario(
         )
         .join(Producto, Producto.id == Inventario.producto_id)
         .join(Sucursal, Sucursal.id == Inventario.sucursal_id)
-        .filter(Inventario.existencia <= umbral, Sucursal.estado == "activa")
+        .filter(
+            Inventario.existencia <= umbral,
+            Sucursal.estado == "activa",
+            Producto.activo.is_(True),
+        )
         # De menor a mayor existencia; sucursal y producto desempatan para que el orden sea estable
         .order_by(Inventario.existencia.asc(), Sucursal.nombre.asc(), Producto.nombre.asc())
     )

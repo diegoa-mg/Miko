@@ -3,7 +3,7 @@ from sqlalchemy.orm import Session
 
 from src.database import get_db
 from src.dependencies import requiere_rol
-from src.models import Inventario, Sucursal, Usuario
+from src.models import Inventario, Producto, Sucursal, Usuario
 from src.schemas import InventarioOut, InventarioUpdate
 from src.services import llenar_inventario_out, consulta_inventario, crear_lista_inventario, obtener_sucursal_del_gerente
 
@@ -63,12 +63,21 @@ def actualizar_existencias(producto_id: int, datos: InventarioUpdate, usuario: U
     # Se obtiene la sucursal del gerente para saber que inventario mostrar
     sucursal = obtener_sucursal_del_gerente(db, usuario.id)
 
-    # Verificar que el producto tenga fila en el inventario de la sucursal
-    fila = db.query(Inventario).filter(Inventario.sucursal_id == sucursal.id, Inventario.producto_id == producto_id).first()
+    # Verificar que el producto tenga fila en el inventario de la sucursal y que esté activo
+    fila = (
+        db.query(Inventario)
+        .join(Producto, Producto.id == Inventario.producto_id)
+        .filter(
+            Inventario.sucursal_id == sucursal.id,
+            Inventario.producto_id == producto_id,
+            Producto.activo.is_(True),
+        )
+        .first()
+    )
     if fila is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
-            detail="El producto no existe en el inventario de tu sucursal"
+            detail="El producto no existe en el inventario de tu sucursal o está inactivo"
         )
 
     # La base suma/resta en un solo paso, solo si el resultado no queda negativo.
