@@ -309,7 +309,7 @@ useEffect(() => {
       {/* Encabezado */}
       <header className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#f9e5e4] dark:bg-[var(--dark-bg)] text-[#875d69] dark:text-rose-300">
+         <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#fae4df] dark:bg-[var(--dark-border)] text-[#d06b7d] dark:text-rose-300">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="32"

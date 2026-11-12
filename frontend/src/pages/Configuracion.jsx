@@ -12,6 +12,7 @@ import {
 import CropFotoModal from "../components/CropFotoModal";
 import ConfirmarCerrarSesion from "../components/ConfirmarCerrarSesion";
 import { extraerMensajeError } from "../api/errores";
+import { Settings } from "lucide-react";
 
 // Extrae el mensaje de error del backend (en 422 "detail" es un arreglo, no un texto)
 const getError = (err, fallback, t) => {
@@ -198,15 +199,29 @@ export default function Configuracion() {
   return (
     <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-8">
       <div className="max-w-7xl mx-auto space-y-6">
+
         {/* Encabezado */}
-        <div className="mb-8">
-          <h1 className="font-sans text-3xl font-bold text-[#875d69] dark:text-rose-300">
-            {t("settings.title")}
-          </h1>
-          <p className="font-sans text-gray-600 dark:text-[var(--dark-muted)] mt-1">
-            {t("perfil.subtitle")}
-          </p>
+      <div className="mb-8">
+        <div className="flex items-center gap-4">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#fae4df] dark:bg-[var(--dark-border)]">
+            <Settings
+              size={32}
+              strokeWidth={1.8}
+              className="text-[#d06b7d] dark:text-rose-300"
+            />
+          </div>
+
+          <div>
+            <h1 className="font-sans text-3xl sm:text-4xl font-bold text-[#8b5e6b] dark:text-rose-300">
+              {t("settings.title")}
+            </h1>
+
+            <p className="font-sans text-lg text-[#5f4a50] dark:text-[var(--dark-muted)] mt-1">
+              {t("perfil.subtitle")}
+            </p>
+          </div>
         </div>
+      </div>
 
         {/* Notificaciones */}
         {mensaje.texto && (
@@ -224,7 +239,7 @@ export default function Configuracion() {
         {/* Tarjeta Principal */}
         <div className="bg-white dark:bg-[var(--dark-surface)] rounded-3xl shadow-sm border border-[#f0dfdc] dark:border-[var(--dark-border)] p-6 md:p-10">
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
-            
+
             {/* Columna Izquierda: Foto de Perfil */}
             <div className="lg:col-span-4 rounded-2xl p-6 min-h-[700px] flex flex-col items-center justify-center text-center">
               <h3 className="font-sans text-base font-semibold text-[#875d69] dark:text-rose-300 mb-1">
@@ -284,7 +299,7 @@ export default function Configuracion() {
 
             {/* Columna Derecha: Formularios */}
             <div className="lg:col-span-8 space-y-8">
-              
+
               {/* Formulario 1: Datos Personales */}
               <form onSubmit={handleUpdatePerfil} className="space-y-4">
                 <div>
