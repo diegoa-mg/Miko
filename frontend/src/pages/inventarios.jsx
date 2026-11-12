@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { obtenerInventarios } from "../api/inventarios";
 import { obtenerSucursales } from "../api/sucursales";
 import { useTranslation } from "react-i18next";
+import { Boxes } from "lucide-react";
 
 function Inventarios() {
   const [inventarios, setInventarios] = useState([]);
@@ -84,18 +85,31 @@ const totalPaginas = Math.ceil(
 
   return (
     <div className="p-6">
+
       {/* Encabezado */}
       <div className="mb-8">
-        <h1 className="text-3xl font-bold text-[#875d69] dark:text-rose-300">
-          {t("inventarios.title")}
-        </h1>
+        <div className="flex items-center gap-4">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#fae4df] dark:bg-[var(--dark-border)]">
+            <Boxes
+              size={32}
+              strokeWidth={1.8}
+              className="text-[#d06b7d] dark:text-rose-300"
+            />
+          </div>
 
-        <p className="mt-2 text-[#203a5f] dark:text-[var(--dark-muted)]">
-          {t("inventarios.subtitle")}
-        </p>
+          <div>
+            <h1 className="font-sans text-3xl sm:text-4xl font-bold text-[#8b5e6b] dark:text-rose-300">
+              {t("inventarios.title")}
+            </h1>
+
+            <p className="font-sans text-lg text-[#5f4a50] dark:text-[var(--dark-muted)] mt-1">
+              {t("inventarios.subtitle")}
+            </p>
+          </div>
+        </div>
       </div>
 
-      {/* Filtro */}    
+      {/* Filtro */}
 <div className="mb-8 w-full overflow-visible rounded-2xl bg-white dark:bg-[var(--dark-surface)] p-5 shadow-sm">
 <div className="grid w-full grid-cols-1 items-end gap-5 lg:grid-cols-[minmax(280px,0.8fr)_minmax(450px,1.4fr)]">
 

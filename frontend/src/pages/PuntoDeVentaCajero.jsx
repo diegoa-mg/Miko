@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { Minus, Plus, X } from "lucide-react";
+import { Minus, Plus, X, ShoppingCart } from "lucide-react";
 import api from "../api/axios";
 import { obtenerMetodosPago, registrarVenta } from "../api/ventasCajero";
 import CobroModal from "../components/CobroModal";
@@ -270,10 +270,29 @@ export default function PuntoDeVentaCajero() {
   return (
     <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-4 sm:p-8">
     <div className="max-w-7xl mx-auto">
-      <div className="mb-6">
-        <h1 className="font-sans text-2xl sm:text-3xl font-bold text-[#875d69] dark:text-rose-300">{t("pos.titulo")}</h1>
-        <p className="font-sans text-gray-600 dark:text-[var(--dark-muted)] mt-1">{t("pos.descripcion")}</p>
-      </div>
+
+      {/* Encabezado */}
+      <header className="mb-7">
+        <div className="flex items-center gap-4">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#fae4df] dark:bg-[var(--dark-border)]">
+            <ShoppingCart
+              size={32}
+              strokeWidth={1.8}
+              className="text-[#d06b7d] dark:text-rose-300"
+            />
+          </div>
+
+          <div>
+            <h1 className="font-sans text-3xl sm:text-4xl font-bold text-[#8b5e6b] dark:text-rose-300">
+              {t("pos.titulo")}
+            </h1>
+
+            <p className="mt-1 font-sans text-lg text-[#5f4a50] dark:text-[var(--dark-muted)]">
+              {t("pos.descripcion")}
+            </p>
+          </div>
+        </div>
+      </header>
 
       <CobroModal
         open={cobroAbierto}

@@ -293,27 +293,37 @@ function Cajeros() {
       <div className="max-w-7xl mx-auto">
 
         {/* Encabezado */}
-        <div className="flex items-center justify-between mb-8">
+      <div className="flex items-center justify-between mb-8">
+        <div className="flex items-center gap-4">
+          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#fae4df] dark:bg-[var(--dark-border)]">
+            <ContactRound
+              size={32}
+              strokeWidth={1.8}
+              className="text-[#d06b7d] dark:text-rose-300"
+            />
+          </div>
+
           <div>
-            <h1 className="font-sans text-3xl font-bold text-[#875d69] dark:text-rose-300">
+            <h1 className="font-sans text-3xl sm:text-4xl font-bold text-[#8b5e6b] dark:text-rose-300">
               {t("cajeros.titulo", "Cajeros")}
             </h1>
 
-            <p className="font-sans text-gray-600 dark:text-[var(--dark-muted)] mt-1">
+            <p className="font-sans text-lg text-[#5f4a50] dark:text-[var(--dark-muted)] mt-1">
               {t("cajeros.descripcion", "Administra los cajeros de Miko")}
             </p>
           </div>
-
-          {!mostrarInactivos && (
-            <button
-              type="button"
-              onClick={abrirNuevoCajero}
-              className="font-sans bg-rose-800 dark:bg-rose-700 hover:bg-rose-900 dark:hover:bg-rose-600 text-white px-5 py-3 rounded-lg transition-colors"
-            >
-              + {t("cajeros.nuevo", "Nuevo cajero")}
-            </button>
-          )}
         </div>
+
+        {!mostrarInactivos && (
+          <button
+            type="button"
+            onClick={abrirNuevoCajero}
+            className="font-sans bg-rose-800 dark:bg-rose-700 hover:bg-rose-900 dark:hover:bg-rose-600 text-white px-5 py-3 rounded-lg transition-colors"
+          >
+            + {t("cajeros.nuevo", "Nuevo cajero")}
+          </button>
+        )}
+      </div>
 
         {/* Barra superior */}
         <div className="bg-white dark:bg-[var(--dark-surface)] rounded-2xl shadow-sm p-4 mb-6">
