@@ -21,6 +21,7 @@ export default function RestablecerPassword() {
   const [error, setError] = useState("");
   const [cargando, setCargando] = useState(false);
   const [exito, setExito] = useState(false);
+  const [enlaceExpirado, setEnlaceExpirado] = useState(false);
 
   const validarPassword = () => {
   if (password.length < 8) return t("restablecerPassword.minimo");
@@ -37,35 +38,73 @@ export default function RestablecerPassword() {
   return "";
 };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setMensaje("");
-    setError("");
+const obtenerMensajeError = (err) => {
+  const status = err.response?.status;
+  const detalle = err.response?.data?.detail;
 
-    if (!token) {
+  if (!err.response) {
+    return t("restablecerPassword.sinConexion");
+  }
+
+  if (status === 400) {
+    return t("restablecerPassword.enlaceExpirado");
+  }
+
+  if (status === 422) {
+    if (typeof detalle === "string") {
+      return detalle;
+    }
+
+    return t("restablecerPassword.errorValidacion");
+  }
+
+  return t("restablecerPassword.error");
+};
+
+  const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  setMensaje("");
+  setError("");
+  setExito(false);
+  setEnlaceExpirado(false);
+
+  const formulario = e.currentTarget;
+
+  if (!formulario.checkValidity()) {
+    setError(t("restablecerPassword.campoObligatorio"));
+    return;
+  }
+
+  if (!token) {
     setError(t("restablecerPassword.enlaceInvalido"));
     return;
-    }
+  }
 
-    const validacion = validarPassword();
+  const validacion = validarPassword();
 
-    if (validacion) {
-      setError(validacion);
-      return;
-    }
+  if (validacion) {
+    setError(validacion);
+    return;
+  }
 
-    setCargando(true);
+  setCargando(true);
 
-    try {
-      await restablecerPassword(token, password);
-        setMensaje(t("restablecerPassword.exito"));
-        setExito(true);
-    } catch (err) {
-  setError(t("restablecerPassword.error"));
-} finally {
-  setCargando(false);
-}
-  };
+  try {
+    await restablecerPassword(token, password);
+
+    setMensaje(t("restablecerPassword.exito"));
+    setExito(true);
+ } catch (err) {
+  setError(obtenerMensajeError(err));
+
+  if (err.response?.status === 400) {
+    setEnlaceExpirado(true);
+  }
+}finally {
+    setCargando(false);
+  }
+};
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-[#fdf6e3] text-[#4a2f38] px-4 font-sans dark:bg-[var(--dark-bg)] dark:text-[var(--dark-text)]">
@@ -89,8 +128,22 @@ export default function RestablecerPassword() {
           </div>
         )}
 
+        {enlaceExpirado && (
+          <button
+            type="button"
+            onClick={() => navigate("/olvide-password")}
+            className="w-full mb-4 rounded-xl bg-[#a40f3c] hover:bg-[#8d0d34] text-white font-medium py-3 transition-colors"
+          >
+            {t("restablecerPassword.solicitarNuevoEnlace")}
+          </button>
+        )}
+
         {!exito && (
-          <form onSubmit={handleSubmit} className="flex flex-col gap-4">
+          <form
+            onSubmit={handleSubmit}
+            noValidate
+            className="flex flex-col gap-4"
+          >
             <div>
               <label className="block text-sm font-medium mb-2">
                 {t("restablecerPassword.nueva")}
