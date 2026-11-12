@@ -236,9 +236,15 @@ export default function DashboardGerente() {
                     <p className="font-medium text-gray-800 dark:text-[var(--dark-text)] break-words min-w-0">
                       {alerta.producto_nombre}
                     </p>
-                    <p className="text-sm text-yellow-700 dark:text-yellow-400 font-semibold shrink-0">
-                      {t("dashboard.stock")}: {alerta.existencia}
-                    </p>
+                    {Number(alerta.existencia) === 0 ? (
+                      <p className="text-sm text-red-600 dark:text-red-400 font-semibold shrink-0">
+                        {t("dashboard.soldOut")}
+                      </p>
+                    ) : (
+                      <p className="text-sm text-yellow-700 dark:text-yellow-400 font-semibold shrink-0">
+                        {t("dashboard.stock")}: {alerta.existencia}
+                      </p>
+                    )}
                   </li>
                 ))}
               </ul>
@@ -259,8 +265,14 @@ export default function DashboardGerente() {
                     <p className="font-medium text-gray-800 dark:text-[var(--dark-text)] break-words">
                       {cajero.nombre}
                     </p>
+                    <p
+                      className="text-xs text-gray-400 dark:text-[var(--dark-muted)]"
+                      title={t("dashboard.id")}
+                    >
+                      # {cajero.id}
+                    </p>
                     <p className="text-sm text-gray-500 dark:text-[var(--dark-muted)] break-words">
-                      {cajero.email}
+                      ✉ {cajero.email}
                     </p>
                   </li>
                 ))}

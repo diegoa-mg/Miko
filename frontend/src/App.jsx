@@ -6,6 +6,7 @@ import { AuthProvider, useAuth } from "./context/AuthContext";
 import ProtectedRoute from "./routes/protectedRoute";
 import RoleRoute from "./routes/roleRoute";
 import logoMiko from "./assets/logo_claro.png";
+import logoOscuro from "./assets/logo_oscuro.png";
 import Sucursales from "./pages/sucursales";
 import Gerentes from "./pages/gerentes";
 import Cajeros from "./pages/cajeros";
@@ -22,7 +23,7 @@ import CajeroLayout from "./layouts/CajeroLayout";
 import Configuracion from "./pages/Configuracion";
 import LanguageSwitcher from "./components/LanguageSwitcher";
 import ThemeToggle from "./components/ThemeToggle";
-import { ThemeProvider } from "./context/ThemeContext";
+import { ThemeProvider, useTheme } from "./context/ThemeContext";
 import VentasGerente from "./pages/VentasGerente";
 import Productos from "./pages/Productos";
 import AvisoPrivacidad from "./pages/AvisoPrivacidad";
@@ -33,12 +34,14 @@ import MisVentasCajero from "./pages/MisVentasCajero";
 import ConfirmarEmail from "./pages/ConfirmarEmail";
 
 function Login() {
+  const { isDark } = useTheme();
   const { login } = useAuth();
   const navigate = useNavigate();
   const { t } = useTranslation();
 
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [mostrarPassword, setMostrarPassword] = useState(false);
   const [error, setError] = useState("");
   const [avisoSesion, setAvisoSesion] = useState(false);
 
@@ -94,7 +97,7 @@ function Login() {
 
       <div className="p-10 w-full max-w-sm">
         <div className="flex flex-col items-center mb-6">
-          <img src={logoMiko} alt="Miko" className="h-20 mb-4" />
+          <img src={isDark ? logoOscuro : logoMiko} alt="Miko" className="h-20 mb-4" />
           <span className="font-logo font-light text-rose-400 dark:text-rose-300">
             {t("login.subtitle")}
           </span>
@@ -121,17 +124,30 @@ function Login() {
           <div>
             <label className="block text-sm font-medium mb-1">{t("login.password")}</label>
             <div className="relative">
-              <span className="material-icons absolute left-4 top-1/2 -translate-y-1/2  mt-5 text-[#cda4b4] dark:text-[var(--dark-muted)]">
+              <span className="material-icons absolute z-10 left-4 top-1/2 -translate-y-1/2  mt-5 text-[#cda4b4] dark:text-[var(--dark-muted)]">
                 lock
               </span>
             </div>
-            <input
-              type="password"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-              className="w-full rounded-full bg-[#f9eeb4] border-2 border-[#e6bdc7] text-[#8c6773] px-10 py-2 focus:outline-none focus:border-[#875d69] dark:bg-[var(--dark-surface)] dark:border-[var(--dark-border)] dark:text-[var(--dark-text)] dark:focus:border-rose-300"
-            />
+            <div className="relative">
+              <input
+                type={mostrarPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full rounded-full bg-[#f9eeb4] border-2 border-[#e6bdc7] text-[#8c6773] pl-10 pr-12 py-2 focus:outline-none focus:border-[#875d69] dark:bg-[var(--dark-surface)] dark:border-[var(--dark-border)] dark:text-[var(--dark-text)] dark:focus:border-rose-300"
+              />
+              <button
+                type="button"
+                onClick={() => setMostrarPassword((prev) => !prev)}
+                className="absolute right-4 top-1/2 -translate-y-1/2 flex items-center justify-center text-[#a8788a] hover:text-[#875d69] dark:text-[var(--dark-muted)] dark:hover:text-rose-300 transition-colors focus:outline-none"
+                title={mostrarPassword ? t("perfil.ocultarPassword") : t("perfil.verPassword")}
+                aria-label={mostrarPassword ? t("perfil.ocultarPassword") : t("perfil.verPassword")}
+              >
+                <span className="material-icons">
+                  {mostrarPassword ? "visibility_off" : "visibility"}
+                </span>
+              </button>
+            </div>
           </div>
 
           <div className="flex items-center justify-between text-sm">
