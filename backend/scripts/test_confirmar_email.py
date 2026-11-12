@@ -125,8 +125,10 @@ def run_tests():
         )
         db.refresh(usuario_principal)
         assert usuario_principal.email == email_nuevo_1
+        assert usuario_principal.correo_verificado_en is not None
         assert res_conf.email == email_nuevo_1
-        print(f"  ✓ Correo confirmado exitosamente en BD: {usuario_principal.email}")
+        assert res_conf.correo_verificado is True
+        print(f"  ✓ Correo confirmado exitosamente en BD: {usuario_principal.email} (verificado: {usuario_principal.correo_verificado_en})")
 
         print("\n--- Test 6: Token expirado devuelve 400 ---")
         token_expirado = jwt.encode(

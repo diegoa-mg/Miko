@@ -143,7 +143,8 @@ def test_aviso_completo():
         db.refresh(cajero_suc1)
         fecha_primera = cajero_suc1.aviso_aceptado_en
         assert fecha_primera is not None, "Fecha aviso_aceptado_en no se guardó"
-        print("✓ 6. Aceptar con token de aviso válido da 200 y guarda fecha")
+        assert cajero_suc1.correo_verificado_en is not None, "Fecha correo_verificado_en no se guardó"
+        print("✓ 6. Aceptar con token de aviso válido da 200 y guarda fecha y verifica correo")
 
         # 7. Repetir aceptación (idempotente: no sobrescribe fecha)
         resp = client.post("/aviso-privacidad/aceptar", json={"token": token_aviso})

@@ -95,23 +95,23 @@ export default function TicketVentaModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-4"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 p-2 sm:p-4"
       onMouseDown={(e) => e.target === e.currentTarget && onClose()}
     >
       <div
         role="dialog"
         aria-modal="true"
         aria-labelledby="ticket-titulo"
-        className="flex max-h-[90vh] w-full max-w-lg flex-col rounded-xl bg-white dark:bg-[var(--dark-surface)] dark:border dark:border-[var(--dark-border)] p-6 shadow-xl"
+        className="flex max-h-[95vh] w-full max-w-lg flex-col rounded-2xl bg-white dark:bg-[var(--dark-surface)] dark:border dark:border-[var(--dark-border)] p-4 sm:p-6 shadow-xl"
       >
         <div className="mb-4 flex items-start justify-between">
           <div className="flex items-center gap-2">
-            {recienRegistrada && <CheckCircle2 size={24} className="text-green-600 dark:text-green-400" />}
-            <div>
-              <h2 id="ticket-titulo" className="font-sans text-xl font-bold text-[#875d69] dark:text-rose-300">
+            {recienRegistrada && <CheckCircle2 size={24} className="text-green-600 dark:text-green-400 shrink-0" />}
+            <div className="min-w-0">
+              <h2 id="ticket-titulo" className="font-sans text-lg sm:text-xl font-bold text-[#875d69] dark:text-rose-300">
                 {recienRegistrada ? t("ticketVenta.ventaRegistrada") : t("ticketVenta.titulo")}
               </h2>
-              <p className="text-sm text-gray-500 dark:text-[var(--dark-muted)]">
+              <p className="text-xs sm:text-sm text-gray-500 dark:text-[var(--dark-muted)]">
                 {t("ticketVenta.venta")} #{ventaId}
               </p>
             </div>
@@ -120,7 +120,7 @@ export default function TicketVentaModal({
             type="button"
             onClick={onClose}
             aria-label={t("ticketVenta.cerrar")}
-            className="text-gray-400 dark:text-[var(--dark-muted)] hover:text-gray-600 dark:hover:text-white"
+            className="min-h-[40px] min-w-[40px] flex items-center justify-center text-gray-400 dark:text-[var(--dark-muted)] hover:text-gray-600 dark:hover:text-white"
           >
             <X size={20} />
           </button>
@@ -206,12 +206,12 @@ export default function TicketVentaModal({
           </p>
         )}
 
-        <div className="mt-5 grid grid-cols-2 gap-3">
+        <div className="mt-5 grid grid-cols-1 sm:grid-cols-2 gap-3">
           <button
             type="button"
             onClick={() => ejecutarPdf(abrirTicketPdf)}
             disabled={ocupado || !ticket}
-            className="flex items-center justify-center gap-2 rounded-lg border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] py-2 text-sm font-medium text-[#875d69] dark:text-rose-300 hover:bg-[#f4d0d0] dark:hover:bg-[var(--dark-border)] disabled:opacity-50"
+            className="min-h-[44px] flex items-center justify-center gap-2 rounded-xl border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] py-2 text-sm font-medium text-[#875d69] dark:text-rose-300 hover:bg-[#f4d0d0] dark:hover:bg-[var(--dark-border)] disabled:opacity-50"
           >
             <Printer size={16} />
             {t("ticketVenta.imprimir")}
@@ -220,7 +220,7 @@ export default function TicketVentaModal({
             type="button"
             onClick={() => ejecutarPdf(descargarTicketPdf)}
             disabled={ocupado || !ticket}
-            className="flex items-center justify-center gap-2 rounded-lg border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] py-2 text-sm font-medium text-[#875d69] dark:text-rose-300 hover:bg-[#f4d0d0] dark:hover:bg-[var(--dark-border)] disabled:opacity-50"
+            className="min-h-[44px] flex items-center justify-center gap-2 rounded-xl border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] py-2 text-sm font-medium text-[#875d69] dark:text-rose-300 hover:bg-[#f4d0d0] dark:hover:bg-[var(--dark-border)] disabled:opacity-50"
           >
             <Download size={16} />
             {t("ticketVenta.descargar")}
@@ -229,7 +229,7 @@ export default function TicketVentaModal({
         <button
           type="button"
           onClick={onClose}
-          className="mt-3 w-full rounded-lg bg-rose-800 dark:bg-rose-700 py-2 font-medium text-white transition-colors hover:bg-rose-900 dark:hover:bg-rose-600"
+          className="mt-3 w-full min-h-[44px] rounded-xl bg-rose-800 dark:bg-rose-700 py-2.5 font-medium text-white transition-colors hover:bg-rose-900 dark:hover:bg-rose-600 flex items-center justify-center"
         >
           {textoCerrar ?? t("ticketVenta.cerrar")}
         </button>

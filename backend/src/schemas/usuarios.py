@@ -48,6 +48,7 @@ class UsuarioOut(BaseModel):
     activo: bool
     foto_url: str | None = None
     aviso_pendiente: bool = False
+    correo_verificado: bool = False
 
     model_config = ConfigDict(from_attributes=True)
 
@@ -74,6 +75,7 @@ class CuentaUpdateResponse(BaseModel):
     activo: bool
     foto_url: str | None = None
     aviso_pendiente: bool = False
+    correo_verificado: bool = False
     mensaje: str | None = None
     email_pendiente: str | None = None
 

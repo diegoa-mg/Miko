@@ -19,6 +19,13 @@ import TicketVentaModal from "../components/TicketVentaModal";
 // Tiempo mínimo que se ve "Generando ticket..." para que no parpadee si el ticket llega muy rápido
 const MIN_MS_TICKET = 600;
 
+// Detecta si es pantalla táctil para evitar que el teclado virtual tape la pantalla
+const esDispositivoTactil = () =>
+  typeof window !== "undefined" &&
+  (window.matchMedia("(pointer: coarse)").matches ||
+    "ontouchstart" in window ||
+    navigator.maxTouchPoints > 0);
+
 // precio llega como Decimal (string): Number(...) lo convierte
 const getStock = (p) => Number(p.existencia ?? 0);
 const getPrice = (p) => Number(p.precio ?? 0);
@@ -235,13 +242,17 @@ export default function PuntoDeVentaCajero() {
     } finally {
       setCodigo("");
       setBuscandoCodigo(false);
-      codigoRef.current?.focus(); // listo para el siguiente escaneo
+      if (!esDispositivoTactil()) {
+        codigoRef.current?.focus(); // listo para el siguiente escaneo (solo si no es táctil)
+      }
     }
   };
 
-  // Enfoca el campo del lector al entrar a la pantalla
+  // Enfoca el campo del lector al entrar a la pantalla solo si NO es pantalla táctil
   useEffect(() => {
-    codigoRef.current?.focus();
+    if (!esDispositivoTactil()) {
+      codigoRef.current?.focus();
+    }
   }, []);
 
   // ---- Totales --------------------------------------------------------------
@@ -300,35 +311,47 @@ export default function PuntoDeVentaCajero() {
   const cerrarTicket = useCallback(() => {
     if (fasePago) return; // mientras carga no se puede cerrar con Esc
     setTicketVenta(null);
-    codigoRef.current?.focus(); // listo para la siguiente venta
+    if (!esDispositivoTactil()) {
+      codigoRef.current?.focus(); // listo para la siguiente venta (solo no táctil)
+    }
   }, [fasePago]);
 
   // ---- Render ---------------------------------------------------------------
 
   return (
-    <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-4 sm:p-8">
+    <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-4 sm:p-6 lg:p-8">
     <div className="max-w-7xl mx-auto">
 
       {/* Encabezado */}
       <header className="mb-7">
-        <div className="flex items-center gap-4">
-          <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#fae4df] dark:bg-[var(--dark-border)]">
-            <ShoppingCart
-              size={32}
-              strokeWidth={1.8}
-              className="text-[#d06b7d] dark:text-rose-300"
-            />
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          <div className="flex items-center gap-4">
+            <div className="flex h-14 w-14 sm:h-16 sm:w-16 shrink-0 items-center justify-center rounded-2xl bg-[#fae4df] dark:bg-[var(--dark-border)]">
+              <ShoppingCart
+                size={28}
+                strokeWidth={1.8}
+                className="text-[#d06b7d] dark:text-rose-300 sm:w-8 sm:h-8"
+              />
+            </div>
+
+            <div className="min-w-0">
+              <h1 className="font-sans text-2xl sm:text-4xl font-bold text-[#8b5e6b] dark:text-rose-300 truncate sm:whitespace-normal">
+                {t("pos.titulo")}
+              </h1>
+
+              <p className="mt-1 font-sans text-base sm:text-lg text-[#5f4a50] dark:text-[var(--dark-muted)]">
+                {t("pos.descripcion")}
+              </p>
+            </div>
           </div>
 
-          <div>
-            <h1 className="font-sans text-3xl sm:text-4xl font-bold text-[#8b5e6b] dark:text-rose-300">
-              {t("pos.titulo")}
-            </h1>
-
-            <p className="mt-1 font-sans text-lg text-[#5f4a50] dark:text-[var(--dark-muted)]">
-              {t("pos.descripcion")}
-            </p>
-          </div>
+          <a
+            href="#carrito-venta"
+            className="inline-flex min-h-[40px] items-center justify-center gap-2 rounded-full bg-rose-800 dark:bg-rose-700 px-5 py-2.5 text-sm font-semibold text-white transition-colors hover:bg-rose-900 dark:hover:bg-rose-600 xl:hidden self-start sm:self-center"
+          >
+            <ShoppingCart size={18} />
+            {t("pos.verCarrito", { count: piezas })}
+          </a>
         </div>
       </header>
 
@@ -352,18 +375,11 @@ export default function PuntoDeVentaCajero() {
 
       <ProcesandoCobro fase={fasePago} />
 
-      <a
-        href="#carrito-venta"
-        className="mb-4 inline-flex items-center gap-2 rounded-full bg-rose-800 dark:bg-rose-700 px-4 py-2 text-sm font-medium text-white xl:hidden"
-      >
-        {t("pos.verCarrito", { count: piezas })}
-      </a>
-
       {aviso && (
         <div
           role="status"
           aria-live="polite"
-          className={`mb-4 rounded-md border px-4 py-2 text-sm ${
+          className={`mb-4 rounded-md border px-4 py-2.5 text-sm ${
             aviso.tipo === "error"
               ? "border-red-300 dark:border-red-800 bg-red-50 dark:bg-red-950/40 text-red-700 dark:text-red-300"
               : "border-green-300 dark:border-green-800 bg-green-50 dark:bg-green-950/40 text-green-700 dark:text-green-300"
@@ -377,7 +393,7 @@ export default function PuntoDeVentaCajero() {
         {/* ===================== CATÁLOGO ===================== */}
         <section className="min-w-0">
           {/* Lector de código de barras */}
-          <form onSubmit={enviarCodigo} className="mb-3 flex gap-2">
+          <form onSubmit={enviarCodigo} className="mb-3 flex flex-col sm:flex-row gap-2">
             <div className="relative flex-1">
               <span className="material-icons pointer-events-none absolute left-4 top-1/2 -translate-y-1/2 text-xl text-[#cda4b4] dark:text-[var(--dark-muted)]">
                 qr_code_scanner
@@ -389,7 +405,7 @@ export default function PuntoDeVentaCajero() {
                 placeholder={t("pos.codigoPlaceholder")}
                 aria-label={t("pos.codigoLabel")}
                 autoComplete="off"
-                className={`w-full rounded-full bg-white dark:bg-[var(--dark-bg)] border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] text-[#4a2f38] dark:text-[var(--dark-text)] placeholder:text-[#b08a98] dark:placeholder:text-[var(--dark-muted)] pl-12 pr-5 py-2 focus:outline-none focus:border-[#875d69] dark:focus:border-rose-300 focus:ring-2 focus:ring-rose-200 dark:focus:ring-[var(--dark-border)] ${
+                className={`min-h-[40px] w-full rounded-full bg-white dark:bg-[var(--dark-bg)] border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] text-[#4a2f38] dark:text-[var(--dark-text)] placeholder:text-[#b08a98] dark:placeholder:text-[var(--dark-muted)] pl-12 pr-5 py-2 text-sm focus:outline-none focus:border-[#875d69] dark:focus:border-rose-300 focus:ring-2 focus:ring-rose-200 dark:focus:ring-[var(--dark-border)] ${
                   codigo ? "font-mono" : ""
                 }`}
               />
@@ -397,7 +413,7 @@ export default function PuntoDeVentaCajero() {
             <button
               type="submit"
               disabled={buscandoCodigo || !codigo.trim()}
-              className="rounded-full bg-rose-800 dark:bg-rose-700 hover:bg-rose-900 dark:hover:bg-rose-600 text-white px-5 py-2 text-sm font-medium transition-colors disabled:opacity-50"
+              className="min-h-[40px] rounded-full bg-rose-800 dark:bg-rose-700 hover:bg-rose-900 dark:hover:bg-rose-600 text-white px-5 py-2 text-sm font-medium transition-colors disabled:opacity-50 shrink-0"
             >
               {buscandoCodigo ? t("pos.buscandoCodigo") : t("pos.agregarCodigo")}
             </button>
@@ -410,13 +426,13 @@ export default function PuntoDeVentaCajero() {
               onChange={(e) => setBuscar(e.target.value)}
               placeholder={t("pos.buscar")}
               aria-label={t("pos.buscar")}
-              className="min-w-0 flex-1 rounded-full bg-white dark:bg-[var(--dark-bg)] border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] text-[#8c6773] dark:text-[var(--dark-text)] px-5 py-2 focus:outline-none focus:border-[#875d69] dark:focus:border-rose-300"
+              className="min-h-[40px] min-w-0 flex-1 rounded-full bg-white dark:bg-[var(--dark-bg)] border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] text-[#8c6773] dark:text-[var(--dark-text)] px-5 py-2 text-sm focus:outline-none focus:border-[#875d69] dark:focus:border-rose-300"
             />
             <select
               value={categoriaId}
               onChange={(e) => setCategoriaId(e.target.value)}
               aria-label={t("pos.categoria")}
-              className="rounded-full bg-white dark:bg-[var(--dark-bg)] border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] text-[#8c6773] dark:text-[var(--dark-text)] px-4 py-2 sm:w-60 sm:shrink-0 focus:outline-none focus:border-[#875d69] dark:focus:border-rose-300"
+              className="min-h-[40px] rounded-full bg-white dark:bg-[var(--dark-bg)] border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] text-[#8c6773] dark:text-[var(--dark-text)] px-4 py-2 text-sm w-full sm:w-60 sm:shrink-0 focus:outline-none focus:border-[#875d69] dark:focus:border-rose-300"
             >
               <option value="">{t("pos.todasCategorias")}</option>
               {categoriasFiltro.map((c) => (
@@ -511,22 +527,22 @@ export default function PuntoDeVentaCajero() {
                         onClick={() => quitar(l.producto.id)}
                         aria-label={t("pos.quitar")}
                         title={t("pos.quitar")}
-                        className="flex shrink-0 items-center gap-1 rounded-full border border-red-300 dark:border-red-800 px-2 py-1 text-xs text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40"
+                        className="flex min-h-[40px] shrink-0 items-center gap-1.5 rounded-full border border-red-300 dark:border-red-800 px-3 py-1.5 text-xs font-medium text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-950/40"
                       >
-                        <X size={14} />
+                        <X size={16} />
                         {t("pos.quitarCorto")}
                       </button>
                     </div>
 
-                    <div className="mt-2 flex items-center justify-between">
-                      <div className="flex items-center gap-1">
+                    <div className="mt-3 flex items-center justify-between gap-2 flex-wrap">
+                      <div className="flex items-center gap-1.5">
                         <button
                           onClick={() => restar(l.producto.id)}
                           disabled={Number(l.cantidad) <= 1}
                           aria-label={t("pos.restar")}
-                          className="h-8 w-8 rounded-full border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] text-[#875d69] dark:text-rose-300 hover:bg-[#f4d0d0] dark:hover:bg-[var(--dark-border)] disabled:opacity-40"
+                          className="h-10 w-10 min-h-[40px] min-w-[40px] rounded-full border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] text-[#875d69] dark:text-rose-300 hover:bg-[#f4d0d0] dark:hover:bg-[var(--dark-border)] disabled:opacity-40 flex items-center justify-center"
                         >
-                          <Minus size={14} className="mx-auto" />
+                          <Minus size={16} className="mx-auto" />
                         </button>
                         <input
                           type="number"
@@ -536,18 +552,18 @@ export default function PuntoDeVentaCajero() {
                           onChange={(e) => cambiarCantidad(l.producto.id, e.target.value)}
                           onBlur={() => normalizarCantidad(l.producto.id)}
                           aria-label={t("pos.cantidad")}
-                          className="h-8 w-14 rounded-lg border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] text-center focus:outline-none dark:bg-[var(--dark-bg)] dark:text-[var(--dark-text)] focus:border-[#875d69] dark:focus:border-rose-300 [appearance:textfield] [-moz-appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
+                          className="h-10 w-14 rounded-lg border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] text-center text-sm font-semibold focus:outline-none dark:bg-[var(--dark-bg)] dark:text-[var(--dark-text)] focus:border-[#875d69] dark:focus:border-rose-300 [appearance:textfield] [-moz-appearance:textfield] [&::-webkit-outer-spin-button]:appearance-none [&::-webkit-inner-spin-button]:appearance-none"
                         />
                         <button
                           onClick={() => sumar(l.producto.id)}
                           disabled={Number(l.cantidad) >= stock}
                           aria-label={t("pos.sumar")}
-                          className="h-8 w-8 rounded-full border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] text-[#875d69] dark:text-rose-300 hover:bg-[#f4d0d0] dark:hover:bg-[var(--dark-border)] disabled:opacity-40"
+                          className="h-10 w-10 min-h-[40px] min-w-[40px] rounded-full border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] text-[#875d69] dark:text-rose-300 hover:bg-[#f4d0d0] dark:hover:bg-[var(--dark-border)] disabled:opacity-40 flex items-center justify-center"
                         >
-                          <Plus size={14} className="mx-auto" />
+                          <Plus size={16} className="mx-auto" />
                         </button>
                       </div>
-                      <div className="text-right">
+                      <div className="text-right ml-auto">
                         <p className="text-xs text-gray-500 dark:text-[var(--dark-muted)]">{t("pos.subtotal")}</p>
                         <p className="font-semibold text-gray-800 dark:text-[var(--dark-text)]">{money.format(subtotalLinea(l))}</p>
                       </div>

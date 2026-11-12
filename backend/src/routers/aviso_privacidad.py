@@ -38,9 +38,19 @@ def aceptar_aviso(datos: AceptarAvisoRequest, db: Session = Depends(get_db)):
         )
 
     # Idempotente: no se sobrescribe la fecha de la primera aceptación
+    modificado = False
+    ahora_utc = datetime.now(timezone.utc).replace(tzinfo=None)
+
     if usuario.aviso_aceptado_en is None:
         # Columna DateTime sin zona (UTC), igual que Venta.fecha
-        usuario.aviso_aceptado_en = datetime.now(timezone.utc).replace(tzinfo=None)
+        usuario.aviso_aceptado_en = ahora_utc
+        modificado = True
+
+    if usuario.correo_verificado_en is None:
+        usuario.correo_verificado_en = ahora_utc
+        modificado = True
+
+    if modificado:
         db.commit()
 
     return {"message": "Aviso de privacidad aceptado. Ya puedes iniciar sesión."}

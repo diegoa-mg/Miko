@@ -36,6 +36,7 @@ def llenar_usuario_out(usuario: Usuario) -> UsuarioOut:
         activo=usuario.activo,
         foto_url=usuario.foto_url,
         aviso_pendiente=aviso_pendiente(usuario),
+        correo_verificado=usuario.correo_verificado_en is not None,
     )
 
 def listar_cajeros_activos(db: Session, sucursal_id: int) -> list[Usuario]:
