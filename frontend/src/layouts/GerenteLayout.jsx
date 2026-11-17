@@ -14,9 +14,10 @@ const items = [
 
 export default function GerenteLayout() {
   return (
-    <div className="flex h-screen">
+    <div className="flex h-screen h-[100dvh]">
       <Sidebar items={items} settingsPath="/gerente/configuracion" />
-      <main className="flex-1 min-w-0 overflow-y-auto bg-[#fdf6e3] dark:bg-[var(--dark-bg)]">
+      {/* pt-14: espacio para la barra superior que solo existe en celular */}
+      <main className="flex-1 min-w-0 overflow-y-auto pt-14 md:pt-0 bg-[#fdf6e3] dark:bg-[var(--dark-bg)]">
         <Outlet />
       </main>
     </div>
