@@ -5,6 +5,7 @@ from sqlalchemy.orm import Session
 from src.repositories import obtener_usuario_por_email, obtener_usuario_por_id, actualizar_password
 from src.security import hash_password, decodificar_token_restablecer
 from src.services.usuarios import aviso_pendiente
+from src.services.bloqueo_login import limpiar_bloqueo
 from src.services.correo import enviar_restablecimiento
 
 MENSAJE_OLVIDE = "Si el correo está registrado, recibirás un enlace para restablecer tu contraseña."
@@ -43,7 +44,11 @@ def restablecer_password(db: Session, token: str, password_nueva: str) -> dict:
     ):
         raise _enlace_invalido()
 
-    # 3. Guardar: hash nuevo y token_version += 1 (lo hace el repository)
+    # 3. Guardar: hash nuevo y token_version += 1 (lo hace el repository).
+    # Quien restablece su contraseña con el enlace del correo ya demostró que controla la cuenta,
+    # así que se quita también el bloqueo de login. limpiar_bloqueo no hace commit: lo hace
+    # actualizar_password, y la contraseña y el desbloqueo se guardan juntos o no se guarda nada.
+    limpiar_bloqueo(usuario)
     actualizar_password(db, usuario, hash_password(password_nueva))
 
     return {"message": "Tu contraseña fue restablecida. Ya puedes iniciar sesión."}

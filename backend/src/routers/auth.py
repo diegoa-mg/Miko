@@ -6,7 +6,16 @@ from src.database import get_db
 from src.models import Usuario
 from src.schemas import LoginRequest, TokenResponse, UsuarioOut, OlvidePasswordRequest, RestablecerPasswordRequest
 from src.security import crear_access_token, verify_password
-from src.services import llenar_usuario_out, aviso_pendiente, MENSAJE_OLVIDE, restablecer_password, solicitar_restablecimiento
+from src.services import (
+    llenar_usuario_out,
+    aviso_pendiente,
+    MENSAJE_OLVIDE,
+    restablecer_password,
+    solicitar_restablecimiento,
+    verificar_cuenta_no_bloqueada,
+    registrar_intento_fallido,
+    reiniciar_bloqueo,
+)
 
 """
 APIRouter es un mini FastAPI, agrupa rutas relaciones para no meterlas en main.py. 
@@ -26,15 +35,28 @@ def login(credenciales: LoginRequest, db: Session = Depends(get_db)): # db: Sess
     # credenciales.password se compara contra usuario.password_hash.
     usuario = db.query(Usuario).filter(Usuario.email == credenciales.email).first()
 
+    # Si la cuenta está bloqueada responde 429 aquí mismo, sin verificar la contraseña.
+    # Si el correo no existe no hay nada que bloquear y sigue el 401 genérico de abajo.
+    if usuario is not None:
+        verificar_cuenta_no_bloqueada(db, usuario)
+
     # Mismo mensaje exista o no el usuario, para no revelar cuál campo falló.
     # activo va al final para que un usuario desactivado también pase por bcrypt
     # y tarde lo mismo que uno activo: así el tiempo de respuesta no revela su estado.
     # Limitación conocida: si el email no existe, responde más rápido (no llega a bcrypt).
-    if usuario is None or not verify_password(credenciales.password, usuario.password_hash) or not usuario.activo:
+    password_correcta = usuario is not None and verify_password(credenciales.password, usuario.password_hash)
+    if usuario is None or not password_correcta or not usuario.activo:
+        # Solo la contraseña incorrecta cuenta como intento fallido (y solo en correos que existen)
+        if usuario is not None and not password_correcta:
+            registrar_intento_fallido(db, usuario)
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Correo o contraseña incorrectos",
         )
+
+    # Contraseña correcta y cuenta activa: el contador de intentos fallidos vuelve a 0
+    # (aunque después falte aceptar el aviso, la contraseña sí fue la correcta)
+    reiniciar_bloqueo(db, usuario)
 
     if aviso_pendiente(usuario):
         raise HTTPException(

@@ -35,6 +35,9 @@ class Usuario(Base):
     aviso_aceptado_en: Mapped[datetime | None] = mapped_column(DateTime)
     correo_verificado_en: Mapped[datetime | None] = mapped_column(DateTime)
     token_version: Mapped[int] = mapped_column(default=0, server_default="0")
+    # Límite de intentos de login: ver services/bloqueo_login.py
+    intentos_fallidos: Mapped[int] = mapped_column(default=0, server_default="0")
+    bloqueado_hasta: Mapped[datetime | None] = mapped_column(DateTime)
 
     rol: Mapped["Rol"] = relationship(back_populates="usuarios")
     sucursal: Mapped[Optional["Sucursal"]] = relationship(
