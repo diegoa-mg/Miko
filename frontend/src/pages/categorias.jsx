@@ -167,14 +167,14 @@ export default function Categorias() {
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={abrirCrear}
-          className="flex items-center gap-2 px-5 py-2.5 bg-rose-800 dark:bg-rose-700 hover:bg-rose-900 dark:hover:bg-rose-600 text-white text-sm font-semibold rounded-xl transition-colors"
-        >
-          <span className="material-icons text-lg">add</span>
-          {t("categorias.nueva")}
-        </button>
+       <button
+        type="button"
+        onClick={abrirCrear}
+        className="w-full md:w-auto flex items-center justify-center gap-2 px-5 py-3 bg-rose-800 dark:bg-rose-700 hover:bg-rose-900 dark:hover:bg-rose-600 text-white text-sm font-semibold rounded-xl transition-colors"
+      >
+        <span className="material-icons text-lg">add</span>
+        {t("categorias.nueva")}
+      </button>
       </div>
 
         {/* Notificaciones */}

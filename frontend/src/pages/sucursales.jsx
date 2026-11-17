@@ -172,7 +172,7 @@ const reactivarSucursal = async (sucursal) => {
   }
 };
   return (
-    <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-8">
+    <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-4 sm:p-6 lg:p-8">
       {sucursalAEliminar && (
   <div className="miko-confirm-overlay">
     <div className="miko-confirm-modal">
@@ -225,7 +225,7 @@ const reactivarSucursal = async (sucursal) => {
       <div className="max-w-6xl mx-auto">
 
         {/* Encabezado */}
-      <div className="flex items-center justify-between mb-8">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div className="flex items-center gap-4">
           <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#fae4df] dark:bg-[var(--dark-border)]">
             <Store
@@ -258,7 +258,7 @@ const reactivarSucursal = async (sucursal) => {
                 gerente_id: "",
               });
             }}
-            className="font-sans bg-rose-800 dark:bg-rose-700 hover:bg-rose-900 dark:hover:bg-rose-600 text-white px-5 py-3 rounded-lg transition-colors"
+           className="w-full sm:w-auto font-sans bg-rose-800 dark:bg-rose-700 hover:bg-rose-900 dark:hover:bg-rose-600 text-white px-5 py-3 rounded-lg transition-colors"
           >
             {mostrarFormulario
               ? t("sucursales.cancelar")
@@ -374,16 +374,16 @@ const reactivarSucursal = async (sucursal) => {
 
         {/* Lista */}
         <div className="bg-white dark:bg-[var(--dark-surface)] rounded-xl shadow-sm overflow-hidden">
-         <div className="p-6 border-b flex flex-wrap items-center justify-between gap-4">
+         <div className="p-4 sm:p-6 border-b flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
   <h2 className="text-xl font-semibold text-[#875d69] dark:text-rose-300">
     {t("sucursales.lista")}
   </h2>
 
-  <div className="flex items-center gap-3">
+  <div className="flex flex-row w-full sm:w-auto gap-3">
     <button
       type="button"
       onClick={() => setFiltroEstado("activa")}
-      className={`flex items-center gap-2 px-6 py-3 rounded-full transition-colors ${
+    className={`flex flex-1 sm:flex-none justify-center items-center gap-2 px-6 py-3 rounded-full transition-colors ${
         filtroEstado === "activa"
           ? "bg-[#875d69] text-white"
           : "bg-[#e1a0a5] dark:bg-[var(--dark-border)] text-[#875d69] dark:text-rose-300"
@@ -410,7 +410,7 @@ const reactivarSucursal = async (sucursal) => {
     <button
       type="button"
       onClick={() => setFiltroEstado("inactiva")}
-      className={`flex items-center gap-2 px-6 py-3 rounded-full transition-colors ${
+      className={`flex flex-1 sm:flex-none justify-center items-center gap-2 px-6 py-3 rounded-full transition-colors ${
         filtroEstado === "inactiva"
           ? "bg-[#875d69] text-white"
           : "bg-[#e1a0a5] dark:bg-[var(--dark-border)] text-[#875d69] dark:text-rose-300"

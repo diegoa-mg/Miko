@@ -200,28 +200,32 @@ export default function Configuracion() {
     <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto space-y-6">
 
-        {/* Encabezado */}
-      <div className="mb-6 sm:mb-8">
-        <div className="flex flex-col sm:flex-row sm:items-center gap-4">
-          <div className="flex h-14 w-14 sm:h-16 sm:w-16 shrink-0 items-center justify-center rounded-2xl bg-[#fae4df] dark:bg-[var(--dark-border)]">
-            <Settings
-              size={28}
-              strokeWidth={1.8}
-              className="text-[#d06b7d] dark:text-rose-300 sm:w-8 sm:h-8"
-            />
-          </div>
+       
+{/* Encabezado */}
+<div className="mb-6 sm:mb-8">
+  <div className="flex flex-row items-center gap-4">
 
-          <div className="min-w-0">
-            <h1 className="font-sans text-2xl sm:text-4xl font-bold text-[#8b5e6b] dark:text-rose-300 truncate sm:whitespace-normal">
-              {t("settings.title")}
-            </h1>
+    <div className="flex h-14 w-14 sm:h-16 sm:w-16 shrink-0 items-center justify-center rounded-2xl bg-[#fae4df] dark:bg-[var(--dark-border)]">
+      <Settings
+        size={28}
+        strokeWidth={1.8}
+        className="text-[#d06b7d] dark:text-rose-300 sm:w-8 sm:h-8"
+      />
+    </div>
 
-            <p className="font-sans text-base sm:text-lg text-[#5f4a50] dark:text-[var(--dark-muted)] mt-1">
-              {t("perfil.subtitle")}
-            </p>
-          </div>
-        </div>
-      </div>
+    <div className="min-w-0">
+      <h1 className="font-sans text-2xl sm:text-4xl font-bold text-[#8b5e6b] dark:text-rose-300">
+        {t("settings.title")}
+      </h1>
+
+      <p className="font-sans text-sm sm:text-lg text-[#5f4a50] dark:text-[var(--dark-muted)] mt-1">
+        {t("perfil.subtitle")}
+      </p>
+    </div>
+
+  </div>
+</div>
+
 
         {/* Notificaciones */}
         {mensaje.texto && (
@@ -241,7 +245,7 @@ export default function Configuracion() {
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
 
             {/* Columna Izquierda: Foto de Perfil */}
-            <div className="lg:col-span-4 rounded-2xl p-6 min-h-[700px] flex flex-col items-center justify-center text-center">
+            <div className="lg:col-span-4 w-full max-w-sm mx-auto lg:max-w-none rounded-2xl p-4 sm:p-6 min-h-0 flex flex-col items-center justify-center text-center">
               <h3 className="font-sans text-base font-semibold text-[#875d69] dark:text-rose-300 mb-1">
                 {t("perfil.fotoTitulo")}
               </h3>
@@ -250,7 +254,7 @@ export default function Configuracion() {
               </p>
 
               <div className="relative mb-5 group">
-                <div className="w-36 h-36 md:w-44 md:h-44 rounded-full p-1 bg-white dark:bg-[var(--dark-surface)] shadow-md ring-4 ring-[#ead8d8] dark:ring-[var(--dark-border)] overflow-hidden">
+                <div className="w-32 h-32 sm:w-36 sm:h-36 md:w-44 md:h-44 rounded-full p-1 bg-white dark:bg-[var(--dark-surface)] shadow-md ring-4 ring-[#ead8d8] dark:ring-[var(--dark-border)] overflow-hidden">
                   <img
                     src={fotoSrc}
                     alt={t("perfil.fotoTitulo")}
