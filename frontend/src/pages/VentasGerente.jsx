@@ -116,21 +116,21 @@ function VentasGerente() {
   const totalPaginas = Math.max(1, Math.ceil(totalVentas / ventasPorPagina));
 
   return (
-    <div className="min-h-screen bg-[#fdf6e9] dark:bg-[var(--dark-bg)] p-6">
+    <div className="min-h-screen bg-[#fdf6e9] dark:bg-[var(--dark-bg)] p-4 sm:p-6 lg:p-8">
       {/* ENCABEZADO */}
       <div className="mb-6">
         <div className="flex items-center gap-4">
-          <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-[#fae4df] dark:bg-[var(--dark-border)]">
+          <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl sm:h-16 sm:w-16 bg-[#fae4df] dark:bg-[var(--dark-border)]">
             <span className="material-icons text-3xl text-[#d06b7d] dark:text-rose-300">
               trending_up
             </span>
           </div>
 
-          <div>
-            <h1 className="text-4xl font-bold text-[#8b5e6b] dark:text-rose-300">
+          <div className="min-w-0">
+            <h1 className="text-2xl font-bold break-words sm:text-4xl text-[#8b5e6b] dark:text-rose-300">
               {t("ventas.titulo")}
             </h1>
-            <p className="mt-1 text-lg text-[#5f4a50] dark:text-[var(--dark-muted)]">
+            <p className="mt-1 text-base text-[#5f4a50] sm:text-lg dark:text-[var(--dark-muted)]">
               {t("ventas.descripcion")}
             </p>
           </div>
@@ -138,7 +138,7 @@ function VentasGerente() {
       </div>
 
       {/* FILTROS */}
-      <section className="mb-6 rounded-3xl border border-[#f0d5dc] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-surface)] p-6 shadow-sm">
+      <section className="mb-6 rounded-3xl border border-[#f0d5dc] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-surface)] p-4 shadow-sm sm:p-6">
         <div className="mb-5 flex items-center gap-4">
           <div>
         <h2 className="text-xl font-bold text-[#68434f] dark:text-[var(--dark-text)]">
@@ -200,7 +200,7 @@ function VentasGerente() {
               setMetodoPagoSeleccionado("");
               setPaginaActual(1);
             }}
-            className="mt-4 rounded-full px-4 py-2 text-sm font-semibold text-[#b6536b] dark:text-rose-300 transition hover:bg-[#fff1f3] dark:hover:bg-white/5"
+            className="mt-4 w-full rounded-full px-4 py-2 text-center text-sm font-semibold text-[#b6536b] sm:w-auto dark:text-rose-300 transition hover:bg-[#fff1f3] dark:hover:bg-white/5"
           >
             {t("ventas.limpiarFiltros")}
           </button>
@@ -209,9 +209,9 @@ function VentasGerente() {
 
       {/* RESUMEN DE LA PÁGINA ACTUAL */}
       <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-        <div className="rounded-3xl border border-[#ead8d8] dark:border-[var(--dark-border)] bg-white/80 dark:bg-[var(--dark-surface)] p-5 shadow-sm">
+        <div className="rounded-3xl border border-[#ead8d8] dark:border-[var(--dark-border)] bg-white/80 dark:bg-[var(--dark-surface)] p-4 shadow-sm sm:p-5">
           <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#fae4df] dark:bg-[var(--dark-border)]">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#fae4df] dark:bg-[var(--dark-border)]">
               <span className="material-icons text-2xl text-[#d06b7d] dark:text-rose-300">
                 receipt_long
               </span>
@@ -227,9 +227,9 @@ function VentasGerente() {
           </div>
         </div>
 
-        <div className="rounded-3xl border border-[#ead8d8] dark:border-[var(--dark-border)] bg-white/80 dark:bg-[var(--dark-surface)] p-5 shadow-sm">
+        <div className="rounded-3xl border border-[#ead8d8] dark:border-[var(--dark-border)] bg-white/80 dark:bg-[var(--dark-surface)] p-4 shadow-sm sm:p-5">
           <div className="flex items-center gap-4">
-            <div className="flex h-14 w-14 items-center justify-center rounded-2xl bg-[#f9eeb4] dark:bg-yellow-900/30">
+            <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#f9eeb4] dark:bg-yellow-900/30">
               <span className="material-icons text-2xl text-[#a78b42] dark:text-yellow-400">
                 payments
               </span>
@@ -248,7 +248,7 @@ function VentasGerente() {
 
       {/* TABLA */}
       <section className="overflow-hidden rounded-3xl border border-[#ead8d8] dark:border-[var(--dark-border)] bg-white/80 dark:bg-[var(--dark-surface)] shadow-sm">
-        <div className="flex items-center gap-3 border-b border-[#ead8d8] dark:border-[var(--dark-border)] p-5">
+        <div className="flex items-center gap-3 border-b border-[#ead8d8] dark:border-[var(--dark-border)] p-4 sm:p-5">
           <span className="material-icons text-2xl text-[#d06b7d] dark:text-rose-300">
             receipt_long
           </span>
@@ -292,22 +292,22 @@ function VentasGerente() {
             <table className="w-full">
               <thead>
                 <tr className="border-b border-[#ead8d8] dark:border-[var(--dark-border)] bg-[#fffaf8] dark:bg-[var(--dark-bg)]">
-                  <th className="p-4 text-left text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
+                  <th className="p-3 sm:p-4 text-left text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
                     {t("ventas.venta")}
                   </th>
-                  <th className="p-4 text-left text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
+                  <th className="hidden p-3 sm:p-4 text-left text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)] md:table-cell">
                     {t("ventas.sucursal")}
                   </th>
-                  <th className="p-4 text-left text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
+                  <th className="hidden p-3 sm:p-4 text-left text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)] sm:table-cell">
                     {t("ventas.cajero")}
                   </th>
-                  <th className="p-4 text-left text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
+                  <th className="p-3 sm:p-4 text-left text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
                     {t("ventas.fecha")}
                   </th>
-                  <th className="p-4 text-left text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
+                  <th className="p-3 sm:p-4 text-left text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
                     {t("ventas.metodoPago")}
                   </th>
-                  <th className="p-4 text-center text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
+                  <th className="p-3 sm:p-4 text-center text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
                     {t("ventas.total")}
                   </th>
                 </tr>
@@ -326,7 +326,7 @@ function VentasGerente() {
                       key={venta.id}
                       className="border-b border-[#f0e3e3] dark:border-[var(--dark-border)] last:border-b-0 transition-colors hover:bg-[#fff5f6] dark:hover:bg-white/5"
                     >
-                      <td className="p-4">
+                      <td className="p-3 sm:p-4">
                         <span className="inline-flex items-center gap-2 rounded-full bg-[#fae4df] dark:bg-[var(--dark-border)] px-3 py-1 text-sm font-semibold text-[#8b5e6b] dark:text-[var(--dark-muted)]">
                           <span className="material-icons text-base text-[#d06b7d] dark:text-rose-300">
                             receipt
@@ -335,11 +335,11 @@ function VentasGerente() {
                         </span>
                       </td>
 
-                      <td className="p-4 font-medium text-[#5f3c46] dark:text-[var(--dark-text)]">
+                      <td className="hidden p-3 sm:p-4 font-medium text-[#5f3c46] dark:text-[var(--dark-text)] md:table-cell">
                         {venta.sucursal_nombre || "—"}
                       </td>
 
-                      <td className="p-4">
+                      <td className="hidden p-3 sm:p-4 sm:table-cell">
                         <div className="flex items-center gap-2 whitespace-nowrap text-[#5f3c46] dark:text-[var(--dark-text)]">
                           <span className="material-icons text-lg text-[#bd8794] dark:text-[var(--dark-muted)]">
                             person
@@ -348,11 +348,11 @@ function VentasGerente() {
                         </div>
                       </td>
 
-                      <td className="whitespace-nowrap p-4 text-[#8c6773] dark:text-[var(--dark-muted)]">
+                      <td className="whitespace-nowrap p-3 sm:p-4 text-[#8c6773] dark:text-[var(--dark-muted)]">
                         {formatearFecha(venta.fecha)}
                       </td>
 
-                      <td className="p-4">
+                      <td className="p-3 sm:p-4">
                         <span
                           className={`inline-flex items-center gap-1.5 whitespace-nowrap rounded-full px-3 py-1.5 text-sm font-semibold ${
                             estilosPago[venta.metodo_pago_nombre] ||
@@ -370,7 +370,7 @@ function VentasGerente() {
                         </span>
                       </td>
 
-                      <td className="whitespace-nowrap p-4 text-right">
+                      <td className="whitespace-nowrap p-3 sm:p-4 text-right">
                         <span className="font-bold text-[#c94f68] dark:text-rose-300">
                           {formatearPrecio(venta.total)}
                         </span>

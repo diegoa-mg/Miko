@@ -193,7 +193,7 @@ function InventarioGerente() {
         {/* Encabezado */}
         <header className="mb-7">
           <div className="flex items-center gap-4">
-            <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#fae4df] dark:bg-[var(--dark-border)]">
+            <div className="flex h-14 w-14 shrink-0 items-center sm:h-16 sm:w-16 justify-center rounded-2xl bg-[#fae4df] dark:bg-[var(--dark-border)]">
               <Boxes
                 size={32}
                 strokeWidth={1.8}
@@ -201,12 +201,12 @@ function InventarioGerente() {
               />
             </div>
 
-            <div>
-              <h1 className="font-sans text-3xl sm:text-4xl font-bold text-[#8b5e6b] dark:text-rose-300">
+            <div className="min-w-0">
+              <h1 className="font-sans text-2xl sm:text-4xl font-bold break-words text-[#8b5e6b] dark:text-rose-300">
                 {tr("titulo", "Inventario")}
               </h1>
 
-              <p className="mt-1 font-sans text-lg text-[#5f4a50] dark:text-[var(--dark-muted)]">
+              <p className="mt-1 font-sans text-base sm:text-lg text-[#5f4a50] dark:text-[var(--dark-muted)]">
                 {tr(
                   "descripcion",
                   "Consulta y ajusta las existencias de tu sucursal."
@@ -324,19 +324,19 @@ function InventarioGerente() {
               <>
                 {/* Tabla */}
                 <div className="overflow-x-auto rounded-2xl border border-[#ead8d8] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-surface)] shadow-sm">
-                  <table className="w-full min-w-[760px]">
+                  <table className="w-full min-w-[480px] sm:min-w-[760px]">
                     <thead>
                       <tr className="border-b border-[#ead8d8] dark:border-[var(--dark-border)] bg-[#fff8f8] dark:bg-[var(--dark-bg)]">
-                        <th className="p-4 text-left text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
+                        <th className="p-3 sm:p-4 text-left text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
                           {tr("producto", "Producto")}
                         </th>
-                        <th className="p-4 text-left text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
+                        <th className="hidden p-3 sm:p-4 text-left text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)] sm:table-cell">
                           {tr("categoria", "Categoría")}
                         </th>
-                        <th className="p-4 text-center text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
+                        <th className="p-3 sm:p-4 text-center text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
                           {tr("existencia", "Existencia")}
                         </th>
-                        <th className="p-4 text-center text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
+                        <th className="p-3 sm:p-4 text-center text-sm font-semibold text-[#5f3c46] dark:text-[var(--dark-text)]">
                           {tr("ajustar", "Ajustar existencias")}
                         </th>
                       </tr>
@@ -351,21 +351,24 @@ function InventarioGerente() {
                             key={`${fila.sucursal_id}-${fila.producto_id}`}
                             className="border-b border-[#f0e3e3] dark:border-[var(--dark-border)] last:border-b-0 transition-colors hover:bg-[#fffaf7] dark:hover:bg-white/5"
                           >
-                            <td className="p-4 font-semibold text-[#4f3b40] dark:text-[var(--dark-text)]">
+                            <td className="p-3 sm:p-4 font-semibold text-[#4f3b40] dark:text-[var(--dark-text)]">
                               {fila.producto_nombre}
+                              <span className="mt-0.5 block text-xs font-normal text-[#8c6773] dark:text-[var(--dark-muted)] sm:hidden">
+                                {fila.categoria_nombre}
+                              </span>
                             </td>
 
-                            <td className="p-4 text-sm text-[#8c6773] dark:text-[var(--dark-muted)]">
+                            <td className="hidden p-3 sm:p-4 text-sm text-[#8c6773] dark:text-[var(--dark-muted)] sm:table-cell">
                               {fila.categoria_nombre}
                             </td>
 
-                            <td className="p-4 text-center">
+                            <td className="p-3 sm:p-4 text-center">
                               <span className="inline-flex min-w-12 justify-center rounded-full bg-[#f9eeb4] dark:bg-yellow-900/30 px-3 py-1.5 font-semibold text-[#70565e] dark:text-[var(--dark-text)]">
                                 {numero(fila.existencia)}
                               </span>
                             </td>
 
-                            <td className="p-4">
+                            <td className="p-3 sm:p-4">
                               <div className="flex items-center justify-center gap-2">
                                 <input
                                   type="number"
@@ -383,7 +386,7 @@ function InventarioGerente() {
                                     "Cantidad"
                                   )}
                                   disabled={ocupado}
-                                  className="w-20 rounded-lg border border-[#ead8d8] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-bg)] px-2 py-2 text-center text-sm text-[#875d69] dark:text-rose-300 outline-none focus:border-[#875d69] dark:focus:border-rose-300 focus:ring-2 focus:ring-[#ead8d8] dark:focus:ring-[var(--dark-border)] disabled:opacity-50"
+                                  className="w-16 sm:w-20 rounded-lg border border-[#ead8d8] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-bg)] px-2 py-2 text-center text-sm text-[#875d69] dark:text-rose-300 outline-none focus:border-[#875d69] dark:focus:border-rose-300 focus:ring-2 focus:ring-[#ead8d8] dark:focus:ring-[var(--dark-border)] disabled:opacity-50"
                                 />
 
                                 <button
@@ -419,7 +422,7 @@ function InventarioGerente() {
                 {/* Paginación */}
                 <div className="mt-5 flex flex-col items-center justify-center gap-3 rounded-2xl bg-white dark:bg-[var(--dark-surface)] p-4 shadow-sm">
 
-<div className="flex items-center justify-center gap-3">
+<div className="flex flex-wrap items-center justify-center gap-2 sm:gap-3">
   {/* Página anterior */}
   <button
     type="button"

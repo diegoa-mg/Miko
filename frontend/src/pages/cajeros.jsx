@@ -377,7 +377,7 @@ function Cajeros() {
 
         {/* Mensaje de feedback si existe */}
         {mensaje && (
-          <div className="bg-green-100 dark:bg-green-950/40 border border-green-400 dark:border-green-800 text-green-700 dark:text-green-300 px-4 py-3 rounded-xl mb-6 flex justify-between items-center">
+          <div className="bg-green-100 dark:bg-green-950/40 border border-green-400 dark:border-green-800 text-green-700 dark:text-green-300 px-4 py-3 rounded-xl mb-6 flex justify-between items-start gap-3 break-words">
             <span>{mensaje}</span>
             <button
               type="button"
@@ -390,7 +390,7 @@ function Cajeros() {
         )}
 
         {error && !mostrarFormulario && (
-          <div className="bg-red-100 dark:bg-red-950/40 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-xl mb-6 flex justify-between items-center">
+          <div className="bg-red-100 dark:bg-red-950/40 border border-red-400 dark:border-red-800 text-red-700 dark:text-red-300 px-4 py-3 rounded-xl mb-6 flex justify-between items-start gap-3 break-words">
             <span>{error}</span>
             <button
               type="button"
@@ -422,11 +422,11 @@ function Cajeros() {
                 key={cajero.id}
                 className="bg-white dark:bg-[var(--dark-surface)] rounded-3xl shadow-sm border border-[#f0dfdc] dark:border-[var(--dark-border)] overflow-hidden hover:shadow-md transition-shadow"
               >
-                <div className="p-6">
+                <div className="p-4 sm:p-6">
                   <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-4">
+                    <div className="flex min-w-0 items-center gap-3 sm:gap-4">
                       {/* Avatar */}
-                      <div className="w-20 h-20 rounded-full bg-[#f6d5ca] dark:bg-[var(--dark-border)] flex items-center justify-center text-[#875d69] dark:text-rose-300 text-xl font-semibold">
+                      <div className="w-16 h-16 sm:w-20 sm:h-20 shrink-0 rounded-full bg-[#f6d5ca] dark:bg-[var(--dark-border)] flex items-center justify-center text-[#875d69] dark:text-rose-300 text-xl font-semibold">
                         {cajero.nombre
                           ?.split(" ")
                           .map((nombre) => nombre[0])
@@ -437,7 +437,7 @@ function Cajeros() {
 
                       <div className="min-w-0">
                         <div className="flex flex-wrap items-center gap-x-3 gap-y-1">
-                          <h2 className="text-xl font-semibold text-[#875d69] dark:text-rose-300">
+                          <h2 className="text-lg sm:text-xl font-semibold break-words text-[#875d69] dark:text-rose-300">
                             {cajero.nombre}
                           </h2>
                           <span
@@ -461,7 +461,7 @@ function Cajeros() {
                           )}
                         </div>
 
-                        <p className="font-sans text-sm text-gray-600 dark:text-[var(--dark-muted)] mt-1">
+                        <p className="font-sans text-sm text-gray-600 dark:text-[var(--dark-muted)] mt-1 break-all">
                           ✉ {cajero.email}
                         </p>
 
@@ -481,8 +481,8 @@ function Cajeros() {
                 </div>
 
                 {/* Acciones */}
-                <div className="bg-[#fffaf2] dark:bg-[var(--dark-bg)] px-6 py-4 flex justify-end">
-                  <div className="flex gap-2">
+                <div className="bg-[#fffaf2] dark:bg-[var(--dark-bg)] px-4 sm:px-6 py-4 flex justify-end">
+                  <div className="flex flex-wrap justify-end gap-2">
                     {cajero.activo ? (
                       <>
                     {/* Reenviar aviso */}

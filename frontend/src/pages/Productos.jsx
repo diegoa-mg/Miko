@@ -305,11 +305,11 @@ useEffect(() => {
     }).format(Number(valor ?? 0));
 
   return (
-    <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] px-5 py-8 font-sans md:px-8">
+    <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-4 font-sans sm:p-6 lg:p-8">
       {/* Encabezado */}
-      <header className="mb-8 flex flex-col gap-5 sm:flex-row sm:items-center sm:justify-between">
+      <header className="mb-6 flex flex-col gap-4 sm:mb-8 sm:flex-row sm:items-center sm:justify-between">
         <div className="flex items-center gap-4">
-         <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#fae4df] dark:bg-[var(--dark-border)] text-[#d06b7d] dark:text-rose-300">
+         <div className="flex h-14 w-14 shrink-0 items-center justify-center rounded-2xl bg-[#fae4df] dark:bg-[var(--dark-border)] text-[#d06b7d] sm:h-16 sm:w-16 dark:text-rose-300">
           <svg
             xmlns="http://www.w3.org/2000/svg"
             width="32"
@@ -323,8 +323,8 @@ useEffect(() => {
           </svg>
         </div>
 
-          <div>
-            <h1 className="font-sans text-3xl font-bold text-[#875d69] dark:text-rose-300">
+          <div className="min-w-0">
+            <h1 className="font-sans text-2xl sm:text-3xl font-bold break-words text-[#875d69] dark:text-rose-300">
               {t("productos.titulo", { defaultValue: "Productos" })}
             </h1>
             <p className="mt-1 font-sans text-gray-600 dark:text-[var(--dark-muted)]">
@@ -339,7 +339,7 @@ useEffect(() => {
          <button
           type="button"
           onClick={abrirCrear}
-          className="flex items-center justify-center gap-2 rounded-xl bg-[#a30f3c] px-6 py-3 font-sans text-sm font-normal text-white transition-colors hover:bg-[#850c32]"
+          className="flex w-full items-center justify-center gap-2 rounded-xl bg-[#a30f3c] px-6 py-3 sm:w-auto font-sans text-sm font-normal text-white transition-colors hover:bg-[#850c32]"
         >
           <Plus size={21} />
           {t("productos.nuevo", { defaultValue: "Nuevo producto" })}
@@ -363,7 +363,7 @@ useEffect(() => {
       )}
 
       {/* Búsqueda y filtros */}
-      <section className="mb-6 rounded-2xl border border-[#f0dfdc] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-surface)] p-5 shadow-sm md:p-6">
+      <section className="mb-6 rounded-2xl border border-[#f0dfdc] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-surface)] p-4 shadow-sm sm:p-5 lg:p-6">
         <div className="mb-5 flex flex-wrap gap-3">
   <button
     type="button"
@@ -371,7 +371,7 @@ useEffect(() => {
       setVista("activos");
       setMensaje("");
     }}
-    className={`flex items-center gap-2 rounded-full px-6 py-3 font-sans text-sm font-normal transition-colors ${
+    className={`flex flex-1 items-center justify-center gap-2 rounded-full px-4 py-3 font-sans text-sm font-normal transition-colors sm:flex-none sm:px-6 ${
   vista === "activos"
     ? "bg-[#875d69] text-white"
     : "bg-[#eab0b5] dark:bg-[var(--dark-border)] text-[#875d69] dark:text-rose-300 hover:bg-[#e4a0a7] dark:hover:bg-rose-900/50"
@@ -397,7 +397,7 @@ useEffect(() => {
       setVista("inactivos");
       setMensaje("");
     }}
-   className={`flex items-center gap-2 rounded-full px-6 py-3 font-sans text-sm font-normal transition-colors ${
+   className={`flex flex-1 items-center justify-center gap-2 rounded-full px-4 py-3 font-sans text-sm font-normal transition-colors sm:flex-none sm:px-6 ${
   vista === "inactivos"
     ? "bg-[#875d69] text-white"
     : "bg-[#eab0b5] dark:bg-[var(--dark-border)] text-[#875d69] dark:text-rose-300 hover:bg-[#e4a0a7] dark:hover:bg-rose-900/50"
@@ -478,25 +478,25 @@ useEffect(() => {
 
       <section className="overflow-hidden rounded-2xl border border-[#f0dfdc] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-surface)] shadow-sm">
         <div className="overflow-x-auto">
-          <table className="w-full min-w-[780px] border-collapse text-left">
+          <table className="w-full min-w-[440px] sm:min-w-[780px] border-collapse text-left">
             <thead>
               <tr className="bg-[#f9e5e4] dark:bg-[var(--dark-bg)] text-sm text-[#875d69] dark:text-rose-300">
-                <th className="px-5 py-4 font-semibold">
+                <th className="px-3 py-3 sm:px-5 sm:py-4 font-semibold">
                   {t("productos.nombre", { defaultValue: "Nombre" })}
                 </th>
-                <th className="px-5 py-4 font-semibold">
+                <th className="hidden px-3 py-3 sm:px-5 sm:py-4 font-semibold sm:table-cell">
                   {t("productos.categoria", { defaultValue: "Categoría" })}
                 </th>
-                <th className="px-5 py-4 font-semibold">
+                <th className="px-3 py-3 sm:px-5 sm:py-4 font-semibold">
                   {t("productos.precio", { defaultValue: "Precio" })}
                 </th>
-                <th className="px-5 py-4 font-semibold">
+                <th className="px-3 py-3 sm:px-5 sm:py-4 font-semibold">
                   {t("productos.existencia", { defaultValue: "Existencias" })}
                 </th>
-                <th className="px-5 py-4 font-semibold">
+                <th className="hidden px-3 py-3 sm:px-5 sm:py-4 font-semibold sm:table-cell">
                   {t("productos.estado", { defaultValue: "Estado" })}
                 </th>
-                <th className="px-5 py-4 text-center font-semibold">
+                <th className="px-3 py-3 sm:px-5 sm:py-4 text-center font-semibold">
                   {t("productos.acciones", { defaultValue: "Acciones" })}
                 </th>
               </tr>
@@ -525,9 +525,12 @@ useEffect(() => {
                     key={producto.id}
                     className="transition-colors hover:bg-[#fffaf7] dark:hover:bg-white/5"
                   >
-                    <td className="px-5 py-4">
+                    <td className="px-3 py-3 sm:px-5 sm:py-4">
                       <p className="font-semibold text-[#875d69] dark:text-rose-300">
                         {producto.nombre}
+                      </p>
+                      <p className="mt-0.5 text-xs text-[#9b7b83] dark:text-[var(--dark-muted)] sm:hidden">
+                        {producto.categoria_nombre}
                       </p>
 
                       <div className="mt-1 flex items-center gap-1.5 text-xs text-[#9b7b83] dark:text-[var(--dark-muted)]">
@@ -539,16 +542,16 @@ useEffect(() => {
                         </span>
                       </div>
                     </td>
-                    <td className="px-5 py-4 text-[#9b7b83] dark:text-[var(--dark-muted)]">
+                    <td className="hidden px-3 py-3 sm:px-5 sm:py-4 text-[#9b7b83] dark:text-[var(--dark-muted)] sm:table-cell">
                       {producto.categoria_nombre}
                     </td>
-                    <td className="px-5 py-4 font-medium text-[#875d69] dark:text-rose-300">
+                    <td className="px-3 py-3 sm:px-5 sm:py-4 font-medium text-[#875d69] dark:text-rose-300">
                       {dinero(producto.precio)}
                     </td>
-                    <td className="px-5 py-4 text-[#875d69] dark:text-rose-300">
+                    <td className="px-3 py-3 sm:px-5 sm:py-4 text-[#875d69] dark:text-rose-300">
                       {producto.existencia}
                     </td>
-                    <td className="px-5 py-4">
+                    <td className="hidden px-3 py-3 sm:px-5 sm:py-4 sm:table-cell">
                       <span
                         className={`inline-block h-2 w-8 rounded-full ${
                           producto.activo ? "bg-green-300" : "bg-red-300"
@@ -557,8 +560,8 @@ useEffect(() => {
                         aria-label={producto.activo ? "Activo" : "Inactivo"}
                       />
                     </td>
-                    <td className="px-5 py-4">
-                      <div className="flex items-center justify-center gap-3">
+                    <td className="px-3 py-3 sm:px-5 sm:py-4">
+                      <div className="flex items-center justify-center gap-2 sm:gap-3">
                         {producto.activo ? (
                           <>
                             <button
@@ -742,7 +745,7 @@ useEffect(() => {
             if (e.target === e.currentTarget) cerrarPanel();
           }}
         >
-          <aside className="h-full w-full max-w-md overflow-y-auto bg-[#fffaf2] dark:bg-[var(--dark-bg)] p-6 shadow-2xl">
+          <aside className="h-full w-full max-w-md overflow-y-auto bg-[#fffaf2] dark:bg-[var(--dark-bg)] p-4 shadow-2xl sm:p-6">
             <div className="mb-6 flex items-center justify-between">
              <h2 className="font-sans text-2xl font-bold text-[#875d69] dark:text-rose-300">
                 {productoEditar

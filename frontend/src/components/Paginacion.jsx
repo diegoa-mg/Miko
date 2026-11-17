@@ -19,8 +19,8 @@ export default function Paginacion({
     "flex h-9 w-9 items-center justify-center rounded-xl border border-[#ead8d8] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-surface)] text-[#8b5e6b] dark:text-[var(--dark-muted)] transition hover:bg-[#fae4df] dark:hover:bg-[var(--dark-border)] disabled:cursor-not-allowed disabled:opacity-40";
 
   return (
-    <div className="flex flex-col items-center gap-4 border-t border-[#ead8d8] dark:border-[var(--dark-border)] bg-[#fffaf8] dark:bg-[var(--dark-bg)] px-5 py-4">
-      <div className="flex flex-wrap items-center justify-center gap-2">
+    <div className="flex flex-col items-center gap-4 border-t border-[#ead8d8] dark:border-[var(--dark-border)] bg-[#fffaf8] dark:bg-[var(--dark-bg)] px-3 py-4 sm:px-5">
+      <div className="flex flex-wrap items-center justify-center gap-1.5 sm:gap-2">
         <button
           type="button"
           onClick={() => onCambiar(Math.max(1, paginaActual - 1))}
@@ -34,7 +34,7 @@ export default function Paginacion({
         {paginas.map((pagina, indice) => (
           <span key={pagina} className="contents">
             {indice > 0 && pagina - paginas[indice - 1] > 1 && (
-              <span className="px-1 text-[#8c6773] dark:text-[var(--dark-muted)]">
+              <span className="px-0.5 text-[#8c6773] dark:text-[var(--dark-muted)]">
                 …
               </span>
             )}
@@ -43,7 +43,7 @@ export default function Paginacion({
               onClick={() => onCambiar(pagina)}
               disabled={deshabilitado}
               aria-current={paginaActual === pagina ? "page" : undefined}
-              className={`h-9 min-w-9 rounded-xl border px-3 text-sm font-semibold transition ${
+              className={`h-9 min-w-9 rounded-xl border px-2.5 text-sm sm:px-3 font-semibold transition ${
                 paginaActual === pagina
                   ? "border-[#d06b7d] dark:border-rose-700 bg-[#d06b7d] dark:bg-rose-700 text-white"
                   : "border-[#ead8d8] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-surface)] text-[#8b5e6b] dark:text-[var(--dark-muted)] hover:bg-[#fae4df] dark:hover:bg-[var(--dark-border)]"
