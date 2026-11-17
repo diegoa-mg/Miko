@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import Select from "../components/Select";
 import {
   ContactRound,
   Contact,
@@ -688,21 +689,23 @@ function Cajeros() {
                   <label className="font-sans block text-sm font-medium text-[#875d69] dark:text-rose-300 mb-2">
                     {t("cajeros.sucursalAsignada", "Sucursal asignada")}
                   </label>
-                  <select
+                  <Select
                     name="sucursal_id"
                     value={formulario.sucursal_id}
                     onChange={manejarCambio}
-                    className="font-sans w-full border-2 border-[#ead8d8] dark:border-[var(--dark-border)] rounded-xl px-4 py-3 bg-white dark:bg-[var(--dark-bg)] focus:outline-none focus:border-[#cda4b4] dark:focus:border-rose-300"
-                  >
-                    <option value="">
-                      -- {t("cajeros.seleccionaSucursal", "Sin sucursal asignada")} --
-                    </option>
-                    {sucursales.map((sucursal) => (
-                      <option key={sucursal.id} value={sucursal.id}>
-                        {sucursal.nombre}
-                      </option>
-                    ))}
-                  </select>
+                    ariaLabel={t("cajeros.sucursalAsignada", "Sucursal asignada")}
+                    options={[
+                      {
+                        value: "",
+                        label: `-- ${t("cajeros.seleccionaSucursal", "Sin sucursal asignada")} --`,
+                      },
+                      ...sucursales.map((sucursal) => ({
+                        value: String(sucursal.id),
+                        label: sucursal.nombre,
+                      })),
+                    ]}
+                    botonClassName="font-sans rounded-xl px-4 py-3 text-base"
+                  />
                 </div>
                 )}
 

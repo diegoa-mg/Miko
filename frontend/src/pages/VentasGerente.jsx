@@ -1,5 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
+import Select from "../components/Select";
+import DatePicker from "../components/DatePicker";
 import { obtenerVentas, contarVentas } from "../api/ventas";
 import Paginacion from "../components/Paginacion";
 
@@ -155,19 +157,18 @@ function VentasGerente() {
             >
               {t("ventas.metodoPago")}
             </label>
-            <select
+            <Select
               id="filtro-metodo-pago-gerente"
               value={metodoPagoSeleccionado}
               onChange={(e) => cambiarMetodoPago(e.target.value)}
-              className="w-full h-[52px] min-w-0 rounded-full border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-bg)] px-5 text-sm text-[#8c6773] dark:text-[var(--dark-text)] outline-none focus:border-[#875d69] dark:focus:border-rose-300"
-            >
-              <option value="">{t("ventas.todosMetodosPago")}</option>
-              <option value="efectivo">{t("ventas.metodosPago.efectivo")}</option>
-              <option value="tarjeta">{t("ventas.metodosPago.tarjeta")}</option>
-              <option value="transferencia">
-                {t("ventas.metodosPago.transferencia")}
-              </option>
-            </select>
+              options={[
+                { value: "", label: t("ventas.todosMetodosPago") },
+                { value: "efectivo", label: t("ventas.metodosPago.efectivo") },
+                { value: "tarjeta", label: t("ventas.metodosPago.tarjeta") },
+                { value: "transferencia", label: t("ventas.metodosPago.transferencia") },
+              ]}
+              botonClassName="h-[52px] rounded-full px-5 text-sm"
+            />
           </div>
 
           <div>
@@ -178,15 +179,14 @@ function VentasGerente() {
     {t("ventas.filtrarPorFecha")}
   </label>
 
-  <input
+  <DatePicker
     id="fecha-gerente"
-    type="date"
     value={fechaSeleccionada}
-    onChange={(e) => {
-      setFechaSeleccionada(e.target.value);
+    onChange={(valor) => {
+      setFechaSeleccionada(valor);
       setPaginaActual(1);
     }}
-    className="w-full h-[52px] min-w-0 rounded-full border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-bg)] px-5 text-sm text-[#8c6773] dark:text-[var(--dark-text)] outline-none focus:border-[#875d69] dark:focus:border-rose-300"
+    botonClassName="h-[52px] rounded-full px-5 text-sm"
   />
 </div>
 
