@@ -4,9 +4,9 @@ cajeros, categorías, productos, inventario y ventas.
 
 Ejecutar dentro del contenedor (con las migraciones ya aplicadas):
 
-    docker compose exec backend python -m scripts.datos_de_prueba
+    docker compose exec -e SEED_PASSWORD='...' -e DATABASE_URL='...' backend python -m scripts.datos_de_prueba_prod
 
-Todas las cuentas creadas usan la contraseña: Miko.12345
+Todas las cuentas creadas usan la contraseña indicada en la variable de entorno SEED_PASSWORD.
 
 El script es idempotente: se puede correr varias veces sin duplicar nada.
 Cada registro se busca por su dato único (email, nombre de sucursal,
@@ -19,9 +19,11 @@ precios que varían un poco entre sucursales, como pide el protocolo.
 
 Variante para la base de producción: mismos datos, pero con correos @miko-pos.com
 (dominio propio del proyecto). Se corre con DATABASE_URL apuntando a Supabase.
-Cambiar la contraseña del admin inmediatamente después de cargarlo.
+
+La contraseña no se guarda en el repositorio: se pasa con SEED_PASSWORD.
 """
 import random
+import os
 from datetime import datetime, time, timedelta, timezone
 from decimal import Decimal
 
@@ -40,7 +42,7 @@ from src.models import (
 from src.security import hash_password
 from src.services import ZONA_NEGOCIO, hoy_en_negocio
 
-PASSWORD = "Miko.12345"
+PASSWORD = os.environ["SEED_PASSWORD"]  # obligatoria: sin valor por defecto
 DIAS_DE_VENTAS = 30
 UMBRAL_BAJO = 5  # mismo default que el dashboard
 
@@ -443,7 +445,7 @@ def main():
         if n:
             print(f"  Ventas: {n} en los últimos {DIAS_DE_VENTAS} días")
 
-        print("\nCuentas (contraseña para todas: " + PASSWORD + ")")
+        print("\nCuentas (contraseña: la definida en SEED_PASSWORD)")
         print("  admin@miko-pos.com                  Admin general")
         for nombre, email, suc, activo in GERENTES:
             extra = suc or "sin sucursal"
