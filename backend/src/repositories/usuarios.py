@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from sqlalchemy.orm import Session
 from src.models import Usuario
 
@@ -14,5 +16,26 @@ def actualizar_password(db: Session, usuario: Usuario, password_hash: str) -> Us
     """
     usuario.password_hash = password_hash
     usuario.token_version += 1
+    db.commit()
+    return usuario
+
+def incrementar_intentos_fallidos(db: Session, usuario: Usuario) -> int:
+    """
+    Suma 1 al contador y devuelve el valor nuevo. El +1 lo hace la base en un solo UPDATE
+    (intentos_fallidos = intentos_fallidos + 1), no Python: así, si dos logins fallidos
+    llegan al mismo tiempo, no se pisan y ninguno se pierde.
+    """
+    db.query(Usuario).filter(Usuario.id == usuario.id).update(
+        {Usuario.intentos_fallidos: Usuario.intentos_fallidos + 1},
+        synchronize_session=False,
+    )
+    db.commit()
+    db.refresh(usuario)
+    return usuario.intentos_fallidos
+
+def guardar_bloqueo(db: Session, usuario: Usuario, intentos_fallidos: int, bloqueado_hasta: datetime | None) -> Usuario:
+    """Guarda el estado del bloqueo de login (contador y fecha) en un solo commit."""
+    usuario.intentos_fallidos = intentos_fallidos
+    usuario.bloqueado_hasta = bloqueado_hasta
     db.commit()
     return usuario

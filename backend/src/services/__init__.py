@@ -32,4 +32,12 @@ from src.services.correo import (
     enviar_confirmacion_cambio_email,
 )
 from src.services.pdf_ticket import generar_pdf_ticket
+from src.services.bloqueo_login import (
+    MAX_INTENTOS_FALLIDOS,
+    MINUTOS_BLOQUEO,
+    verificar_cuenta_no_bloqueada,
+    registrar_intento_fallido,
+    reiniciar_bloqueo,
+    limpiar_bloqueo,
+)
 from src.services.recuperacion_password import MENSAJE_OLVIDE, restablecer_password, solicitar_restablecimiento
