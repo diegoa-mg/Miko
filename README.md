@@ -1,12 +1,15 @@
 <div align="center">
 
-<!-- 🖼️ Logo pendiente: reemplaza este comentario cuando lo subas -->
-<!-- <img src="./ruta/al/logo.png" width="200" alt="Logo de Miko" /> -->
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./frontend/src/assets/logo_oscuro.png">
+  <img src="./frontend/src/assets/logo_claro.png" width="220" alt="Logo de Miko">
+</picture>
+<br><br>
 
 # Miko
 ### Control centralizado de sucursales, inventario y ventas
 
-![Estado](https://img.shields.io/badge/Estado-En%20desarrollo-yellow?style=for-the-badge)
+[![Estado](https://img.shields.io/badge/Estado-En%20producci%C3%B3n-brightgreen?style=for-the-badge)](https://miko-pos.com)
 ![FastAPI](https://img.shields.io/badge/FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Alembic](https://img.shields.io/badge/Alembic-Migraciones-6BA539?style=for-the-badge)
@@ -36,6 +39,7 @@ Aplicación web que permite a una empresa con varias sucursales administrar de f
 ✅ Aviso de privacidad<br>
 ✅ Edición de perfil, cambio de contraseña y foto de perfil<br>
 ✅ Cierre de sesión en todos los dispositivos (versión de token: al cambiar la contraseña o cerrar sesiones, los tokens anteriores dejan de funcionar)
+✅ Bloqueo temporal de la cuenta (15 minutos) tras 5 intentos fallidos de inicio de sesión<br>
  
 **Administrador General**<br>
 ✅ CRUD de sucursales y asignación de gerente<br>
@@ -167,7 +171,7 @@ Esto crea un usuario Administrador General para poder iniciar sesión:
 |---|---|
 | `admin@miko.com` | `Miko.12345` |
 
->⚠️ Estas credenciales son **solo para desarrollo local**. No uses este script en el servidor de producción.
+>⚠️ Estas credenciales son **solo para desarrollo local**. Las cuentas de producción no usan estas contraseñas.
 
 Verifica que los 4 contenedores estén `Up` con `docker compose ps`, y abre:
 
@@ -195,6 +199,40 @@ No necesitas configurar nada: las variables `SMTP_*` ya traen valores por defect
 >⚠️ Los correos que ves en Mailpit nunca llegan a una bandeja real y se pierden al reiniciar el contenedor. Para producción hay que cambiar los valores `SMTP_*` por los de un proveedor real y guardarlos solo en variables de entorno, nunca en el repositorio.
 
 >⚠️ No modifiques el `Dockerfile` del frontend sin saber por qué está así — usa una versión específica de Node y pnpm a propósito; cambiarlo rompe el build para todo el equipo.
+
+## 🌐 Producción
+
+El sistema está desplegado y se puede usar en línea:
+
+| Servicio | URL |
+|----------|-----|
+| **Aplicación web** | https://miko-pos.com |
+| **API (documentación Swagger)** | https://miko-api-2era.onrender.com/docs |
+
+### ¿Dónde vive cada parte?
+
+| Componente | Plataforma | Notas |
+|------------|-----------|-------|
+| Frontend (React) | Neubox | Archivos estáticos generados con `vite build`; el `.htaccess` redirige a HTTPS y habilita las rutas de React Router |
+| Backend (FastAPI) | Render | Contenedor Docker construido desde `backend/Dockerfile`; despliegue manual desde la rama `main` |
+| Base de datos | Supabase (PostgreSQL) | Conexión mediante el pooler de sesión; las migraciones se aplican con Alembic |
+| Fotos de perfil | Supabase Storage | Bucket público exclusivo de producción |
+| Correo | Neubox (SMTP) | Buzón `no-reply@miko-pos.com`, usado para el aviso de privacidad y la recuperación de contraseña |
+
+El dominio `miko-pos.com` cuenta con certificado SSL (Let's Encrypt, renovación automática).
+
+### Datos de la demo
+
+La base de producción contiene **datos de prueba ficticios** (sucursales, productos, ventas de los últimos 30 días) cargados con `backend/scripts/datos_de_prueba_prod.py`. Las credenciales de acceso se entregan por separado y no se publican en este repositorio.
+
+### Cómo se despliega una nueva versión
+
+1. Integrar los cambios a `main` mediante Pull Request.
+2. Si hay migraciones nuevas, aplicarlas primero a la base de producción con `alembic upgrade head`.
+3. Hacer el *Manual Deploy* del backend en Render.
+4. Para el frontend: compilar con `VITE_API_URL` apuntando a la API de producción y subir el contenido de `dist/` a Neubox.
+
+> Las variables de entorno de producción (base de datos, JWT, SMTP, Supabase) se configuran en el panel de Render y nunca se guardan en el repositorio.
 
 ## 📂 Estructura del proyecto
 
