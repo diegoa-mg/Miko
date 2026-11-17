@@ -192,7 +192,7 @@ const manejarReenviarAviso = async (id) => {
 );
 
   return (
-    <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-8">
+    <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-4 sm:p-6 lg:p-8">
         {gerenteAEliminar && (
     <div className="miko-confirm-overlay">
         <div className="miko-confirm-modal">
@@ -246,7 +246,7 @@ const manejarReenviarAviso = async (id) => {
       <div className="max-w-7xl mx-auto">
 
         {/* Encabezado */}
-      <div className="flex items-center justify-between mb-8">
+     <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 mb-8">
         <div className="flex items-center gap-4">
           <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#fae4df] dark:bg-[var(--dark-border)]">
             <UsersRound
@@ -271,7 +271,7 @@ const manejarReenviarAviso = async (id) => {
           <button
             type="button"
             onClick={abrirNuevoGerente}
-            className="font-sans bg-rose-800 dark:bg-rose-700 hover:bg-rose-900 dark:hover:bg-rose-600 text-white px-5 py-3 rounded-lg transition-colors"
+            className="font-sans w-full sm:w-auto bg-rose-800 dark:bg-rose-700 hover:bg-rose-900 dark:hover:bg-rose-600 text-white px-5 py-3 rounded-lg transition-colors"
           >
             + {t("gerentes.nuevo")}
           </button>
@@ -283,43 +283,46 @@ const manejarReenviarAviso = async (id) => {
           <div className="flex flex-col lg:flex-row gap-4 items-center justify-between">
 
             {/* Opciones */}
-            <div className="flex gap-2 w-full lg:w-auto">
-              <button
-                type="button"
-                onClick={() => {
-                  setMostrarInactivos(false);
-                  cargarDatos(false);
-                }}
-                className={`font-sans px-5 py-3 rounded-full transition-colors ${
-                  !mostrarInactivos
-                    ? "bg-[#875d69] text-white"
-                    : "bg-[#E8B4B8] dark:bg-[var(--dark-border)] text-[#875d69] dark:text-rose-300 hover:bg-[#dda0a5] dark:hover:bg-rose-900/50"
-                }`}
-              >
-                <span className="flex items-center gap-2">
-                  <UsersRound size={18} strokeWidth={1.8} />
-                  {t("gerentes.activos")}
-                </span>
-              </button>
+            
+{/* Opciones */}
+<div className="flex flex-row gap-2 w-full lg:w-auto">
+  <button
+    type="button"
+    onClick={() => {
+      setMostrarInactivos(false);
+      cargarDatos(false);
+    }}
+    className={`font-sans flex-1 min-w-0 px-3 sm:px-5 py-3 rounded-full transition-colors ${
+      !mostrarInactivos
+        ? "bg-[#875d69] text-white"
+        : "bg-[#E8B4B8] dark:bg-[var(--dark-border)] text-[#875d69] dark:text-rose-300 hover:bg-[#dda0a5] dark:hover:bg-rose-900/50"
+    }`}
+  >
+    <span className="flex items-center justify-center gap-2">
+      <UsersRound size={18} strokeWidth={1.8} />
+      {t("gerentes.activos")}
+    </span>
+  </button>
 
-              <button
-                type="button"
-                onClick={() => {
-                  setMostrarInactivos(true);
-                  cargarDatos(true);
-                }}
-                className={`font-sans px-5 py-3 rounded-full transition-colors ${
-                  mostrarInactivos
-                    ? "bg-[#875d69] text-white"
-                    : "bg-[#E8B4B8] dark:bg-[var(--dark-border)] text-[#875d69] dark:text-rose-300 hover:bg-[#dda0a5] dark:hover:bg-rose-900/50"
-                }`}
-              >
-                <span className="flex items-center gap-2">
-                  <UserRoundX size={18} strokeWidth={1.8} />
-                  {t("gerentes.inactivos")}
-                </span>
-              </button>
-            </div>
+  <button
+    type="button"
+    onClick={() => {
+      setMostrarInactivos(true);
+      cargarDatos(true);
+    }}
+    className={`font-sans flex-1 min-w-0 px-3 sm:px-5 py-3 rounded-full transition-colors ${
+      mostrarInactivos
+        ? "bg-[#875d69] text-white"
+        : "bg-[#E8B4B8] dark:bg-[var(--dark-border)] text-[#875d69] dark:text-rose-300 hover:bg-[#dda0a5] dark:hover:bg-rose-900/50"
+    }`}
+  >
+    <span className="flex items-center justify-center gap-2">
+      <UserRoundX size={22} strokeWidth={2.2} className="shrink-0" />
+      {t("gerentes.inactivos")}
+    </span>
+  </button>
+</div>
+
 
             {/* Buscador */}
             <div className="w-full lg:w-80">
@@ -426,8 +429,11 @@ const manejarReenviarAviso = async (id) => {
                           )}
                         </div>
 
-                        <p className="font-sans text-sm text-gray-600 dark:text-[var(--dark-muted)] mt-2">
-                          ✉ {gerente.email}
+                        <p className="font-sans text-xs sm:text-sm text-gray-600 dark:text-[var(--dark-muted)] mt-2 flex items-center gap-2">
+                          <span className="shrink-0">✉</span>
+                          <span className="whitespace-nowrap">
+                            {gerente.email}
+                          </span>
                         </p>
 
                         <p className="font-sans text-sm text-gray-600 dark:text-[var(--dark-muted)] mt-1">

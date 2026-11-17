@@ -9,6 +9,7 @@ function Inventarios() {
   const [inventarios, setInventarios] = useState([]);
   const [sucursales, setSucursales] = useState([]);
   const [sucursalSeleccionada, setSucursalSeleccionada] = useState("");
+  const [mostrarOpcionesSucursal, setMostrarOpcionesSucursal] = useState(false);
   const [busqueda, setBusqueda] = useState("");
   const [paginaActual, setPaginaActual] = useState(1);
   const [cargando, setCargando] = useState(true);
@@ -86,11 +87,11 @@ const totalPaginas = Math.ceil(
 );
 
   return (
-    <div className="p-6">
+    <div className="p-4 sm:p-6 lg:p-8">
 
       {/* Encabezado */}
       <div className="mb-8">
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-3 sm:gap-4">
           <div className="flex h-16 w-16 shrink-0 items-center justify-center rounded-2xl bg-[#fae4df] dark:bg-[var(--dark-border)]">
             <Boxes
               size={32}
@@ -100,7 +101,7 @@ const totalPaginas = Math.ceil(
           </div>
 
           <div>
-            <h1 className="font-sans text-3xl sm:text-4xl font-bold text-[#8b5e6b] dark:text-rose-300">
+            <h1 className="font-sans text-2xl sm:text-3xl lg:text-4xl font-bold text-[#8b5e6b] dark:text-rose-300">
               {t("inventarios.title")}
             </h1>
 
@@ -112,8 +113,8 @@ const totalPaginas = Math.ceil(
       </div>
 
       {/* Filtro */}
-<div className="mb-8 w-full overflow-visible rounded-2xl bg-white dark:bg-[var(--dark-surface)] p-5 shadow-sm">
-<div className="grid w-full grid-cols-1 items-end gap-5 lg:grid-cols-[minmax(280px,0.8fr)_minmax(450px,1.4fr)]">
+<div className="mb-8 w-full min-w-0 overflow-visible rounded-2xl bg-white dark:bg-[var(--dark-surface)] p-4 sm:p-5 shadow-sm">
+<div className="grid w-full min-w-0 grid-cols-1 items-end gap-5 lg:grid-cols-[minmax(0,0.8fr)_minmax(0,1.4fr)]">
 
     {/* Filtro por sucursal */}
 <div className="min-w-0 w-full lg:col-span-1">
@@ -124,28 +125,64 @@ const totalPaginas = Math.ceil(
     {t("inventarios.selectBranch")}
   </label>
 
-  <select
-    id="filtro-sucursal"
-    value={sucursalSeleccionada}
-    onChange={(e) => {
-      setSucursalSeleccionada(e.target.value);
-      setPaginaActual(1);
-    }}
-className="w-full h-10 rounded-xl border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-bg)] px-4 text-base text-[#8c6773] dark:text-[var(--dark-text)] shadow-sm focus:border-[#875d69] dark:focus:border-rose-300 focus:outline-none">
-    <option value="">
-      {t("inventarios.allBranches")}
-    </option>
+  
+<div className="relative w-full min-w-0">
 
-    <option value="inactivas">
-      {t("inventarios.inactiveBranches")}
-    </option>
+  <button
+    type="button"
+    onClick={() => setMostrarOpcionesSucursal((prev) => !prev)}
+    aria-expanded={mostrarOpcionesSucursal}
+    className="flex h-10 w-full items-center justify-between gap-2 rounded-xl border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-bg)] px-3 sm:px-4 text-sm sm:text-base text-[#8c6773] dark:text-[var(--dark-text)] shadow-sm focus:border-[#875d69] focus:outline-none"
+  >
+    <span className="truncate">
+      {!sucursalSeleccionada
+        ? t("inventarios.allBranches")
+        : sucursalSeleccionada === "inactivas"
+        ? t("inventarios.inactiveBranches")
+        : sucursales.find(
+            (s) => String(s.id) === String(sucursalSeleccionada)
+          )?.nombre || t("inventarios.allBranches")}
+    </span>
 
-    {sucursales.map((sucursal) => (
-      <option key={sucursal.id} value={sucursal.id}>
-        {sucursal.nombre}
-      </option>
-    ))}
-  </select>
+    <span className="material-icons shrink-0">
+      {mostrarOpcionesSucursal
+        ? "keyboard_arrow_up"
+        : "keyboard_arrow_down"}
+    </span>
+  </button>
+
+  {mostrarOpcionesSucursal && (
+    <div className="absolute left-0 right-0 top-full z-50 mt-2 max-h-60 w-full overflow-y-auto rounded-xl border border-[#e6bdc7] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-surface)] shadow-xl">
+
+      {[
+        { value: "", label: t("inventarios.allBranches") },
+        { value: "inactivas", label: t("inventarios.inactiveBranches") },
+        ...sucursales.map((sucursal) => ({
+          value: String(sucursal.id),
+          label: sucursal.nombre,
+        })),
+      ].map((opcion) => (
+        <button
+          key={opcion.value}
+          type="button"
+          onClick={() => {
+            setSucursalSeleccionada(opcion.value);
+            setPaginaActual(1);
+            setMostrarOpcionesSucursal(false);
+          }}
+          className={`block w-full break-words px-4 py-3 text-left text-sm transition-colors hover:bg-[#fae4df] dark:hover:bg-[var(--dark-border)] ${
+            String(sucursalSeleccionada) === opcion.value
+              ? "bg-[#fae4df] dark:bg-[var(--dark-border)] text-[#875d69] dark:text-rose-300 font-semibold"
+              : "text-[#8c6773] dark:text-[var(--dark-text)]"
+          }`}
+        >
+          {opcion.label}
+        </button>
+      ))}
+    </div>
+  )}
+</div>
+
 </div>
 
     {/* Buscador por nombre */}
@@ -180,7 +217,7 @@ className="w-full h-10 rounded-xl border-2 border-[#e6bdc7] dark:border-[var(--d
 </div>
 
 
-      {/* Estado de carga */}
+    {/* Estado de carga */}
       {cargando && (
         <div className="rounded-2xl border border-[#ead8d8] dark:border-[var(--dark-border)] bg-white/70 dark:bg-[var(--dark-surface)] p-8 text-center shadow-sm">
           <p className="text-[#8c6773] dark:text-[var(--dark-muted)]">
