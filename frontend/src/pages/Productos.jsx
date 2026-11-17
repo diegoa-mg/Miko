@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { useTranslation } from "react-i18next";
+import Select from "../components/Select";
 import {
   Package,
   Plus,
@@ -435,22 +436,25 @@ useEffect(() => {
             />
           </div>
 
-          <select
+          <Select
             value={categoriaSeleccionada}
             onChange={(e) => setCategoriaSeleccionada(e.target.value)}
-            aria-label={t("productos.categorias", {
+            ariaLabel={t("productos.categorias", {
               defaultValue: "Categorías",
             })}
-            className="w-full min-w-0 rounded-xl border-2 border-[#ead8d8] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-bg)] px-3 py-3 text-sm text-[#875d69] dark:text-rose-300 focus:border-[#cda4b4] dark:focus:border-rose-300 focus:outline-none"          >
-            <option value="">
-              {t("productos.todos", { defaultValue: "Todos los productos" })}
-            </option>
-            {categorias.map((categoria) => (
-              <option key={categoria.id} value={categoria.id}>
-                {categoria.nombre}
-              </option>
-            ))}
-          </select>
+            options={[
+              {
+                value: "",
+                label: t("productos.todos", { defaultValue: "Todos los productos" }),
+              },
+              ...categorias.map((categoria) => ({
+                value: String(categoria.id),
+                label: categoria.nombre,
+              })),
+            ]}
+            className="w-full min-w-0"
+            botonClassName="rounded-xl px-3 py-3 text-sm"
+          />
 
           <button
             type="button"
@@ -877,24 +881,23 @@ useEffect(() => {
                     defaultValue: "Categorías",
                   })}
                 </label>
-                <select
+                <Select
                   name="categoria_id"
                   value={formulario.categoria_id}
                   onChange={cambiarCampo}
                   required
-                  className="w-full rounded-xl border-2 border-[#ead8d8] dark:border-[var(--dark-border)] bg-white dark:bg-[var(--dark-bg)] px-4 py-3 text-[#875d69] dark:text-rose-300 focus:border-[#cda4b4] dark:focus:border-rose-300 focus:outline-none"
-                >
-                  <option value="">
-                    {t("productos.seleccionarCategoria", {
-                      defaultValue: "Selecciona una categoría",
-                    })}
-                  </option>
-                  {categorias.map((categoria) => (
-                    <option key={categoria.id} value={categoria.id}>
-                      {categoria.nombre}
-                    </option>
-                  ))}
-                </select>
+                  ariaLabel={t("productos.categorias", {
+                    defaultValue: "Categorías",
+                  })}
+                  placeholder={t("productos.seleccionarCategoria", {
+                    defaultValue: "Selecciona una categoría",
+                  })}
+                  options={categorias.map((categoria) => ({
+                    value: String(categoria.id),
+                    label: categoria.nombre,
+                  }))}
+                  botonClassName="rounded-xl px-4 py-3 text-base"
+                />
               </div>
 
               {!productoEditar && (

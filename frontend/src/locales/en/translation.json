@@ -251,6 +251,14 @@
     "errorPdf": "Could not open the ticket PDF. Please try again.",
     "reintentar": "Retry"
   },
+  "datePicker": {
+    "placeholder": "mm/dd/yyyy",
+    "mesAnterior": "Previous month",
+    "mesSiguiente": "Next month",
+    "limpiar": "Clear",
+    "hoy": "Today",
+    "calendario": "Calendar"
+  },
   "misVentas": {
     "titulo": "My sales",
     "descripcion": "Review the sales you have registered.",

@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { useTranslation } from "react-i18next";
+import Select from "../components/Select";
 import { Minus, Plus, X, ShoppingCart } from "lucide-react";
 import api from "../api/axios";
 import { obtenerMetodosPago, registrarVenta } from "../api/ventasCajero";
@@ -428,19 +429,17 @@ export default function PuntoDeVentaCajero() {
               aria-label={t("pos.buscar")}
               className="min-h-[40px] min-w-0 flex-1 rounded-full bg-white dark:bg-[var(--dark-bg)] border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] text-[#8c6773] dark:text-[var(--dark-text)] px-5 py-2 text-sm focus:outline-none focus:border-[#875d69] dark:focus:border-rose-300"
             />
-            <select
+            <Select
               value={categoriaId}
               onChange={(e) => setCategoriaId(e.target.value)}
-              aria-label={t("pos.categoria")}
-              className="min-h-[40px] rounded-full bg-white dark:bg-[var(--dark-bg)] border-2 border-[#e6bdc7] dark:border-[var(--dark-border)] text-[#8c6773] dark:text-[var(--dark-text)] px-4 py-2 text-sm w-full sm:w-60 sm:shrink-0 focus:outline-none focus:border-[#875d69] dark:focus:border-rose-300"
-            >
-              <option value="">{t("pos.todasCategorias")}</option>
-              {categoriasFiltro.map((c) => (
-                <option key={c.id} value={c.id}>
-                  {c.nombre}
-                </option>
-              ))}
-            </select>
+              ariaLabel={t("pos.categoria")}
+              options={[
+                { value: "", label: t("pos.todasCategorias") },
+                ...categoriasFiltro.map((c) => ({ value: String(c.id), label: c.nombre })),
+              ]}
+              className="w-full sm:w-60 sm:shrink-0"
+              botonClassName="min-h-[40px] rounded-full px-4 py-2 text-sm"
+            />
           </div>
 
           {cargando && <p className="text-sm text-gray-500 dark:text-[var(--dark-muted)]">{t("pos.cargando")}</p>}

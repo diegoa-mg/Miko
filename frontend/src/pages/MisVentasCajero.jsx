@@ -9,6 +9,7 @@ import {
 } from "../api/ventasCajero";
 import TicketVentaModal from "../components/TicketVentaModal";
 import Paginacion from "../components/Paginacion";
+import DatePicker from "../components/DatePicker";
 import {
   crearFormatoMoneda,
   fechaHoy,
@@ -155,26 +156,28 @@ export default function MisVentasCajero() {
             <label htmlFor="mv-desde" className="mb-1 block text-sm font-medium text-gray-700 dark:text-[var(--dark-text)]">
               {t("misVentas.desde")}
             </label>
-            <input
+            <DatePicker
               id="mv-desde"
-              type="date"
               value={desde}
+              onChange={setDesde}
               max={hasta || undefined}
-              onChange={(e) => setDesde(e.target.value)}
-              className={`w-full sm:w-auto ${inputFecha}`}
+              hoy={hoy || undefined}
+              className="w-full sm:w-44"
+              botonClassName={inputFecha}
             />
           </div>
           <div className="w-full sm:w-auto">
             <label htmlFor="mv-hasta" className="mb-1 block text-sm font-medium text-gray-700 dark:text-[var(--dark-text)]">
               {t("misVentas.hasta")}
             </label>
-            <input
+            <DatePicker
               id="mv-hasta"
-              type="date"
               value={hasta}
+              onChange={setHasta}
               min={desde || undefined}
-              onChange={(e) => setHasta(e.target.value)}
-              className={`w-full sm:w-auto ${inputFecha}`}
+              hoy={hoy || undefined}
+              className="w-full sm:w-44"
+              botonClassName={inputFecha}
             />
           </div>
           <div className="flex flex-wrap gap-2 w-full sm:w-auto pt-1 sm:pt-0">
