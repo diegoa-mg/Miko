@@ -88,6 +88,7 @@
     "avisoPendiente": "Debes aceptar el aviso de privacidad. Revisa tu correo.",
     "errorSinConexion": "No se pudo conectar con el servidor. Revisa tu conexión e inténtalo de nuevo.",
     "errorServidor": "Ocurrió un error en el servidor. Inténtalo más tarde.",
+    "cuentaBloqueada": "Demasiados intentos fallidos. Tu cuenta quedó bloqueada 15 minutos. Inténtalo más tarde.",
     "sesionNoValida": "Tu sesión ha dejado de ser válida o ha vencido. Por favor, inicia sesión nuevamente."
   },
   "sidebar": {

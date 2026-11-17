@@ -76,6 +76,8 @@ function Login() {
 
       if (codigo === "aviso_pendiente") {
         setError(t("login.avisoPendiente"));
+      } else if (codigo === "cuenta_bloqueada") {
+        setError(t("login.cuentaBloqueada"));
       } else if (!error.response) {
         // El servidor no respondió (backend caído, sin conexión)
         setError(t("login.errorSinConexion"));

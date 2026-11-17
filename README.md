@@ -38,7 +38,7 @@ Aplicación web que permite a una empresa con varias sucursales administrar de f
 ✅ Verificación de correo electrónico<br>
 ✅ Aviso de privacidad<br>
 ✅ Edición de perfil, cambio de contraseña y foto de perfil<br>
-✅ Cierre de sesión en todos los dispositivos (versión de token: al cambiar la contraseña o cerrar sesiones, los tokens anteriores dejan de funcionar)
+✅ Cierre de sesión en todos los dispositivos (versión de token: al cambiar la contraseña o cerrar sesiones, los tokens anteriores dejan de funcionar)<br>
 ✅ Bloqueo temporal de la cuenta (15 minutos) tras 5 intentos fallidos de inicio de sesión<br>
  
 **Administrador General**<br>

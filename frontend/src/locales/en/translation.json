@@ -88,6 +88,7 @@
     "avisoPendiente": "You must accept the privacy policy before logging in. Please check your email.",
     "errorSinConexion": "Could not connect to the server. Check your connection and try again.",
     "errorServidor": "A server error occurred. Please try again later.",
+    "cuentaBloqueada": "Too many failed attempts. Your account is locked for 15 minutes. Please try again later.",
     "sesionNoValida": "Your session is no longer valid or has expired. Please sign in again."
   },
   "sidebar": {
