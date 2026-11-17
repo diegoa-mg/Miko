@@ -50,7 +50,7 @@ export default function DashboardCajero() {
 
   if (cargando) {
     return (
-      <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-4 sm:p-6 lg:p-8">
+      <div className="bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-4 sm:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto text-gray-500 dark:text-[var(--dark-muted)]">
           {t("common.loading")}
         </div>
@@ -60,7 +60,7 @@ export default function DashboardCajero() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-4 sm:p-6 lg:p-8">
+      <div className="bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-4 sm:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto text-red-500 dark:text-red-400">
           {mensajeError(error, t("dashboard.error"))}
         </div>
@@ -71,7 +71,7 @@ export default function DashboardCajero() {
   const ultimasVentas = data.ultimas_ventas ?? [];
 
   return (
-    <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-4 sm:p-6 lg:p-8">
+    <div className="bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
 
         {/* Encabezado */}
@@ -86,7 +86,7 @@ export default function DashboardCajero() {
           </div>
 
           <div className="min-w-0">
-            <h1 className="font-sans text-2xl sm:text-4xl font-bold text-[#8b5e6b] dark:text-rose-300 truncate sm:whitespace-normal">
+            <h1 className="font-sans text-2xl sm:text-4xl font-bold text-[#8b5e6b] dark:text-rose-300 break-words">
               {t("dashboard.title")}
             </h1>
 

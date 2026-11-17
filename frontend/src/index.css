@@ -2,8 +2,16 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Tamaño base: más compacto en celular para que quepa más contenido en 360 px.
+   Desde 768 px (md) vuelve al 120% de siempre. */
 html {
-  font-size: 120%; /* o 125%, 130%... */
+  font-size: 100%;
+}
+
+@media (min-width: 768px) {
+  html {
+    font-size: 120%; /* o 125%, 130%... */
+  }
 }
 
 /* Modo oscuro: paleta (ajusta aquí qué tan oscuro se ve) */
@@ -191,6 +199,8 @@ html {
 
 .miko-confirm-modal {
   width: min(420px, calc(100% - 40px));
+  max-height: calc(100dvh - 40px);
+  overflow-y: auto;
   background: #fffaf2;
   border-radius: 24px;
   padding: 30px;
@@ -260,6 +270,22 @@ html {
 .miko-confirm-accept:hover {
   background: #704a57;
   transform: translateY(-1px);
+}
+
+/* Celulares muy angostos: modal menos holgado y botones que ocupan todo el ancho */
+@media (max-width: 480px) {
+  .miko-confirm-modal {
+    padding: 22px;
+  }
+
+  .miko-confirm-actions {
+    flex-direction: column-reverse;
+  }
+
+  .miko-confirm-cancel,
+  .miko-confirm-accept {
+    width: 100%;
+  }
 }
 
 @keyframes miko-overlay-show {

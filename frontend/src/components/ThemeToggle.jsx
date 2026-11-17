@@ -1,9 +1,13 @@
 import { useTranslation } from "react-i18next";
 import { useTheme } from "../context/ThemeContext";
 
-// Botón para alternar claro/oscuro. Por ahora flotante (visible en el login);
-// al llegar al layout se puede reutilizar dentro del sidebar pasando otra className.
-export default function ThemeToggle({ className = "fixed bottom-16 right-4 z-50" }) {
+// Botón para alternar claro/oscuro. Flotante:
+// - Celular: arriba a la derecha (dentro de la barra superior del layout).
+// - Escritorio: abajo a la derecha, como antes.
+// Se puede reutilizar en otro lugar pasando otra className.
+export default function ThemeToggle({
+  className = "fixed top-2 right-14 z-50 md:top-auto md:bottom-16 md:right-4",
+}) {
   const { t } = useTranslation();
   const { isDark, toggleTheme } = useTheme();
   const label = isDark ? t("theme.toLight") : t("theme.toDark");

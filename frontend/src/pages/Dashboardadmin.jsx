@@ -69,7 +69,7 @@ function SeccionPersonas({
           {personas.map((persona) => (
             <li
               key={persona.id}
-              className="py-3 flex items-center justify-between gap-4"
+              className="py-3 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-1 sm:gap-4"
             >
               <div className="min-w-0 flex-1">
                 <p className="font-medium text-gray-800 dark:text-[var(--dark-text)] break-words">
@@ -81,11 +81,11 @@ function SeccionPersonas({
                 >
                   # {persona.id}
                 </p>
-                <p className="text-sm text-gray-500 dark:text-[var(--dark-muted)] break-words">
+                <p className="text-sm text-gray-500 dark:text-[var(--dark-muted)] break-all">
                   ✉ {persona.email}
                 </p>
               </div>
-              <p className="text-sm text-gray-500 dark:text-[var(--dark-muted)] text-right max-w-[40%] break-words">
+              <p className="text-sm text-gray-500 dark:text-[var(--dark-muted)] sm:text-right sm:max-w-[40%] break-words">
                 {nombreSucursal(persona)}
               </p>
             </li>
@@ -138,7 +138,7 @@ export default function DashboardAdmin() {
 
   if (cargando) {
     return (
-      <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-8">
+      <div className="bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-4 sm:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto text-gray-500 dark:text-[var(--dark-muted)]">
           {t("common.loading")}
         </div>
@@ -148,7 +148,7 @@ export default function DashboardAdmin() {
 
   if (error) {
     return (
-      <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-8">
+      <div className="bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-4 sm:p-6 lg:p-8">
         <div className="max-w-7xl mx-auto text-red-500 dark:text-red-400">
           {mensajeError(error, t("dashboard.error"))}
         </div>
@@ -157,23 +157,23 @@ export default function DashboardAdmin() {
   }
 
   return (
-    <div className="min-h-screen bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-4 sm:p-8">
+    <div className="bg-[#fdf6e3] dark:bg-[var(--dark-bg)] p-4 sm:p-6 lg:p-8">
       <div className="max-w-7xl mx-auto">
         {/* Encabezado */}
       <div className="flex items-center gap-4 mb-6 sm:mb-8">
-        <div className="h-16 w-16 shrink-0 rounded-2xl bg-[#fae4df] dark:bg-[var(--dark-border)] flex items-center justify-center">
+        <div className="h-14 w-14 sm:h-16 sm:w-16 shrink-0 rounded-2xl bg-[#fae4df] dark:bg-[var(--dark-border)] flex items-center justify-center">
           <LayoutDashboard
             size={32}
             className="text-[#d06b7d] dark:text-rose-300"
           />
         </div>
 
-        <div>
-          <h1 className="font-sans text-3xl sm:text-4xl font-bold text-[#8b5e6b] dark:text-rose-300">
+        <div className="min-w-0">
+          <h1 className="font-sans text-2xl sm:text-4xl font-bold break-words text-[#8b5e6b] dark:text-rose-300">
             {t("dashboard.title")}
           </h1>
 
-          <p className="font-sans text-lg text-[#5f4a50] dark:text-[var(--dark-muted)] mt-1">
+          <p className="font-sans text-base sm:text-lg text-[#5f4a50] dark:text-[var(--dark-muted)] mt-1">
             {t("dashboard.descripcion")}
           </p>
         </div>
