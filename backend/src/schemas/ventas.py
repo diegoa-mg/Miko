@@ -72,6 +72,11 @@ class TicketProducto(BaseModel):
     model_config = ConfigDict(from_attributes=True)
 
 
+class ZonaHorariaResponse(BaseModel):
+    """Zona horaria del negocio (nombre IANA, por ejemplo "America/Mexico_City")."""
+    zona_horaria: str
+
+
 class TicketOut(BaseModel):
     """Datos completos del comprobante / ticket de venta."""
     venta_id: int

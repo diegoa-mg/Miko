@@ -2,7 +2,8 @@ import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
 import Select from "../components/Select";
 import DatePicker from "../components/DatePicker";
-import { obtenerVentas, contarVentas } from "../api/ventas";
+import { obtenerVentas, contarVentas, obtenerZonaHorariaVentas } from "../api/ventas";
+import { formatearFechaNegocio } from "../api/formatoVentas";
 import Paginacion from "../components/Paginacion";
 
 function VentasGerente() {
@@ -17,8 +18,22 @@ function VentasGerente() {
   const [intentoCarga, setIntentoCarga] = useState(0);
   const [metodoPagoSeleccionado, setMetodoPagoSeleccionado] = useState("");
   const [fechaSeleccionada, setFechaSeleccionada] = useState("");
+  const [zona, setZona] = useState(undefined); // undefined = aún no se sabe
 
   const ventasPorPagina = 15;
+
+  // Zona horaria del negocio: las fechas de las ventas llegan en UTC y se muestran en esa zona
+  useEffect(() => {
+    let cancelado = false;
+
+    obtenerZonaHorariaVentas().then((z) => {
+      if (!cancelado) setZona(z);
+    });
+
+    return () => {
+      cancelado = true;
+    };
+  }, []);
 
   useEffect(() => {
     let cancelado = false;
@@ -76,21 +91,6 @@ function VentasGerente() {
         currency: "MXN",
       }
     );
-
-  const formatearFecha = (fecha) => {
-    if (!fecha) return "—";
-
-    const fechaValida = new Date(fecha);
-    if (Number.isNaN(fechaValida.getTime())) return "—";
-
-    return fechaValida.toLocaleString(
-      i18n.language?.startsWith("en") ? "en-US" : "es-MX",
-      {
-        dateStyle: "medium",
-        timeStyle: "short",
-      }
-    );
-  };
 
   const traducirMetodoPago = (metodo) => {
     const claveMetodo = String(metodo || "").trim().toLowerCase();
@@ -349,7 +349,7 @@ function VentasGerente() {
                       </td>
 
                       <td className="whitespace-nowrap p-3 sm:p-4 text-[#8c6773] dark:text-[var(--dark-muted)]">
-                        {formatearFecha(venta.fecha)}
+                        {formatearFechaNegocio(venta.fecha, i18n.language, zona)}
                       </td>
 
                       <td className="p-3 sm:p-4">

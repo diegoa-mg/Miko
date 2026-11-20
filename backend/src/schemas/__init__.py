@@ -36,5 +36,6 @@ from src.schemas.ventas import (
     VentaUpdate,
     TicketProducto,
     TicketOut,
+    ZonaHorariaResponse,
 )
 from src.schemas.aviso_privacidad import AceptarAvisoRequest

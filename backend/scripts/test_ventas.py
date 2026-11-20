@@ -7,7 +7,11 @@ from datetime import datetime
 sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), "..")))
 
 from fastapi import HTTPException
+from fastapi.testclient import TestClient
 from src.database import SessionLocal
+from src.main import app
+from src.security import crear_access_token
+from src.services.fechas import ZONA_NEGOCIO
 from src.models import (
     Categoria,
     Inventario,
@@ -255,6 +259,40 @@ def run_tests():
         db.refresh(inv)
         assert inv.existencia == 10, f"Esperado stock 10 tras anulación, pero es {inv.existencia}"
         print(f"✓ Inventario restaurado tras anulación OK: stock en {inv.existencia}")
+
+        # 8. GET /ventas/zona-horaria: admin y gerente pueden consultarla; el cajero no.
+        # Se llama por HTTP (TestClient) porque el permiso lo valida la dependencia requiere_rol.
+        client = TestClient(app)
+        correos_zona = ["test_ventas_zona_gerente@miko.com", "test_ventas_zona_cajero@miko.com"]
+        try:
+            tokens = {"admin": crear_access_token(usuario.id, usuario.token_version)}
+            for clave, nombre_rol, correo in (("gerente", "gerente_sede", correos_zona[0]), ("cajero", "cajero", correos_zona[1])):
+                rol_x = db.query(Rol).filter(Rol.nombre == nombre_rol).first()
+                if not rol_x:
+                    rol_x = Rol(nombre=nombre_rol)
+                    db.add(rol_x)
+                    db.commit()
+                    db.refresh(rol_x)
+                u = db.query(Usuario).filter(Usuario.email == correo).first()
+                if not u:
+                    u = Usuario(nombre=f"Zona {clave} Test", email=correo, password_hash="fakehash", rol_id=rol_x.id)
+                    db.add(u)
+                    db.commit()
+                    db.refresh(u)
+                tokens[clave] = crear_access_token(u.id, u.token_version)
+
+            for clave in ("admin", "gerente"):
+                resp = client.get("/ventas/zona-horaria", headers={"Authorization": f"Bearer {tokens[clave]}"})
+                assert resp.status_code == 200, f"{clave}: esperaba 200, obtuve {resp.status_code}: {resp.text}"
+                assert resp.json() == {"zona_horaria": ZONA_NEGOCIO.key}, resp.json()
+            resp = client.get("/ventas/zona-horaria", headers={"Authorization": f"Bearer {tokens['cajero']}"})
+            assert resp.status_code == 403, f"cajero: esperaba 403, obtuve {resp.status_code}"
+            resp = client.get("/ventas/zona-horaria")
+            assert resp.status_code == 401, f"sin sesión: esperaba 401, obtuve {resp.status_code}"
+            print(f"✓ GET /ventas/zona-horaria OK: admin y gerente reciben '{ZONA_NEGOCIO.key}', cajero 403, sin sesión 401")
+        finally:
+            db.query(Usuario).filter(Usuario.email.in_(correos_zona)).delete(synchronize_session=False)
+            db.commit()
 
         print("\n=== TODOS LOS ENDPOINTS Y LA LÓGICA DE INVENTARIO FUNCIONAN CORRECTAMENTE ===")
 

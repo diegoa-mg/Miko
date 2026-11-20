@@ -25,12 +25,14 @@ from src.schemas import (
     VentaCreate,
     VentaOut,
     VentaUpdate,
+    ZonaHorariaResponse,
 )
 from src.services import (
     generar_pdf_ticket,
     obtener_sucursal_del_gerente,
     rango_del_dia_en_utc,
 )
+from src.services.fechas import ZONA_NEGOCIO
 
 router = APIRouter(prefix="/ventas", tags=["ventas"])
 
@@ -84,6 +86,19 @@ def listar_metodos_pago(
         nombre_str = m.nombre.value if hasattr(m.nombre, "value") else str(m.nombre)
         resultado.append(MetodoPagoOut(id=m.id, nombre=nombre_str))
     return resultado
+
+
+# Va antes de las rutas "/{venta_id}": si no, FastAPI tomaría "zona-horaria" como un venta_id
+@router.get("/zona-horaria", response_model=ZonaHorariaResponse)
+def obtener_zona_horaria(
+    usuario_actual: Usuario = Depends(requiere_rol("admin_general", "gerente_sede")),
+):
+    """
+    Zona horaria del negocio. Las ventas se guardan en UTC y las pantallas de Ventas
+    (administrador y gerente) la necesitan para mostrar la hora de cada venta. El cajero
+    ya la recibe en su dashboard, por eso aquí solo entran administrador y gerente.
+    """
+    return ZonaHorariaResponse(zona_horaria=ZONA_NEGOCIO.key)
 
 
 @router.post("", response_model=VentaOut, status_code=status.HTTP_201_CREATED)
