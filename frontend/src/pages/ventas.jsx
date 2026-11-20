@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 import { useTranslation } from "react-i18next";
-import { obtenerVentas, contarVentas } from "../api/ventas";
+import { obtenerVentas, contarVentas, obtenerZonaHorariaVentas } from "../api/ventas";
+import { formatearFechaNegocio } from "../api/formatoVentas";
 import Paginacion from "../components/Paginacion";
 import { obtenerSucursales } from "../api/sucursales";
 
@@ -25,6 +26,7 @@ const sucursalesInactivas = sucursales.filter(
   const [totalVentas, setTotalVentas] = useState(0);
   const [montoTotal, setMontoTotal] = useState(0);
   const [errorCarga, setErrorCarga] = useState("");
+  const [zona, setZona] = useState(undefined); // undefined = aún no se sabe
   // Estados de los filtros personalizados
 const [menuTipoAbierto, setMenuTipoAbierto] = useState(false);
 const [menuSucursalAbierto, setMenuSucursalAbierto] = useState(false);
@@ -115,6 +117,19 @@ const [mesCalendario, setMesCalendario] = useState(() => {
     };
   }, [tipoSucursal, sucursalSeleccionada, fechaSeleccionada, paginaActual]);
 
+  // Zona horaria del negocio: las fechas de las ventas llegan en UTC y se muestran en esa zona
+  useEffect(() => {
+    let cancelado = false;
+
+    obtenerZonaHorariaVentas().then((z) => {
+      if (!cancelado) setZona(z);
+    });
+
+    return () => {
+      cancelado = true;
+    };
+  }, []);
+
   const totalPaginas = Math.max(1, Math.ceil(totalVentas / ventasPorPagina));
 
   const formatearPrecio = (precio) =>
@@ -126,22 +141,6 @@ const [mesCalendario, setMesCalendario] = useState(() => {
     }
   );
 
-  const formatearFecha = (fecha) => {
-  if (!fecha) return "—";
-
-  const fechaValida = new Date(fecha);
-
-  if (Number.isNaN(fechaValida.getTime())) return "—";
-
-  return fechaValida.toLocaleString(
-    i18n.language?.startsWith("en") ? "en-US" : "es-MX",
-    {
-      dateStyle: "medium",
-      timeStyle: "short",
-    }
-  );
-};
-  
 const traducirMetodoPago = (metodo) => {
   const claveMetodo = String(metodo || "")
     .trim()
@@ -742,7 +741,7 @@ const nombreSucursalSeleccionada = sucursalesFiltradas.find(
 
       {/* FECHA */}
      <td className="p-3 text-sm leading-5 text-[#8c6773] dark:text-[var(--dark-muted)] break-words">
-        {formatearFecha(venta.fecha)}
+        {formatearFechaNegocio(venta.fecha, i18n.language, zona)}
       </td>
 
       {/* MÉTODO DE PAGO */}
